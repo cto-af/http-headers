@@ -1,0 +1,41 @@
+{
+  "name": "@cto.af/http-headers",
+  "version": "0.0.0",
+  "decription": "",
+  "main": "lib/index.js",
+  "type": "module",
+  "keywords": [],
+  "author": "Joe Hildebrand <joe-github@cursive.net>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cto-af/http-headers.git"
+  },
+  "homepage": "https://github.com/cto-af/http-headers#readme",
+  "bugs": {
+    "url": "https://github.com/cto-af/http-headers/issues"
+  },
+  "scripts": {
+    "clean": "rm -rf coverage docs lib",
+    "lint": "eslint .",
+    "pretest": "tsc --inlineSourceMap",
+    "test": "c8 node --test",
+    "posttest": "npm run ts",
+    "docs": "typedoc",
+    "ts": "tsc",
+    "build": "npm run test && npm run lint && npm run docs && npm pack --dry-run"
+  },
+  "devDependencies": {
+    "@cto.af/eslint-config": "5.0.5",
+    "c8": "10.1.2",
+    "eslint-plugin-jsdoc": "50.4.3",
+    "eslint-plugin-markdown": "5.1.0",
+    "typedoc": "0.26.11",
+    "typescript-eslint": "8.13.0",
+    "typescript": "5.6.3"
+  },
+  "packageManager": "pnpm@9.12.3",
+  "engines": {
+    "node": ">=18"
+  }
+}
