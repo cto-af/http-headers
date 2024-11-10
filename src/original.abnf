@@ -1,0 +1,54 @@
+Headers = 1*(Header CRLF) CRLF
+
+Headers-Loose = 1*(Header [CR] LF) [CR] LF
+
+Header
+  = "Accept" COWS Accept
+  / "Accept-Charset" COWS Accept-Charset
+  / "Accept-Encoding" COWS Accept-Encoding
+  / "Accept-Language" COWS Accept-Language
+  / "Accept-Ranges" COWS Accept-Ranges
+  / "Allow" COWS Allow
+  / "Authentication-Info" COWS Authentication-Info
+  / "Authorization" COWS Authorization
+  / "Connection" COWS Connection
+  / "Content-Encoding" COWS Content-Encoding
+  / "Content-Language" COWS Content-Language
+  / "Content-Length" COWS Content-Length
+  / "Content-Location" COWS Content-Location
+  / "Content-Range" COWS Content-Range
+  / "Content-Type" COWS Content-Type
+  / "Date" COWS Date
+  / "ETag" COWS ETag
+  / "Expect" COWS Expect
+  / "From" COWS From
+  / "Host" COWS Host
+  / "If-Match" COWS If-Match
+  / "If-Modified-Since" COWS If-Modified-Since
+  / "If-None-Match" COWS If-None-Match
+  / "If-Range" COWS If-Range
+  / "If-Unmodified-Since" COWS If-Unmodified-Since
+  / "IMF-fixdate" COWS IMF-fixdate
+  / "Last-Modified" COWS Last-Modified
+  / "Location" COWS Location
+  / "Max-Forwards" COWS Max-Forwards
+  / "Proxy-Authenticate" COWS Proxy-Authenticate
+  / "Proxy-Authentication-Info" COWS Proxy-Authentication-Info
+  / "Proxy-Authorization" COWS Proxy-Authorization
+  / "Range" COWS Range
+  / "Referer" COWS Referer
+  / "Retry-After" COWS Retry-After
+  / "Server" COWS Server
+  / "TE" COWS TE
+  / "Trailer" COWS Trailer
+  / "Upgrade" COWS Upgrade
+  / "User-Agent" COWS User-Agent
+  / "Vary" COWS Vary
+  / "Via" COWS Via
+  / "WWW-Authenticate" COWS WWW-Authenticate
+  / Unknown-Header
+
+Unknown-Header = field-name COWS field-content
+
+COWS = %s":" OWS
+

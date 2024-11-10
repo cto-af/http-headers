@@ -1,10 +1,19 @@
 {
   "name": "@cto.af/http-headers",
   "version": "0.0.0",
-  "decription": "",
+  "decription": "Parse HTTP headers from RFC 9110 using the full ABNF",
   "main": "lib/index.js",
   "type": "module",
-  "keywords": [],
+  "keywords": [
+    "http",
+    "header",
+    "rfc",
+    "9110",
+    "parser",
+    "peggy",
+    "peg",
+    "abnf"
+  ],
   "author": "Joe Hildebrand <joe-github@cursive.net>",
   "license": "MIT",
   "repository": {
@@ -15,24 +24,28 @@
   "bugs": {
     "url": "https://github.com/cto-af/http-headers/issues"
   },
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "clean": "rm -rf coverage docs lib",
     "lint": "eslint .",
-    "pretest": "tsc --inlineSourceMap",
+    "pretest": "npm run parser",
     "test": "c8 node --test",
-    "posttest": "npm run ts",
-    "docs": "typedoc",
-    "ts": "tsc",
+    "abnf": "abnf_gen -c src/original.abnf src/rfc9110.abnf src/rfc3986.abnf src/rfc4647.abnf src/rfc5646.abnf src/rfc5322.abnf -s Headers -s Headers-Loose",
+    "parser": "peggy -c peggy.config.js && mkdir -p lib && cat src/types.d.ts src/index.d.ts > lib/index.d.ts && cp src/index.js lib",
     "build": "npm run test && npm run lint && npm run docs && npm pack --dry-run"
   },
   "devDependencies": {
     "@cto.af/eslint-config": "5.0.5",
+    "@peggyjs/coverage": "1.2.1",
+    "abnf": "4.1.0",
     "c8": "10.1.2",
     "eslint-plugin-jsdoc": "50.4.3",
     "eslint-plugin-markdown": "5.1.0",
-    "typedoc": "0.26.11",
-    "typescript-eslint": "8.13.0",
-    "typescript": "5.6.3"
+    "peggy": "4.1.1",
+    "typescript": "5.6.3",
+    "typescript-eslint": "8.13.0"
   },
   "packageManager": "pnpm@9.12.3",
   "engines": {
