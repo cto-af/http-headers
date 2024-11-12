@@ -94,7 +94,7 @@ Accept_Charset
     };
   })?)|.., OWS "," OWS| {
     return {
-      kind: 'accept_charset',
+      kind: 'accept-charset',
       value: text(),
       charsets: charsets.filter(c => c),
     }
@@ -109,7 +109,7 @@ Accept_Encoding
     }
   })?)|.., OWS "," OWS| {
     return {
-      kind: 'accept_encoding',
+      kind: 'accept-encoding',
       value: text(),
       encodings: encodings.filter(e => e),
     }
@@ -124,7 +124,7 @@ Accept_Language
     };
   })?)|.., OWS "," OWS| {
     return {
-      kind: 'accept_language',
+      kind: 'accept-language',
       value: text(),
       languages: languages.filter(l => l),
     }
@@ -133,7 +133,7 @@ Accept_Language
 Accept_Ranges
   = ranges:acceptable_ranges {
     return {
-      kind: 'accept_ranges',
+      kind: 'accept-ranges',
       value: text(),
       ranges,
     };
@@ -153,7 +153,7 @@ Allow
 Authentication_Info
   = params:(auth_param?)|.., OWS "," OWS| {
     return {
-      kind: 'authentication_info',
+      kind: 'authentication-info',
       value: text(),
       params: params.filter(p => p),
     }
@@ -182,7 +182,7 @@ Connection
 Content_Encoding
   = codings:(content_coding?)|.., OWS "," OWS| {
     return {
-      kind: 'content_encoding',
+      kind: 'content-encoding',
       value: text(),
       encodings: codings.filter(c => c),
     };
@@ -192,7 +192,7 @@ Content_Encoding
 Content_Language
   = tags:(language_tag?)|.., OWS "," OWS| {
     return {
-      kind: 'content_language',
+      kind: 'content-language',
       value: text(),
       tags: tags.filter(t => t),
     };
@@ -201,7 +201,7 @@ Content_Language
 Content_Length
   = num:$DIGIT+ {
       return {
-        kind: 'content_length',
+        kind: 'content-length',
         value: text(),
         length: parseInt(num, 10),
       };
@@ -211,7 +211,7 @@ Content_Location
   = absolute:(absolute_URI { return true } / partial_URI { return false }) {
       const value = text();
       return {
-        kind: 'content_location',
+        kind: 'content-location',
         value,
         uri: value,
         absolute,
@@ -221,7 +221,7 @@ Content_Location
 Content_Range
   = units:range_unit SP range:(range_resp / unsatisfied_range) {
     return {
-      kind: 'content_range',
+      kind: 'content-range',
       value: text(),
       units,
       ...range,
@@ -231,7 +231,7 @@ Content_Range
 Content_Type
   = mt:media_type {
     return {
-      kind: 'content_type',
+      kind: 'content-type',
       value: text(),
       ...mt,
     }
@@ -247,34 +247,95 @@ Date
   }
 
 ETag
-  = entity_tag
+  = etag:entity_tag {
+    return {
+      kind: 'etag',
+      value: text(),
+      etag,
+    };
+  }
 
+// Expect = #expectation
 Expect
-  = (expectation (OWS "," OWS expectation)*)?
+  = expectations:(expectation?)|.., OWS "," OWS| {
+    return {
+      kind: 'expect',
+      value: text(),
+      expectations: expectations.filter(e => e),
+    };
+  }
 
 From
-  = mailbox
+  = address:mailbox {
+    return {
+      kind: 'from',
+      value: text(),
+      address,
+    };
+  }
 
 Host
-  = uri_host (":" port)?
+  = host:uri_host port:(":" @port)? {
+    return {
+      kind: 'host',
+      value: text(),
+      host,
+      port,
+    };
+  }
 
+//  If-Match = "*" / #entity-tag
 If_Match
-  = "*"
-  / (entity_tag (OWS "," OWS entity_tag)*)?
+  = etags:("*" { return ['*'] } / (entity_tag?)|.., OWS "," OWS|) {
+    return {
+      kind: 'if-match',
+      value: text(),
+      etags: etags.filter(e => e),
+    };
+  }
 
 If_Modified_Since
-  = HTTP_date
+  = date:HTTP_date {
+    return {
+      kind: 'if-modified-since',
+      value: text(),
+      date,
+    }
+  }
 
 If_None_Match
-  = "*"
-  / (entity_tag (OWS "," OWS entity_tag)*)?
+  = etags:("*" { return ['*'] } / (entity_tag?)|.., OWS "," OWS|) {
+    return {
+      kind: 'if-none-match',
+      value: text(),
+      etags: etags.filter(e => e),
+    };
+  }
 
 If_Range
-  = entity_tag
-  / HTTP_date
+  = etag:entity_tag {
+    return {
+      kind: 'if-range',
+      value: text(),
+      etag
+    }
+  }
+  / date:HTTP_date {
+    return {
+      kind: 'if-range',
+      value: text(),
+      date,
+    };
+  }
 
 If_Unmodified_Since
-  = HTTP_date
+  = date:HTTP_date {
+    return {
+      kind: 'if-unmodified-since',
+      value: text(),
+      date,
+    };
+  }
 
 IMF_fixdate
   = dt:$(day_name "," SP date1 SP time_of_day SP GMT) {
@@ -282,57 +343,174 @@ IMF_fixdate
   }
 
 Last_Modified
-  = HTTP_date
+  = date:HTTP_date {
+    return {
+      kind: 'last-modified',
+      value: text(),
+      date,
+    };
+  }
 
 Location
-  = URI_reference
+  = uri:URI_reference {
+    return {
+      kind: 'location',
+      value: text(),
+      uri,
+    }
+  }
 
 Max_Forwards
-  = DIGIT+
+  = num:$DIGIT+ {
+    return {
+      kind: 'max-forwards',
+      value: text(),
+      max: parseInt(num, 10)
+    }
+  }
 
+// Proxy-Authenticate = #challenge
 Proxy_Authenticate
-  = (challenge (OWS "," OWS challenge)*)?
+  = challenges:(challenge?)|.., OWS "," OWS| {
+    return {
+      kind: 'proxy-authenticate',
+      value: text(),
+      challenges: challenges.filter(c => c),
+    }
+  }
 
 Proxy_Authentication_Info
-  = (auth_param (OWS "," OWS auth_param)*)?
+  = params:(auth_param?)|.., OWS "," OWS| {
+    return {
+      kind: 'proxy-authentication-info',
+      value: text(),
+      params: params.filter(p => p),
+    }
+  }
 
 Proxy_Authorization
-  = credentials
+  = credentials:credentials {
+    return {
+      kind: 'proxy-authorization',
+      value: text(),
+      ...credentials,
+    }
+  }
 
 Range
-  = ranges_specifier
+  = spec:ranges_specifier {
+    return {
+      kind: 'range',
+      value: text(),
+      ...spec,
+    }
+  }
 
 Referer
-  = absolute_URI
-  / partial_URI
+  = absolute:(absolute_URI {return true} / partial_URI {return false}) {
+    const value = text();
+    return {
+      kind: 'referer',
+      value,
+      uri: value,
+      absolute,
+    };
+  }
 
 Retry_After
-  = HTTP_date
-  / delay_seconds
+  = date:HTTP_date {
+    return {
+      kind: 'retry-after',
+      value: text(),
+      date,
+    }
+  }
+  / seconds:delay_seconds {
+    return {
+      kind: 'retry-after',
+      value: text(),
+      seconds,
+    }
+  }
 
 Server
-  = product (RWS (product / comment))*
+  = first:product last:(RWS @(product / comment))* {
+    return {
+      kind: 'server',
+      value: text(),
+      products: [first, ...last],
+    }
+  }
 
 TE
-  = (t_codings (OWS "," OWS t_codings)*)?
+  = codings:(t_codings?)|.., OWS "," OWS| {
+    const trailers = codings.some(t => t.trailers);
+    return {
+      kind: 'te',
+      value: text(),
+      trailers,
+      codings: codings.filter(c => c && !c.trailers),
+    };
+  }
 
 Trailer
-  = (field_name (OWS "," OWS field_name)*)?
+  = fields:(field_name?)|.., OWS "," OWS| {
+    return {
+      kind: 'trailer',
+      value: text(),
+      fields: fields.filter(f => f).map(f => f.toLowerCase()),
+    }
+  }
 
 Upgrade
-  = (protocol (OWS "," OWS protocol)*)?
+  = protocols:(protocol?)|.., OWS "," OWS| {
+    return {
+      kind: 'upgrade',
+      value: text(),
+      protocols: protocols.filter(p => p),
+    }
+  }
 
 User_Agent
-  = product (RWS (product / comment))*
+  = first:product last:(RWS @(product / comment))* {
+    return {
+      kind: 'user-agent',
+      value: text(),
+      products: [first, ...last],
+    }
+  }
 
 Vary
-  = (("*" / field_name) (OWS "," OWS ("*" / field_name))*)?
+  = fields:(("*" / field_name)?)|.., OWS "," OWS| {
+    return {
+      kind: 'vary',
+      value: text(),
+      fields: fields.filter(f => f).map(f => f.toLowerCase()),
+    }
+  }
 
 Via
-  = ((received_protocol RWS received_by (RWS comment)?) (OWS "," OWS (received_protocol RWS received_by (RWS comment)?))*)?
+  = via:((proto:received_protocol RWS by:received_by comment:(RWS @comment)? {
+    if (comment) {
+      proto.comment = comment;
+    }
+    return {...proto, ...by}
+  })?)|.., OWS "," OWS| {
+    return {
+      kind: 'via',
+      value: text(),
+      path: via.filter(v => v),
+    }
+  }
 
 WWW_Authenticate
-  = challenge |1.., OWS "," OWS|
+  = challenges:(challenge?)|.., OWS "," OWS| {
+    return {
+      kind: 'www-authenticate',
+      value: text(),
+      challenges: challenges.filter(c => c),
+    }
+  }
 
 SP
   = " "
@@ -492,22 +670,31 @@ HTTP_date
   / obs_date
 
 entity_tag
-  = weak? opaque_tag
+  = $(weak? opaque_tag)
 
 expectation
-  = token ("=" (token / quoted_string) parameters)?
+  = token:token p:("=" @(token / quoted_string) @parameters)? {
+    const res = {
+      token: token.toLowerCase(),
+    };
+    if (p) {
+      res.value = p[0];
+      res.parameters = Object.fromEntries(p[1]);
+    }
+    return res;
+  }
 
 mailbox
   = name_addr
   / addr_spec
 
 uri_host
-  = IP_literal
-  / IPv4address
+  = $IP_literal
+  / $IPv4address
   / reg_name
 
 port
-  = DIGIT*
+  = num:$DIGIT* { return parseInt(num, 10) }
 
 day_name
   = "Mon"
@@ -528,42 +715,64 @@ GMT
   = "GMT"
 
 URI_reference
-  = URI
-  / relative_ref
+  // This re-parses, but the first is for conformance with this spec, the
+  // second is the loose WHATWG style.
+  = u:$URI { return new URL(u) }
+  / $relative_ref
 
 challenge
-  = auth_scheme (SP+ @((auth_param|1..,OWS "," OWS|)? / token68))?
+  = scheme:auth_scheme t:(SP+ @auth_params_or_token68)? {
+    return {
+      scheme,
+      ...t
+    }
+  }
 
 ranges_specifier
-  = @range_unit "=" OWS @range_set
+  = units:range_unit "=" OWS ranges:range_set {
+    return {units, ranges};
+  }
 
 delay_seconds
-  = DIGIT+
+  = num:$DIGIT+ { return parseInt(num, 10) }
 
 product
-  = token ("/" product_version)?
+  = product:token version:("/" @product_version)? {
+    return {product, version}
+  }
 
 RWS
   = (SP / HTAB)+
 
 comment
-  = "(" (ctext / quoted_pair / comment)* ")"
+  = "(" c:(ctext / quoted_pair / comment)* ")" { return { comment: c.join('')} }
 
 t_codings
-  = "trailers"i
-  / (transfer_coding weight?)
+  = "trailers"i { return {trailers: true} }
+  / coding:transfer_coding {
+    const weight = parseFloat(coding.parameters.q ?? '1');
+    coding.weight = weight;
+    delete coding.parameters.q;
+    return coding;
+  }
 
 field_name
   = token
 
 protocol
-  = protocol_name ("/" protocol_version)?
+  = name:protocol_name version:("/" @protocol_version)? {
+    return {name, version}
+  }
 
 received_protocol
-  = (protocol_name "/")? protocol_version
+  = protocol:(@protocol_name "/")? version:protocol_version {
+    return {protocol, version};
+  }
 
 received_by
-  = pseudonym (":" port)?
+  = name:pseudonym port:(":" @port)? {
+    return {name, port}
+  }
 
 type
   = tok:token { return tok.toLowerCase() }
@@ -643,7 +852,7 @@ privateuse
 //   / regular
 
 scheme
-  = ALPHA (ALPHA / DIGIT / "+" / "-" / ".")*
+  = $(ALPHA (ALPHA / DIGIT / "+" / "-" / ".")*)
 
 hier_part
   = "//" authority path_abempty
@@ -677,10 +886,10 @@ opaque_tag
   = DQUOTE etagc* DQUOTE
 
 name_addr
-  = display_name? angle_addr
+  = display_name? @angle_addr
 
 addr_spec
-  = local_part "@" domain
+  = $(local_part "@" domain)
 
 IP_literal
   = "[" (IPv6address / IPvFuture) "]"
@@ -689,7 +898,7 @@ IPv4address
   = dec_octet "." dec_octet "." dec_octet "." dec_octet
 
 reg_name
-  = (unreserved / pct_encoded / sub_delims)*
+  = parts:(unreserved / pct_encoded / sub_delims)* { return parts.join('') }
 
 day
   = num:$DIGIT|2| { return parseInt(num, 10) }
@@ -727,7 +936,13 @@ relative_ref
   = relative_part ("?" query)? ("#" fragment)?
 
 range_set
-  = range_spec (OWS "," OWS range_spec)*
+  = ranges:(range_spec?)|1.., OWS "," OWS| {
+    const res = ranges.filter(r => r);
+    if (res.length < 1) {
+      error('Expecting at least one valid range')
+    }
+    return res;
+  }
 
 product_version
   = token
@@ -744,7 +959,12 @@ quoted_pair
   = "\\" @(HTAB / SP / VCHAR / obs_text)
 
 transfer_coding
-  = token (OWS ";" OWS transfer_parameter)*
+  = encoding:token params:(OWS ";" OWS @transfer_parameter)* {
+    return {
+      encoding,
+      parameters: Object.fromEntries(params),
+    }
+  }
 
 protocol_name
   = token
@@ -835,7 +1055,7 @@ path_abempty
   = ("/" segment)*
 
 path_absolute
-  = "/" (segment_nz ("/" segment)*)?
+  = "/" @(segment_nz ("/" @segment)*)?
 
 path_rootless
   = segment_nz ("/" segment)*
@@ -878,7 +1098,7 @@ display_name
   = phrase
 
 angle_addr
-  = CFWS? "<" addr_spec ">" CFWS?
+  = CFWS? "<" @addr_spec ">" CFWS?
   / obs_angle_addr
 
 local_part
@@ -921,7 +1141,7 @@ unreserved
   / "~"
 
 pct_encoded
-  = "%" HEXDIG HEXDIG
+  = "%" hex:$(HEXDIG HEXDIG) { return String.fromCodePoint(parseInt(hex, 16)) }
 
 sub_delims
   = "!"
@@ -937,7 +1157,7 @@ sub_delims
   / "="
 
 fragment
-  = (pchar / "/" / "?")*
+  = $(pchar / "/" / "?")*
 
 range_spec
   = int_range
@@ -951,7 +1171,9 @@ VCHAR
   = [\x21-\x7e]
 
 transfer_parameter
-  = token BWS "=" BWS (token / quoted_string)
+  = token:token BWS "=" BWS value:(token / quoted_string) {
+    return [token.toLowerCase(), value];
+  }
 
 parameter_name
   = tok:token { return tok.toLowerCase() }
@@ -974,13 +1196,13 @@ userinfo
   = (unreserved / pct_encoded / sub_delims / ":")*
 
 segment
-  = pchar*
+  = $pchar*
 
 segment_nz
-  = pchar+
+  = $pchar+
 
 segment_nz_nc
-  = (unreserved / pct_encoded / sub_delims / "@")+
+  = char:(unreserved / pct_encoded / sub_delims / "@")+ { return char.join('') }
 
 day_name_l
   = "Monday"
@@ -1008,13 +1230,13 @@ CFWS
   / FWS
 
 obs_angle_addr
-  = CFWS? "<" obs_route addr_spec ">" CFWS?
+  = CFWS? "<" obs_route @addr_spec ">" CFWS?
 
 dot_atom
   = CFWS? dot_atom_text CFWS?
 
 email_quoted_string
-  = CFWS? DQUOTE (FWS? qcontent)* FWS? DQUOTE CFWS?
+  = CFWS? DQUOTE @$(FWS? @qcontent)* FWS? DQUOTE CFWS?
 
 obs_local_part
   = word ("." word)*
@@ -1042,13 +1264,22 @@ HEXDIG
   / "F"i
 
 int_range
-  = first_pos "-" last_pos?
+  = first:first_pos "-" last:last_pos? &(OWS "," / EOL) {
+    if ((last != null) && (last < first)) {
+      error('last less than first');
+    }
+    return { first, last };
+  }
 
 suffix_range
-  = "-" suffix_length
+  = "-" last:suffix_length &(OWS "," / EOL) {
+    return {first: null, last};
+  }
 
-other_range
-  = ([\x21-\x2b] / [\x2d-\x7e])+
+other_range // VCHAR excluding comma
+  = other:$([\x21-\x2b] / [\x2d-\x7e])+ {
+    return {other};
+  }
 
 word
   = atom
@@ -1068,7 +1299,7 @@ obs_route
   = obs_domain_list ":"
 
 dot_atom_text
-  = atext+ ("." atext+)*
+  = $(atext+ ("." atext+)*)
 
 qcontent
   = qtext
@@ -1080,10 +1311,10 @@ dtext
   / obs_dtext
 
 atom
-  = CFWS? atext+ CFWS?
+  = CFWS? @$atext+ CFWS?
 
 suffix_length
-  = DIGIT+
+  = num:$DIGIT+ { return parseInt(num, 10); }
 
 WSP
   = SP
