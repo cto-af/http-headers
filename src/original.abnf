@@ -9,6 +9,7 @@ Header
   / "Accept-Language" COWS Accept-Language
   / "Accept-Ranges" COWS Accept-Ranges
   / "Allow" COWS Allow
+  / "Alt-Svc" COWS Alt-Svc
   / "Authentication-Info" COWS Authentication-Info
   / "Authorization" COWS Authorization
   / "Connection" COWS Connection

@@ -37,4 +37,5 @@ const contentType = parse('text/html;charset=utf8', {startRule: 'Content_Type'})
 
 ---
 [![Tests](https://github.com/cto-af/http-headers/actions/workflows/node.js.yml/badge.svg)](https://github.com/cto-af/http-headers/actions/workflows/node.js.yml)
-[![codecov](https://codecov.io/gh/cto-af/http-headers/graph/badge.svg?token=R4kYlgO3hF)](https://codecov.io/gh/cto-af/http-headers)
+<!-- no coverage stats for generated files -->
+<!-- [![codecov](https://codecov.io/gh/cto-af/http-headers/graph/badge.svg?token=R4kYlgO3hF)](https://codecov.io/gh/cto-af/http-headers) -->

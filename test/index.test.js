@@ -74,13 +74,26 @@ test('Headers', async() => {
     // #region Accept_Charset
     {
       startRule: (startRule = 'Accept_Charset'),
-      validInput: 'iso-8859-5, unicode-1-1;q=0.8',
+      validInput: 'iso-8859-5, unicode-1-1;q=0.8, *',
       validResult: {
-        kind: 'accept_charset',
-        value: 'iso-8859-5, unicode-1-1;q=0.8',
+        kind: 'accept-charset',
+        value: 'iso-8859-5, unicode-1-1;q=0.8, *',
         charsets: [
           {charset: 'iso-8859-5', weight: 1},
           {charset: 'unicode-1-1', weight: 0.8},
+          {charset: '*', weight: 1},
+        ],
+      },
+      invalid: '* ',
+    },
+    {
+      startRule,
+      validInput: '*',
+      validResult: {
+        kind: 'accept-charset',
+        value: '*',
+        charsets: [
+          {charset: '*', weight: 1},
         ],
       },
     },
@@ -90,7 +103,7 @@ test('Headers', async() => {
       startRule: (startRule = 'Accept_Encoding'),
       validInput: 'compress, gzip',
       validResult: {
-        kind: 'accept_encoding',
+        kind: 'accept-encoding',
         value: 'compress, gzip',
         encodings: [
           {coding: 'compress', weight: 1},
@@ -101,7 +114,7 @@ test('Headers', async() => {
     {
       validInput: 'compress;q=0.5,, gzip;q=1.0,',
       validResult: {
-        kind: 'accept_encoding',
+        kind: 'accept-encoding',
         value: 'compress;q=0.5,, gzip;q=1.0,',
         encodings: [
           {coding: 'compress', weight: 0.5},
@@ -113,7 +126,7 @@ test('Headers', async() => {
     {
       validInput: 'gzip;q=1.0, identity; q=0.5, *;q=0',
       validResult: {
-        kind: 'accept_encoding',
+        kind: 'accept-encoding',
         value: 'gzip;q=1.0, identity; q=0.5, *;q=0',
         encodings: [
           {coding: 'gzip', weight: 1},
@@ -127,15 +140,25 @@ test('Headers', async() => {
     // #region Accept_Language
     {
       startRule: (startRule = 'Accept_Language'),
-      validInput: 'da, en-gb;q=0.8, en;q=0.7',
+      validInput: 'da, en-gb;q=0.8, en;q=0.7, es',
       validResult: {
-        kind: 'accept_language',
-        value: 'da, en-gb;q=0.8, en;q=0.7',
+        kind: 'accept-language',
+        value: 'da, en-gb;q=0.8, en;q=0.7, es',
         languages: [
           {range: ['da'], weight: 1},
           {range: ['en', 'gb'], weight: 0.8},
           {range: ['en'], weight: 0.7},
+          {range: ['es'], weight: 1},
         ],
+      },
+    },
+    {
+      startRule,
+      validInput: '*',
+      validResult: {
+        kind: 'accept-language',
+        languages: [{range: ['*'], weight: 1}],
+        value: '*',
       },
     },
 
@@ -144,7 +167,7 @@ test('Headers', async() => {
       startRule: (startRule = 'Accept_Ranges'),
       validInput: 'bytes,, ,',
       validResult: {
-        kind: 'accept_ranges',
+        kind: 'accept-ranges',
         value: 'bytes,, ,',
         ranges: ['bytes'],
       },
@@ -161,12 +184,49 @@ test('Headers', async() => {
       },
     },
 
+    // #region Alt_Svc
+    {
+      startRule: (startRule = 'Alt_Svc'),
+      validInput: 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000',
+      validResult: {
+        kind: 'alt-svc',
+        value: 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000',
+        services: [
+          {
+            protocol: 'h3',
+            authority: ':443',
+            parameters: {ma: '2592000'},
+          },
+          {
+            protocol: 'h3-29',
+            authority: ':443',
+            parameters: {ma: '2592000'},
+          },
+        ],
+      },
+    },
+    {
+      startRule,
+      validInput: 'h3=":443"; ma=2592000,,',
+      validResult: {
+        kind: 'alt-svc',
+        value: 'h3=":443"; ma=2592000,,',
+        services: [
+          {
+            protocol: 'h3',
+            authority: ':443',
+            parameters: {ma: '2592000'},
+          },
+        ],
+      },
+    },
+
     // #region Authentication_Info
     {
       startRule: (startRule = 'Authentication_Info'),
       validInput: 'foo=bar,boo="bla\\""',
       validResult: {
-        kind: 'authentication_info',
+        kind: 'authentication-info',
         value: 'foo=bar,boo="bla\\""',
         params: [
           {name: 'foo', value: 'bar'},
@@ -213,7 +273,7 @@ test('Headers', async() => {
       startRule: (startRule = 'Content_Encoding'),
       validInput: 'gzip,,',
       validResult: {
-        kind: 'content_encoding',
+        kind: 'content-encoding',
         value: 'gzip,,',
         encodings: ['gzip'],
       },
@@ -225,7 +285,7 @@ test('Headers', async() => {
       startRule: (startRule = 'Content_Language'),
       validInput: 'de, fr, ja, i-enochian',
       validResult: {
-        kind: 'content_language',
+        kind: 'content-language',
         value: 'de, fr, ja, i-enochian',
         tags: [
           {
@@ -267,7 +327,7 @@ test('Headers', async() => {
       // Language subtag plus Script subtag
       validInput: 'zh-Hant, zh-Hans, sr-Cyrl, sr-Latn',
       validResult: {
-        kind: 'content_language',
+        kind: 'content-language',
         value: 'zh-Hant, zh-Hans, sr-Cyrl, sr-Latn',
         tags: [
           {
@@ -311,7 +371,7 @@ test('Headers', async() => {
       // counterparts
       validInput: 'zh-cmn-Hans-CN, cmn-Hans-CN, zh-yue-HK, yue-HK',
       validResult: {
-        kind: 'content_language',
+        kind: 'content-language',
         value: 'zh-cmn-Hans-CN, cmn-Hans-CN, zh-yue-HK, yue-HK',
         tags: [
           {
@@ -354,7 +414,7 @@ test('Headers', async() => {
       // Language-Script-Region
       validInput: 'zh-Hans-CN, sr-Latn-RS',
       validResult: {
-        kind: 'content_language',
+        kind: 'content-language',
         value: 'zh-Hans-CN, sr-Latn-RS',
         tags: [
           {
@@ -381,7 +441,7 @@ test('Headers', async() => {
       // Language-Variant
       validInput: 'sl-rozaj, sl-rozaj-biske, sl-nedis',
       validResult: {
-        kind: 'content_language',
+        kind: 'content-language',
         value: 'sl-rozaj, sl-rozaj-biske, sl-nedis',
         tags: [
           {
@@ -416,7 +476,7 @@ test('Headers', async() => {
       // Language-Region-Variant
       validInput: 'de-CH-1901, sl-IT-nedis',
       validResult: {
-        kind: 'content_language',
+        kind: 'content-language',
         value: 'de-CH-1901, sl-IT-nedis',
         tags: [
           {
@@ -443,7 +503,7 @@ test('Headers', async() => {
       // Language-Script-Region-Variant
       validInput: 'hy-Latn-IT-arevela,,',
       validResult: {
-        kind: 'content_language',
+        kind: 'content-language',
         value: 'hy-Latn-IT-arevela,,',
         tags: [
           {
@@ -462,7 +522,7 @@ test('Headers', async() => {
       // Language-Region
       validInput: 'de-DE, en-US, es-419',
       validResult: {
-        kind: 'content_language',
+        kind: 'content-language',
         value: 'de-DE, en-US, es-419',
         tags: [
           {
@@ -497,7 +557,7 @@ test('Headers', async() => {
       // Private use subtags
       validInput: 'de-CH-x-phonebk, az-Arab-x-AZE-derbend',
       validResult: {
-        kind: 'content_language',
+        kind: 'content-language',
         value: 'de-CH-x-phonebk, az-Arab-x-AZE-derbend',
         tags: [
           {
@@ -524,7 +584,7 @@ test('Headers', async() => {
       // Private use registry values
       validInput: 'x-whatever, qaa-Qaaa-QM-x-southern, de-Qaaa, sr-Latn-QM, sr-Qaaa-RS',
       validResult: {
-        kind: 'content_language',
+        kind: 'content-language',
         value: 'x-whatever, qaa-Qaaa-QM-x-southern, de-Qaaa, sr-Latn-QM, sr-Qaaa-RS',
         tags: [
           {
@@ -575,7 +635,7 @@ test('Headers', async() => {
       // Tags that use extensions
       validInput: 'en-US-u-islamcal, zh-CN-a-myext-x-private, en-a-myext-b-another',
       validResult: {
-        kind: 'content_language',
+        kind: 'content-language',
         value: 'en-US-u-islamcal, zh-CN-a-myext-x-private, en-a-myext-b-another',
         tags: [
           {
@@ -626,7 +686,7 @@ test('Headers', async() => {
       startRule: (startRule = 'Content_Length'),
       validInput: '0',
       validResult: {
-        kind: 'content_length',
+        kind: 'content-length',
         value: '0',
         length: 0,
       },
@@ -634,7 +694,7 @@ test('Headers', async() => {
     {
       validInput: '01',
       validResult: {
-        kind: 'content_length',
+        kind: 'content-length',
         value: '01',
         length: 1,
       },
@@ -643,7 +703,7 @@ test('Headers', async() => {
     {
       validInput: '10',
       validResult: {
-        kind: 'content_length',
+        kind: 'content-length',
         value: '10',
         length: 10,
       },
@@ -655,7 +715,7 @@ test('Headers', async() => {
       startRule: (startRule = 'Content_Location'),
       validInput: 'https://httpwg.org/specs/rfc9110.html',
       validResult: {
-        kind: 'content_location',
+        kind: 'content-location',
         value: 'https://httpwg.org/specs/rfc9110.html',
         uri: 'https://httpwg.org/specs/rfc9110.html',
         absolute: true,
@@ -664,7 +724,7 @@ test('Headers', async() => {
     {
       validInput: '/specs/rfc9110.html',
       validResult: {
-        kind: 'content_location',
+        kind: 'content-location',
         value: '/specs/rfc9110.html',
         uri: '/specs/rfc9110.html',
         absolute: false,
@@ -677,7 +737,7 @@ test('Headers', async() => {
       startRule: (startRule = 'Content_Range'),
       validInput: 'bytes 42-1233/1234',
       validResult: {
-        kind: 'content_range',
+        kind: 'content-range',
         value: 'bytes 42-1233/1234',
         units: 'bytes',
         first: 42,
@@ -688,7 +748,7 @@ test('Headers', async() => {
     {
       validInput: 'bytes 42-1233/*',
       validResult: {
-        kind: 'content_range',
+        kind: 'content-range',
         value: 'bytes 42-1233/*',
         units: 'bytes',
         first: 42,
@@ -700,7 +760,7 @@ test('Headers', async() => {
     {
       validInput: 'bytes */1234',
       validResult: {
-        kind: 'content_range',
+        kind: 'content-range',
         value: 'bytes */1234',
         units: 'bytes',
         complete: 1234,
@@ -714,7 +774,7 @@ test('Headers', async() => {
       startRule: (startRule = 'Content_Type'),
       validInput: 'text/html; charset=ISO-8859-4',
       validResult: {
-        kind: 'content_type',
+        kind: 'content-type',
         value: 'text/html; charset=ISO-8859-4',
         type: 'text',
         subtype: 'html',
@@ -724,7 +784,7 @@ test('Headers', async() => {
     {
       validInput: 'text/html;charset=utf-8',
       validResult: {
-        kind: 'content_type',
+        kind: 'content-type',
         value: 'text/html;charset=utf-8',
         type: 'text',
         subtype: 'html',
@@ -735,7 +795,7 @@ test('Headers', async() => {
     {
       validInput: 'Text/HTML;Charset="utf-8"',
       validResult: {
-        kind: 'content_type',
+        kind: 'content-type',
         value: 'Text/HTML;Charset="utf-8"',
         type: 'text',
         subtype: 'html',
@@ -746,7 +806,7 @@ test('Headers', async() => {
     {
       validInput: 'text/html; charset="utf-8"',
       validResult: {
-        kind: 'content_type',
+        kind: 'content-type',
         value: 'text/html; charset="utf-8"',
         type: 'text',
         subtype: 'html',
@@ -757,7 +817,7 @@ test('Headers', async() => {
     {
       validInput: 'text/html;charset=UTF-8',
       validResult: {
-        kind: 'content_type',
+        kind: 'content-type',
         value: 'text/html;charset=UTF-8',
         type: 'text',
         subtype: 'html',
@@ -797,6 +857,697 @@ test('Headers', async() => {
         date: new Date('1994-11-06T08:49:37.000Z'),
       },
     },
+    {
+      startRule,
+      validInput: 'Fri, 06 May 1994 07:49:37 GMT',
+      validResult: {
+        kind: 'date',
+        value: 'Fri, 06 May 1994 07:49:37 GMT',
+        date: new Date('Fri, 06 May 1994 07:49:37 GMT'),
+      },
+    },
+    {
+      startRule,
+      validInput: 'Mon, 06 Jun 1994 07:49:37 GMT',
+      validResult: {
+        kind: 'date',
+        value: 'Mon, 06 Jun 1994 07:49:37 GMT',
+        date: new Date('Mon, 06 Jun 1994 07:49:37 GMT'),
+      },
+    },
+    {
+      startRule,
+      validInput: 'Wed, 06 Jul 1994 07:49:37 GMT',
+      validResult: {
+        kind: 'date',
+        value: 'Wed, 06 Jul 1994 07:49:37 GMT',
+        date: new Date('Wed, 06 Jul 1994 07:49:37 GMT'),
+      },
+    },
+    {
+      startRule,
+      validInput: 'Sat, 06 Aug 1994 07:49:37 GMT',
+      validResult: {
+        kind: 'date',
+        value: 'Sat, 06 Aug 1994 07:49:37 GMT',
+        date: new Date('Sat, 06 Aug 1994 07:49:37 GMT'),
+      },
+    },
+    {
+      startRule,
+      validInput: 'Tue, 06 Sep 1994 07:49:37 GMT',
+      validResult: {
+        kind: 'date',
+        value: 'Tue, 06 Sep 1994 07:49:37 GMT',
+        date: new Date('Tue, 06 Sep 1994 07:49:37 GMT'),
+      },
+    },
+    {
+      startRule,
+      validInput: 'Thu, 06 Oct 1994 07:49:37 GMT',
+      validResult: {
+        kind: 'date',
+        value: 'Thu, 06 Oct 1994 07:49:37 GMT',
+        date: new Date('Thu, 06 Oct 1994 07:49:37 GMT'),
+      },
+    },
+    {
+      startRule,
+      validInput: 'Tue, 06 Dec 1994 08:49:37 GMT',
+      validResult: {
+        kind: 'date',
+        value: 'Tue, 06 Dec 1994 08:49:37 GMT',
+        date: new Date('Tue, 06 Dec 1994 08:49:37 GMT'),
+      },
+    },
+
+    // #region ETag
+    {
+      startRule: (startRule = 'ETag'),
+      validInput: '"foo"',
+      validResult: {
+        kind: 'etag',
+        value: '"foo"',
+        etag: '"foo"',
+      },
+    },
+    {
+      startRule,
+      validInput: 'W/"foo\x80"',
+      validResult: {
+        kind: 'etag',
+        value: 'W/"foo\x80"',
+        etag: 'W/"foo\x80"',
+      },
+    },
+    {
+      startRule,
+      validInput: '""',
+      validResult: {
+        kind: 'etag',
+        value: '""',
+        etag: '""',
+      },
+    },
+
+    // #region Expect
+    {
+      startRule: (startRule = 'Expect'),
+      validInput: '100-Continue',
+      validResult: {
+        kind: 'expect',
+        value: '100-Continue',
+        expectations: [
+          {token: '100-continue'},
+        ],
+      },
+    },
+    {
+      startRule,
+      validInput: '100-Continue=boo',
+      validResult: {
+        kind: 'expect',
+        value: '100-Continue=boo',
+        expectations: [
+          {token: '100-continue', value: 'boo', parameters: {}},
+        ],
+      },
+    },
+    {
+      startRule,
+      validInput: '100-Continue=boo;bar=baz',
+      validResult: {
+        kind: 'expect',
+        value: '100-Continue=boo;bar=baz',
+        expectations: [
+          {token: '100-continue', value: 'boo', parameters: {bar: 'baz'}},
+        ],
+      },
+    },
+
+    // #region From
+    {
+      startRule: (startRule = 'From'),
+      validInput: 'spider-admin@example.org',
+      validResult: {
+        kind: 'from',
+        value: 'spider-admin@example.org',
+        address: 'spider-admin@example.org',
+      },
+    },
+    {
+      startRule,
+      validInput: 'SPIDER ADMIN <spider-admin@example.org>',
+      validResult: {
+        kind: 'from',
+        value: 'SPIDER ADMIN <spider-admin@example.org>',
+        address: 'spider-admin@example.org',
+      },
+    },
+    {
+      startRule,
+      validInput: 'very.common@example.com',
+      validResult: {
+        kind: 'from',
+        value: 'very.common@example.com',
+        address: 'very.common@example.com',
+      },
+    },
+    {
+      startRule,
+      validInput: 'long.email-address-with-hyphens@and.subdomains.example.com',
+      validResult: {
+        kind: 'from',
+        value: 'long.email-address-with-hyphens@and.subdomains.example.com',
+        address: 'long.email-address-with-hyphens@and.subdomains.example.com',
+      },
+    },
+    {
+      startRule,
+      validInput: 'user.name+tag+sorting@example.com',
+      validResult: {
+        kind: 'from',
+        value: 'user.name+tag+sorting@example.com',
+        address: 'user.name+tag+sorting@example.com',
+      },
+    },
+    {
+      startRule,
+      validInput: 'name/surname@example.com',
+      validResult: {
+        kind: 'from',
+        value: 'name/surname@example.com',
+        address: 'name/surname@example.com',
+      },
+    },
+    {
+      startRule,
+      validInput: '" "@example.org',
+      validResult: {
+        kind: 'from',
+        value: '" "@example.org',
+        address: '" "@example.org',
+      },
+    },
+    {
+      startRule,
+      validInput: '"john..doe"@example.org',
+      validResult: {
+        kind: 'from',
+        value: '"john..doe"@example.org',
+        address: '"john..doe"@example.org',
+      },
+    },
+    {
+      startRule,
+      validInput: 'mailhost!username@example.org',
+      validResult: {
+        kind: 'from',
+        value: 'mailhost!username@example.org',
+        address: 'mailhost!username@example.org',
+      },
+    },
+    {
+      startRule,
+      validInput: '"very.(),:;<>[]\\".VERY.\\"very@\\\\ \\"very\\".unusual"@strange.example.com',
+      validResult: {
+        kind: 'from',
+        value: '"very.(),:;<>[]\\".VERY.\\"very@\\\\ \\"very\\".unusual"@strange.example.com',
+        address: '"very.(),:;<>[]\\".VERY.\\"very@\\\\ \\"very\\".unusual"@strange.example.com',
+      },
+    },
+    {
+      startRule,
+      validInput: 'user%example.com@example.org',
+      validResult: {
+        kind: 'from',
+        value: 'user%example.com@example.org',
+        address: 'user%example.com@example.org',
+      },
+    },
+    {
+      startRule,
+      validInput: 'user-@example.org',
+      validResult: {
+        kind: 'from',
+        value: 'user-@example.org',
+        address: 'user-@example.org',
+      },
+    },
+    {
+      startRule,
+      validInput: 'postmaster@[123.123.123.123]',
+      validResult: {
+        kind: 'from',
+        value: 'postmaster@[123.123.123.123]',
+        address: 'postmaster@[123.123.123.123]',
+      },
+    },
+    {
+      startRule,
+      validInput: 'postmaster@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334]',
+      validResult: {
+        kind: 'from',
+        value: 'postmaster@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334]',
+        address: 'postmaster@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334]',
+      },
+    },
+    {
+      startRule,
+      validInput: '_test@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334]',
+      validResult: {
+        kind: 'from',
+        value: '_test@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334]',
+        address: '_test@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334]',
+      },
+    },
+
+    // #region Host
+    {
+      startRule: (startRule = 'Host'),
+      validInput: 'foo.bar',
+      validResult: {
+        kind: 'host',
+        value: 'foo.bar',
+        host: 'foo.bar',
+        port: null,
+      },
+    },
+    {
+      startRule,
+      validInput: 'foo%41.bar:80',
+      validResult: {
+        kind: 'host',
+        value: 'foo%41.bar:80',
+        host: 'fooA.bar',
+        port: 80,
+      },
+    },
+    // #region If_Match
+    {
+      startRule: (startRule = 'If_Match'),
+      validInput: '*',
+      validResult: {
+        kind: 'if-match',
+        value: '*',
+        etags: ['*'],
+      },
+    },
+    {
+      startRule,
+      validInput: '"xyzzy", "r2d2xxxx", W/"c3piozzzz",',
+      validResult: {
+        kind: 'if-match',
+        value: '"xyzzy", "r2d2xxxx", W/"c3piozzzz",',
+        etags: ['"xyzzy"', '"r2d2xxxx"', 'W/"c3piozzzz"'],
+      },
+    },
+
+    // #region If_Modified_Since
+    {
+      startRule: (startRule = 'If_Modified_Since'),
+      validInput: 'Thu, 06 Jan 1994 08:49:37 GMT',
+      validResult: {
+        kind: 'if-modified-since',
+        value: 'Thu, 06 Jan 1994 08:49:37 GMT',
+        date: new Date('Thu, 06 Jan 1994 08:49:37 GMT'),
+      },
+    },
+
+    // #region If_None_Match
+    {
+      startRule: (startRule = 'If_None_Match'),
+      validInput: '*',
+      validResult: {
+        kind: 'if-none-match',
+        value: '*',
+        etags: ['*'],
+      },
+    },
+    {
+      startRule,
+      validInput: '"xyzzy", "r2d2xxxx", W/"c3piozzzz",',
+      validResult: {
+        kind: 'if-none-match',
+        value: '"xyzzy", "r2d2xxxx", W/"c3piozzzz",',
+        etags: ['"xyzzy"', '"r2d2xxxx"', 'W/"c3piozzzz"'],
+      },
+    },
+
+    // #region If_Range
+    {
+      startRule: (startRule = 'If_Range'),
+      validInput: 'W/"c3piozzzz"',
+      validResult: {
+        kind: 'if-range',
+        value: 'W/"c3piozzzz"',
+        etag: 'W/"c3piozzzz"',
+      },
+    },
+    {
+      startRule,
+      validInput: 'Sun, 06 Feb 1994 08:49:37 GMT',
+      validResult: {
+        kind: 'if-range',
+        value: 'Sun, 06 Feb 1994 08:49:37 GMT',
+        date: new Date('Sun, 06 Feb 1994 08:49:37 GMT'),
+      },
+    },
+
+    // #region If_Unmodified_Since
+    {
+      startRule: (startRule = 'If_Unmodified_Since'),
+      validInput: 'Sun, 06 Mar 1994 08:49:37 GMT',
+      validResult: {
+        kind: 'if-unmodified-since',
+        value: 'Sun, 06 Mar 1994 08:49:37 GMT',
+        date: new Date('Sun, 06 Mar 1994 08:49:37 GMT'),
+      },
+    },
+
+    // #region Last_Modified
+    {
+      startRule: (startRule = 'Last_Modified'),
+      validInput: 'Wed, 06 Apr 1994 07:49:37 GMT',
+      validResult: {
+        kind: 'last-modified',
+        value: 'Wed, 06 Apr 1994 07:49:37 GMT',
+        date: new Date('Wed, 06 Apr 1994 07:49:37 GMT'),
+      },
+    },
+
+    // #region Location
+    {
+      startRule: (startRule = 'Location'),
+      validInput: '/People.html#tim',
+      validResult: {
+        kind: 'location',
+        value: '/People.html#tim',
+        uri: '/People.html#tim',
+      },
+    },
+    {
+      startRule,
+      validInput: 'http://www.example.net/index.html',
+      validResult: {
+        kind: 'location',
+        value: 'http://www.example.net/index.html',
+        uri: new URL('http://www.example.net/index.html'),
+      },
+    },
+
+    // #region Max_Forwards
+    {
+      startRule: (startRule = 'Max_Forwards'),
+      validInput: '10',
+      validResult: {
+        kind: 'max-forwards',
+        value: '10',
+        max: 10,
+      },
+    },
+
+    // #region Proxy_Authenticate
+    {
+      startRule: (startRule = 'Proxy_Authenticate'),
+      validInput: 'Basic realm="simple", Newauth realm="apps", type=1, title="Login to \\"apps\\"", basic fasdasda',
+      validResult: {
+        kind: 'proxy-authenticate',
+        value: 'Basic realm="simple", Newauth realm="apps", type=1, title="Login to \\"apps\\"", basic fasdasda',
+        challenges: [
+          {scheme: 'Basic', params: [{name: 'realm', value: 'simple'}]},
+          {
+            scheme: 'Newauth',
+            params: [
+              {name: 'realm', value: 'apps'},
+              {name: 'type', value: '1'},
+              {name: 'title', value: 'Login to "apps"'},
+            ],
+          },
+          {scheme: 'basic', token68: 'fasdasda'},
+        ],
+      },
+    },
+
+    // #region Proxy_Authentication_Info
+    {
+      startRule: (startRule = 'Proxy_Authentication_Info'),
+      validInput: 'foo=bar,boo="bla\\""',
+      validResult: {
+        kind: 'proxy-authentication-info',
+        value: 'foo=bar,boo="bla\\""',
+        params: [
+          {name: 'foo', value: 'bar'},
+          {name: 'boo', value: 'bla"'},
+        ],
+      },
+    },
+
+    // #region Proxy_Authorization
+    {
+      startRule: (startRule = 'Proxy_Authorization'),
+      validInput: 'basic Zm9vOmJhcg==',
+      validResult: {
+        kind: 'proxy-authorization',
+        value: 'basic Zm9vOmJhcg==',
+        scheme: 'basic',
+        token68: 'Zm9vOmJhcg==',
+      },
+    },
+    {
+      validInput: 'basic foo=bar',
+      validResult: {
+        kind: 'proxy-authorization',
+        value: 'basic foo=bar',
+        scheme: 'basic',
+        params: [{name: 'foo', value: 'bar'}],
+      },
+      startRule,
+    },
+
+    // #region Range
+    {
+      startRule: (startRule = 'Range'),
+      validInput: 'bytes=1-,1-10,-20,foo,foo-12,-12foo,12-foo,,',
+      validResult: {
+        kind: 'range',
+        value: 'bytes=1-,1-10,-20,foo,foo-12,-12foo,12-foo,,',
+        units: 'bytes',
+        ranges: [
+          {first: 1, last: null},
+          {first: 1, last: 10},
+          {first: null, last: 20},
+          {other: 'foo'},
+          {other: 'foo-12'},
+          {other: '-12foo'},
+          {other: '12-foo'},
+        ],
+      },
+    },
+    {
+      startRule,
+      invalidInput: 'bytes=10-1',
+    },
+    {
+      startRule,
+      invalidInput: 'bytes=10\x80',
+    },
+    {
+      startRule,
+      invalidInput: 'bytes=-\x80',
+    },
+
+    // #region Referer
+    {
+      startRule: (startRule = 'Referer'),
+      validInput: 'https://httpwg.org/specs/rfc9110.html',
+      validResult: {
+        kind: 'referer',
+        value: 'https://httpwg.org/specs/rfc9110.html',
+        uri: 'https://httpwg.org/specs/rfc9110.html',
+        absolute: true,
+      },
+    },
+    {
+      validInput: '/specs/rfc9110.html',
+      validResult: {
+        kind: 'referer',
+        value: '/specs/rfc9110.html',
+        uri: '/specs/rfc9110.html',
+        absolute: false,
+      },
+      startRule,
+    },
+
+    // #region Retry_After
+    {
+      startRule: (startRule = 'Retry_After'),
+      validInput: '30',
+      validResult: {
+        kind: 'retry-after',
+        value: '30',
+        seconds: 30,
+      },
+    },
+    {
+      startRule,
+      validInput: 'Fri, 06 May 1994 07:49:37 GMT',
+      validResult: {
+        kind: 'retry-after',
+        value: 'Fri, 06 May 1994 07:49:37 GMT',
+        date: new Date('Fri, 06 May 1994 07:49:37 GMT'),
+      },
+    },
+
+    // #region Server
+    {
+      startRule: (startRule = 'Server'),
+      validInput: 'Foo/1.0 (bar\\) boo) Moo/2.2.2.122332',
+      validResult: {
+        kind: 'server',
+        value: 'Foo/1.0 (bar\\) boo) Moo/2.2.2.122332',
+        products: [
+          {product: 'Foo', version: '1.0'},
+          {comment: 'bar) boo'},
+          {product: 'Moo', version: '2.2.2.122332'},
+        ],
+      },
+    },
+
+    // #region TE
+    {
+      startRule: (startRule = 'TE'),
+      validInput: 'trailers, deflate;q=0.5',
+      validResult: {
+        kind: 'te',
+        value: 'trailers, deflate;q=0.5',
+        trailers: true,
+        codings: [{encoding: 'deflate', parameters: {}, weight: 0.5}],
+      },
+    },
+    {
+      startRule,
+      validInput: 'compress',
+      validResult: {
+        kind: 'te',
+        value: 'compress',
+        trailers: false,
+        codings: [{encoding: 'compress', parameters: {}, weight: 1}],
+      },
+    },
+
+    // #region Trailer
+    {
+      startRule: (startRule = 'Trailer'),
+      validInput: 'Expires, Via',
+      validResult: {
+        kind: 'trailer',
+        value: 'Expires, Via',
+        fields: ['expires', 'via'],
+      },
+    },
+
+    // #region Upgrade
+    {
+      startRule: (startRule = 'Upgrade'),
+      validInput: 'example/1, foo/2',
+      validResult: {
+        kind: 'upgrade',
+        value: 'example/1, foo/2',
+        protocols: [
+          {name: 'example', version: '1'},
+          {name: 'foo', version: '2'},
+        ],
+      },
+    },
+
+    // #region User_Agent
+    {
+      startRule: (startRule = 'User_Agent'),
+      validInput: 'Mozilla/5.0 (platform; rv:gecko-version) Gecko/gecko-trail Firefox/firefox-version',
+      validResult: {
+        kind: 'user-agent',
+        value: 'Mozilla/5.0 (platform; rv:gecko-version) Gecko/gecko-trail Firefox/firefox-version',
+        products: [
+          {product: 'Mozilla', version: '5.0'},
+          {comment: 'platform; rv:gecko-version'},
+          {product: 'Gecko', version: 'gecko-trail'},
+          {product: 'Firefox', version: 'firefox-version'},
+        ],
+      },
+    },
+    {
+      startRule,
+      validInput: 'Opera/9.80 (Macintosh; Intel Mac OS X; U; en) Presto/2.2.15 Version/10.00',
+      validResult: {
+        kind: 'user-agent',
+        value: 'Opera/9.80 (Macintosh; Intel Mac OS X; U; en) Presto/2.2.15 Version/10.00',
+        products: [
+          {product: 'Opera', version: '9.80'},
+          {comment: 'Macintosh; Intel Mac OS X; U; en'},
+          {product: 'Presto', version: '2.2.15'},
+          {product: 'Version', version: '10.00'},
+        ],
+      },
+    },
+
+    // #region Vary
+    {
+      startRule: (startRule = 'Vary'),
+      validInput: '*, accept, User-Agent',
+      validResult: {
+        kind: 'vary',
+        value: '*, accept, User-Agent',
+        fields: ['*', 'accept', 'user-agent'],
+      },
+    },
+
+    // #region Via
+    {
+      startRule: (startRule = 'Via'),
+      validInput: 'https/1.0 fred (not ethel), 1.1 p.example.net:900 (such example)',
+      validResult: {
+        kind: 'via',
+        value: 'https/1.0 fred (not ethel), 1.1 p.example.net:900 (such example)',
+        path: [
+          {
+            protocol: 'https',
+            version: '1.0',
+            name: 'fred',
+            port: null,
+            comment: 'not ethel',
+          },
+          {
+            protocol: null,
+            version: '1.1',
+            name: 'p.example.net',
+            port: 900,
+            comment: 'such example',
+          },
+        ],
+      },
+    },
+
+    // #region WWW_Authenticate
+    {
+      startRule: (startRule = 'WWW_Authenticate'),
+      validInput: 'Basic realm="simple", Newauth realm="apps", type=1, title="Login to \\"apps\\""',
+      validResult: {
+        kind: 'www-authenticate',
+        value: 'Basic realm="simple", Newauth realm="apps", type=1, title="Login to \\"apps\\""',
+        challenges: [
+          {scheme: 'Basic', params: [{name: 'realm', value: 'simple'}]},
+          {
+            scheme: 'Newauth',
+            params: [
+              {name: 'realm', value: 'apps'},
+              {name: 'type', value: '1'},
+              {name: 'title', value: 'Login to "apps"'},
+            ],
+          },
+        ],
+      },
+    },
 
     // #region Unknown_Header
     {
@@ -819,6 +1570,26 @@ test('Headers', async() => {
         unknown: true,
       },
       startRule,
+    },
+    {
+      startRule,
+      validInput: 'Unk: f\tb',
+      validResult: {
+        kind: 'unk',
+        name: 'Unk',
+        value: 'f\tb',
+        unknown: true,
+      },
+    },
+
+    // #region Unreachable
+    {
+      validInput: '\t',
+      validResult: '\t',
+      invalidInput: ' ',
+      options: {
+        peg$startRuleFunction: 'peg$parseHTAB',
+      },
     },
   ]);
 });
