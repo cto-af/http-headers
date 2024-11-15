@@ -12,6 +12,7 @@ export default {
     'Accept_Language',
     'Accept_Ranges',
     'Allow',
+    'Alt_Svc',
     'Authentication_Info',
     'Authorization',
     'Connection',

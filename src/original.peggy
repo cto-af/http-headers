@@ -11,6 +11,7 @@ Header
   / "Accept-Language"i COWS Accept_Language
   / "Accept-Ranges"i COWS Accept_Ranges
   / "Allow"i COWS Allow
+  / "Alt-Svc"i COWS Alt_Svc
   / "Authentication-Info"i COWS Authentication_Info
   / "Authorization"i COWS Authorization
   / "Connection"i COWS Connection
@@ -79,6 +80,10 @@ Accept_Ranges
 
 Allow
   = (method (OWS "," OWS method)*)?
+
+Alt_Svc
+  = clear
+  / @count:(some:(alt_value?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}) &{ return (count.length >= 1) }
 
 Authentication_Info
   = (auth_param (OWS "," OWS auth_param)*)?
@@ -226,6 +231,12 @@ acceptable_ranges
 
 method
   = token
+
+clear
+  = "clear"
+
+alt_value
+  = alternative (OWS ";" OWS alt_parameter)*
 
 auth_param
   = token BWS "=" BWS (token / quoted_string)
@@ -392,6 +403,12 @@ alphanum
   = ALPHA
   / DIGIT
 
+alternative
+  = protocol_id "=" alt_authority
+
+alt_parameter
+  = token "=" (token / quoted_string)
+
 BWS
   = OWS
 
@@ -533,6 +550,12 @@ field_vchar
 
 parameter
   = parameter_name "=" parameter_value
+
+protocol_id
+  = token
+
+alt_authority
+  = quoted_string
 
 DQUOTE
   = "\""

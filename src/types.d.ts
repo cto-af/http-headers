@@ -56,6 +56,16 @@ export interface Allow extends Header<'allow'> {
   methods: string[];
 }
 
+export interface Service {
+  protocol: string;
+  authority: string;
+  parameters: Parameters;
+}
+export interface Alt_Svc extends Header<'alt-svc'> {
+  services?: Service[];
+  clear?: true;
+}
+
 export interface AuthParam {
   name: string;
   value: string;
@@ -270,6 +280,7 @@ export type AnyHeader
   | Accept_Language
   | Accept_Ranges
   | Allow
+  | Alt_Svc
   | Authentication_Info
   | Authorization
   | Connection

@@ -1,0 +1,14 @@
+   Alt-Svc       = clear / 1#alt-value
+
+   clear         = %s"clear" ; "clear", case-sensitive
+
+   alt-value     = alternative *( OWS ";" OWS alt-parameter )
+
+   alternative   = protocol-id "=" alt-authority
+
+   protocol-id   = token ; percent-encoded ALPN protocol name
+
+   alt-authority = quoted-string ; containing [ uri-host ] ":" port
+
+   alt-parameter     = token "=" ( token / quoted-string )
+

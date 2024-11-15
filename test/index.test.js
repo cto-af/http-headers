@@ -74,13 +74,26 @@ test('Headers', async() => {
     // #region Accept_Charset
     {
       startRule: (startRule = 'Accept_Charset'),
-      validInput: 'iso-8859-5, unicode-1-1;q=0.8',
+      validInput: 'iso-8859-5, unicode-1-1;q=0.8, *',
       validResult: {
         kind: 'accept-charset',
-        value: 'iso-8859-5, unicode-1-1;q=0.8',
+        value: 'iso-8859-5, unicode-1-1;q=0.8, *',
         charsets: [
           {charset: 'iso-8859-5', weight: 1},
           {charset: 'unicode-1-1', weight: 0.8},
+          {charset: '*', weight: 1},
+        ],
+      },
+      invalid: '* ',
+    },
+    {
+      startRule,
+      validInput: '*',
+      validResult: {
+        kind: 'accept-charset',
+        value: '*',
+        charsets: [
+          {charset: '*', weight: 1},
         ],
       },
     },
@@ -127,15 +140,25 @@ test('Headers', async() => {
     // #region Accept_Language
     {
       startRule: (startRule = 'Accept_Language'),
-      validInput: 'da, en-gb;q=0.8, en;q=0.7',
+      validInput: 'da, en-gb;q=0.8, en;q=0.7, es',
       validResult: {
         kind: 'accept-language',
-        value: 'da, en-gb;q=0.8, en;q=0.7',
+        value: 'da, en-gb;q=0.8, en;q=0.7, es',
         languages: [
           {range: ['da'], weight: 1},
           {range: ['en', 'gb'], weight: 0.8},
           {range: ['en'], weight: 0.7},
+          {range: ['es'], weight: 1},
         ],
+      },
+    },
+    {
+      startRule,
+      validInput: '*',
+      validResult: {
+        kind: 'accept-language',
+        languages: [{range: ['*'], weight: 1}],
+        value: '*',
       },
     },
 
@@ -158,6 +181,43 @@ test('Headers', async() => {
         kind: 'allow',
         value: 'GET, PUT,,',
         methods: ['GET', 'PUT'],
+      },
+    },
+
+    // #region Alt_Svc
+    {
+      startRule: (startRule = 'Alt_Svc'),
+      validInput: 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000',
+      validResult: {
+        kind: 'alt-svc',
+        value: 'h3=":443"; ma=2592000,h3-29=":443"; ma=2592000',
+        services: [
+          {
+            protocol: 'h3',
+            authority: ':443',
+            parameters: {ma: '2592000'},
+          },
+          {
+            protocol: 'h3-29',
+            authority: ':443',
+            parameters: {ma: '2592000'},
+          },
+        ],
+      },
+    },
+    {
+      startRule,
+      validInput: 'h3=":443"; ma=2592000,,',
+      validResult: {
+        kind: 'alt-svc',
+        value: 'h3=":443"; ma=2592000,,',
+        services: [
+          {
+            protocol: 'h3',
+            authority: ':443',
+            parameters: {ma: '2592000'},
+          },
+        ],
       },
     },
 
@@ -797,6 +857,69 @@ test('Headers', async() => {
         date: new Date('1994-11-06T08:49:37.000Z'),
       },
     },
+    {
+      startRule,
+      validInput: 'Fri, 06 May 1994 07:49:37 GMT',
+      validResult: {
+        kind: 'date',
+        value: 'Fri, 06 May 1994 07:49:37 GMT',
+        date: new Date('Fri, 06 May 1994 07:49:37 GMT'),
+      },
+    },
+    {
+      startRule,
+      validInput: 'Mon, 06 Jun 1994 07:49:37 GMT',
+      validResult: {
+        kind: 'date',
+        value: 'Mon, 06 Jun 1994 07:49:37 GMT',
+        date: new Date('Mon, 06 Jun 1994 07:49:37 GMT'),
+      },
+    },
+    {
+      startRule,
+      validInput: 'Wed, 06 Jul 1994 07:49:37 GMT',
+      validResult: {
+        kind: 'date',
+        value: 'Wed, 06 Jul 1994 07:49:37 GMT',
+        date: new Date('Wed, 06 Jul 1994 07:49:37 GMT'),
+      },
+    },
+    {
+      startRule,
+      validInput: 'Sat, 06 Aug 1994 07:49:37 GMT',
+      validResult: {
+        kind: 'date',
+        value: 'Sat, 06 Aug 1994 07:49:37 GMT',
+        date: new Date('Sat, 06 Aug 1994 07:49:37 GMT'),
+      },
+    },
+    {
+      startRule,
+      validInput: 'Tue, 06 Sep 1994 07:49:37 GMT',
+      validResult: {
+        kind: 'date',
+        value: 'Tue, 06 Sep 1994 07:49:37 GMT',
+        date: new Date('Tue, 06 Sep 1994 07:49:37 GMT'),
+      },
+    },
+    {
+      startRule,
+      validInput: 'Thu, 06 Oct 1994 07:49:37 GMT',
+      validResult: {
+        kind: 'date',
+        value: 'Thu, 06 Oct 1994 07:49:37 GMT',
+        date: new Date('Thu, 06 Oct 1994 07:49:37 GMT'),
+      },
+    },
+    {
+      startRule,
+      validInput: 'Tue, 06 Dec 1994 08:49:37 GMT',
+      validResult: {
+        kind: 'date',
+        value: 'Tue, 06 Dec 1994 08:49:37 GMT',
+        date: new Date('Tue, 06 Dec 1994 08:49:37 GMT'),
+      },
+    },
 
     // #region ETag
     {
@@ -1043,11 +1166,11 @@ test('Headers', async() => {
     // #region If_Modified_Since
     {
       startRule: (startRule = 'If_Modified_Since'),
-      validInput: 'Sat, 29 Oct 1994 19:43:31 GMT',
+      validInput: 'Thu, 06 Jan 1994 08:49:37 GMT',
       validResult: {
         kind: 'if-modified-since',
-        value: 'Sat, 29 Oct 1994 19:43:31 GMT',
-        date: new Date('Sat, 29 Oct 1994 19:43:31 GMT'),
+        value: 'Thu, 06 Jan 1994 08:49:37 GMT',
+        date: new Date('Thu, 06 Jan 1994 08:49:37 GMT'),
       },
     },
 
@@ -1083,33 +1206,33 @@ test('Headers', async() => {
     },
     {
       startRule,
-      validInput: 'Sat, 29 Oct 1994 19:43:31 GMT',
+      validInput: 'Sun, 06 Feb 1994 08:49:37 GMT',
       validResult: {
         kind: 'if-range',
-        value: 'Sat, 29 Oct 1994 19:43:31 GMT',
-        date: new Date('Sat, 29 Oct 1994 19:43:31 GMT'),
+        value: 'Sun, 06 Feb 1994 08:49:37 GMT',
+        date: new Date('Sun, 06 Feb 1994 08:49:37 GMT'),
       },
     },
 
     // #region If_Unmodified_Since
     {
       startRule: (startRule = 'If_Unmodified_Since'),
-      validInput: 'Sat, 29 Oct 1994 19:43:31 GMT',
+      validInput: 'Sun, 06 Mar 1994 08:49:37 GMT',
       validResult: {
         kind: 'if-unmodified-since',
-        value: 'Sat, 29 Oct 1994 19:43:31 GMT',
-        date: new Date('Sat, 29 Oct 1994 19:43:31 GMT'),
+        value: 'Sun, 06 Mar 1994 08:49:37 GMT',
+        date: new Date('Sun, 06 Mar 1994 08:49:37 GMT'),
       },
     },
 
     // #region Last_Modified
     {
       startRule: (startRule = 'Last_Modified'),
-      validInput: 'Sat, 29 Oct 1994 19:43:31 GMT',
+      validInput: 'Wed, 06 Apr 1994 07:49:37 GMT',
       validResult: {
         kind: 'last-modified',
-        value: 'Sat, 29 Oct 1994 19:43:31 GMT',
-        date: new Date('Sat, 29 Oct 1994 19:43:31 GMT'),
+        value: 'Wed, 06 Apr 1994 07:49:37 GMT',
+        date: new Date('Wed, 06 Apr 1994 07:49:37 GMT'),
       },
     },
 
@@ -1225,6 +1348,14 @@ test('Headers', async() => {
       startRule,
       invalidInput: 'bytes=10-1',
     },
+    {
+      startRule,
+      invalidInput: 'bytes=10\x80',
+    },
+    {
+      startRule,
+      invalidInput: 'bytes=-\x80',
+    },
 
     // #region Referer
     {
@@ -1260,11 +1391,11 @@ test('Headers', async() => {
     },
     {
       startRule,
-      validInput: 'Sat, 29 Oct 1994 19:43:31 GMT',
+      validInput: 'Fri, 06 May 1994 07:49:37 GMT',
       validResult: {
         kind: 'retry-after',
-        value: 'Sat, 29 Oct 1994 19:43:31 GMT',
-        date: new Date('Sat, 29 Oct 1994 19:43:31 GMT'),
+        value: 'Fri, 06 May 1994 07:49:37 GMT',
+        date: new Date('Fri, 06 May 1994 07:49:37 GMT'),
       },
     },
 
@@ -1374,17 +1505,24 @@ test('Headers', async() => {
     // #region Via
     {
       startRule: (startRule = 'Via'),
-      validInput: 'https/1.0 fred, 1.1 p.example.net:900',
+      validInput: 'https/1.0 fred (not ethel), 1.1 p.example.net:900 (such example)',
       validResult: {
         kind: 'via',
-        value: 'https/1.0 fred, 1.1 p.example.net:900',
+        value: 'https/1.0 fred (not ethel), 1.1 p.example.net:900 (such example)',
         path: [
-          {protocol: 'https', version: '1.0', name: 'fred', port: null},
+          {
+            protocol: 'https',
+            version: '1.0',
+            name: 'fred',
+            port: null,
+            comment: 'not ethel',
+          },
           {
             protocol: null,
             version: '1.1',
             name: 'p.example.net',
             port: 900,
+            comment: 'such example',
           },
         ],
       },
@@ -1432,6 +1570,26 @@ test('Headers', async() => {
         unknown: true,
       },
       startRule,
+    },
+    {
+      startRule,
+      validInput: 'Unk: f\tb',
+      validResult: {
+        kind: 'unk',
+        name: 'Unk',
+        value: 'f\tb',
+        unknown: true,
+      },
+    },
+
+    // #region Unreachable
+    {
+      validInput: '\t',
+      validResult: '\t',
+      invalidInput: ' ',
+      options: {
+        peg$startRuleFunction: 'peg$parseHTAB',
+      },
     },
   ]);
 });

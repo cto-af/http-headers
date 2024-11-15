@@ -11,6 +11,7 @@ Header
   / name:"Accept-Language"i COWS h:Accept_Language &EOL { h.name = name; return h }
   / name:"Accept-Ranges"i COWS h:Accept_Ranges &EOL { h.name = name; return h }
   / name:"Allow"i COWS h:Allow &EOL { h.name = name; return h }
+  / name:"Alt-Svc"i COWS h:Alt_Svc &EOL { h.name = name; return h }
   / name:"Authentication-Info"i COWS h:Authentication_Info &EOL { h.name = name; return h }
   / name:"Authorization"i COWS h:Authorization &EOL { h.name = name; return h }
   / name:"Connection"i COWS h:Connection &EOL { h.name = name; return h }
@@ -62,10 +63,14 @@ Unknown_Header
 // ABNF is wrong. Can't see trailing field-vchar because 1* eats it
 // field-content  = field-vchar
 //                  [ 1*( SP / HTAB / field-vchar ) field-vchar ]
-field_content = c:$(field_vchar ( SP / HTAB / field_vchar )*) {
-  return c.trim();
-}
-field_vchar = VCHAR / obs_text
+field_content
+  = c:$(field_vchar ( SP / HTAB / field_vchar )*) {
+    return c.trim();
+  }
+
+field_vchar
+  = VCHAR
+  / obs_text
 
 COWS = ":" OWS
 
@@ -87,7 +92,7 @@ Accept
 
 //  Accept-Charset = #( ( token / "*" ) [ weight ] )
 Accept_Charset
-  = charsets:((charset:(token / "*") weight:weight? {
+  = charsets:((charset:("*" / token) weight:weight? {
     return {
       charset,
       weight: weight ?? 1,
@@ -147,6 +152,24 @@ Allow
       value: text(),
       methods: methods.filter(m => m),
     };
+  }
+
+Alt_Svc
+  = clear {
+    return {
+      kind: 'alt-svc',
+      value: text(),
+      clear: true,
+    }
+  }
+  / services:(some:(alt_value?)|.., OWS "," OWS| {return some.filter(s => s)}) &{
+    return (services.length >= 1)
+  } {
+    return {
+      kind: 'alt-svc',
+      value: text(),
+      services,
+    }
   }
 
 // Authentication-Info = #auth-param
@@ -303,6 +326,7 @@ If_Modified_Since
     }
   }
 
+// If-None-Match = "*" / #entity-tag
 If_None_Match
   = etags:("*" { return ['*'] } / (entity_tag?)|.., OWS "," OWS|) {
     return {
@@ -444,7 +468,7 @@ Server
 
 TE
   = codings:(t_codings?)|.., OWS "," OWS| {
-    const trailers = codings.some(t => t.trailers);
+    const trailers = codings.some(t => t?.trailers);
     return {
       kind: 'te',
       value: text(),
@@ -491,10 +515,7 @@ Vary
 
 Via
   = via:((proto:received_protocol RWS by:received_by comment:(RWS @comment)? {
-    if (comment) {
-      proto.comment = comment;
-    }
-    return {...proto, ...by}
+    return {...proto, ...by, ...comment}
   })?)|.., OWS "," OWS| {
     return {
       kind: 'via',
@@ -538,13 +559,13 @@ media_range
 weight
   = OWS ";" OWS "q="i @qvalue
 
-token
+token "token"
   = $tchar+
 
 codings
-  = content_coding
-  / "identity"i
+  = "identity"i
   / "*"
+  / content_coding
 
 language_range
   = ($ALPHA|1..8|)|1.., "-"|
@@ -552,16 +573,23 @@ language_range
 
 // acceptable-ranges = 1#range-unit
 acceptable_ranges
-  = units:(range_unit?)|.., OWS "," OWS| {
-    const res = units.filter(u => u);
-    if (res.length < 1) {
-      error('At least one range required');
-    }
-    return res;
+  = @units:(un:(range_unit?)|.., OWS "," OWS| {return un.filter(u => u)}) &{
+    return units.length > 0
   }
 
 method
   = token
+
+clear
+  = "clear"
+
+alt_value
+  = alt:alternative params:(OWS ";" OWS @alt_parameter)* {
+    return {
+      ...alt,
+      parameters: Object.fromEntries(params),
+    }
+  }
 
 auth_param
   = name:token BWS "=" BWS value:(token / quoted_string) {
@@ -745,7 +773,20 @@ RWS
   = (SP / HTAB)+
 
 comment
-  = "(" c:(ctext / quoted_pair / comment)* ")" { return { comment: c.join('')} }
+  = "(" c:(ctext / quoted_pair / comment)* ")" {
+    let cmt = c.reduce((t, v) => {
+      if (t.length && (typeof v === 'string') && (typeof t[t.length - 1] === 'string')) {
+        t[t.length - 1] += v;
+      } else {
+        t.push(v)
+      }
+      return t;
+    }, []);
+    if ((cmt.length === 1) && (typeof cmt[0] === 'string')) {
+      cmt = cmt[0];
+    }
+    return { comment: cmt }
+  }
 
 t_codings
   = "trailers"i { return {trailers: true} }
@@ -814,6 +855,14 @@ alphanum
   = ALPHA
   / DIGIT
 
+alternative
+  = protocol:protocol_id "=" authority:alt_authority {
+    return {protocol, authority};
+  }
+
+alt_parameter
+  = @token "=" @(token / quoted_string)
+
 BWS
   = OWS
 
@@ -855,19 +904,17 @@ scheme
   = $(ALPHA (ALPHA / DIGIT / "+" / "-" / ".")*)
 
 hier_part
-  = "//" authority path_abempty
+  = (("//" authority path_abempty)
   / path_absolute
-  / path_rootless
-  / path_empty
+  / path_rootless)?
 
 query
   = (pchar / "/" / "?")*
 
 relative_part
-  = "//" authority path_abempty
+  = ("//" authority path_abempty
   / path_absolute
-  / path_noscheme
-  / path_empty
+  / path_noscheme)?
 
 incl_range
   = @first_pos "-" @last_pos
@@ -876,8 +923,7 @@ complete_length
   = num:$DIGIT+ { return parseInt(num, 10) }
 
 obs_date
-  = rfc850_date
-  / asctime_date
+  = /*OBS*/ @(rfc850_date / asctime_date)
 
 weak
   = "W/"
@@ -935,13 +981,10 @@ URI
 relative_ref
   = relative_part ("?" query)? ("#" fragment)?
 
+// range-set = 1#range-spec
 range_set
-  = ranges:(range_spec?)|1.., OWS "," OWS| {
-    const res = ranges.filter(r => r);
-    if (res.length < 1) {
-      error('Expecting at least one valid range')
-    }
-    return res;
+  = @ranges:(rs:(range_spec?)|.., OWS "," OWS| {return rs.filter(r => r)}) &{
+    return ranges.length > 0
   }
 
 product_version
@@ -988,6 +1031,12 @@ parameter
     return [name, value];
   }
 
+protocol_id
+  = token
+
+alt_authority
+  = quoted_string
+
 DQUOTE
   = "\""
 
@@ -1000,9 +1049,9 @@ qdtext
   / obs_text
 
 language
-  = $(ALPHA|2..3| ("-" extlang)?)
+  = $ALPHA|5..8|
   / $ALPHA|4|
-  / $ALPHA|5..8|
+  / $(ALPHA|2..3| ("-" extlang)?)
 
 script
   = @$ALPHA|4| !ALPHA
@@ -1037,19 +1086,20 @@ irregular
   / "sgn-BE-NL"i
   / "sgn-CH-DE"i
 
-regular
-  = "art-lojban"i
-  / "cel-gaulish"i
-  / "no-bok"i
-  / "no-nyn"i
-  / "zh-guoyu"i
-  / "zh-hakka"i
-  / "zh-min"i
-  / "zh-min-nan"i
-  / "zh-xiang"i
+// All of these are parseable
+// regular
+//   = "art-lojban"i
+//   / "cel-gaulish"i
+//   / "no-bok"i
+//   / "no-nyn"i
+//   / "zh-guoyu"i
+//   / "zh-hakka"i
+//   / "zh-min"i
+//   / "zh-min-nan"i
+//   / "zh-xiang"i
 
 authority
-  = (userinfo "@")? uri_host (":" port)?
+  = (@userinfo "@")? uri_host (":" port)?
 
 path_abempty
   = ("/" segment)*
@@ -1059,9 +1109,6 @@ path_absolute
 
 path_rootless
   = segment_nz ("/" segment)*
-
-path_empty
-  = (. { error(`Can't convert prose description to peggy grammar: "pchar"`) })
 
 pchar
   = unreserved
@@ -1103,34 +1150,34 @@ angle_addr
 
 local_part
   = dot_atom
-  / email_quoted_string
+  / email_quoted_string &"@"
   / obs_local_part
 
 domain
-  = dot_atom
+  = obs_domain
+  / dot_atom
   / domain_literal
-  / obs_domain
 
 IPv6address
   = (h16 ":")|6| ls32
   / "::" (h16 ":")|5| ls32
   / h16? "::" (h16 ":")|4| ls32
-  / ((h16 ":")? h16)? "::" (h16 ":")|3| ls32
-  / ((h16 ":")|..2| h16)? "::" (h16 ":")|2| ls32
-  / ((h16 ":")|..3| h16)? "::" h16 ":" ls32
-  / ((h16 ":")|..4| h16)? "::" ls32
-  / ((h16 ":")|..5| h16)? "::" h16
-  / ((h16 ":")|..6| h16)? "::"
+  / h16|..2, ":"| "::" (h16 ":")|3| ls32
+  / h16|..3, ":"| "::" (h16 ":")|2| ls32
+  / h16|..4, ":"| "::" h16 ":" ls32
+  / h16|..5, ":"| "::" ls32
+  / h16|..6, ":"| "::" h16
+  / h16|..7, ":"| "::"
 
 IPvFuture
   = "v"i HEXDIG+ "." (unreserved / sub_delims / ":")+
 
 dec_octet
-  = DIGIT
-  / [\x31-\x39] DIGIT
-  / "1" DIGIT|2|
+  = "25" [\x30-\x35]
   / "2" [\x30-\x34] DIGIT
-  / "25" [\x30-\x35]
+  / "1" DIGIT|2|
+  / [\x31-\x39] DIGIT
+  / DIGIT
 
 unreserved
   = ALPHA
@@ -1165,7 +1212,7 @@ range_spec
   / other_range
 
 obs_text
-  = [\x80-\xff]
+  = /*OBS*/ @[\x80-\xff]
 
 VCHAR
   = [\x21-\x7e]
@@ -1183,7 +1230,9 @@ parameter_value
   = (token / quoted_string)
 
 extlang
-  = ALPHA|3| !ALPHA ("-" ALPHA|3| !ALPHA)|..2|
+  = ALPHA|3| !ALPHA langextss
+
+langextss = ("-" ALPHA|3| !ALPHA)|..2|
 
 singleton
   = DIGIT
@@ -1193,7 +1242,7 @@ singleton
   / [\x79-\x7a]
 
 userinfo
-  = (unreserved / pct_encoded / sub_delims / ":")*
+  = c:(unreserved / pct_encoded / sub_delims / ":")* { return c.join('') }
 
 segment
   = $pchar*
@@ -1222,15 +1271,15 @@ date3
   }
 
 phrase
-  = word+
-  / obs_phrase
+  = obs_phrase
+  / word+
 
 CFWS
   = ((FWS? email_comment)+ FWS?)
   / FWS
 
 obs_angle_addr
-  = CFWS? "<" obs_route @addr_spec ">" CFWS?
+  = /*OBS*/ CFWS? "<" obs_route @addr_spec ">" CFWS?
 
 dot_atom
   = CFWS? dot_atom_text CFWS?
@@ -1239,19 +1288,19 @@ email_quoted_string
   = CFWS? DQUOTE @$(FWS? @qcontent)* FWS? DQUOTE CFWS?
 
 obs_local_part
-  = word ("." word)*
+  = /*OBS*/ @word|.., "."|
 
 domain_literal
   = CFWS? "[" (FWS? dtext)* FWS? "]" CFWS?
 
 obs_domain
-  = atom ("." atom)*
+  = /*OBS*/ @atom|1.., "."|
 
 h16
   = HEXDIG|1..4|
 
 ls32
-  = (h16 ":" h16)
+  = h16 ":" h16
   / IPv4address
 
 HEXDIG
@@ -1286,7 +1335,7 @@ word
   / email_quoted_string
 
 obs_phrase
-  = word (word / "." / CFWS)*
+  = /*OBS*/ word (word / "." / CFWS)*
 
 FWS
   = ((WSP* CRLF)? WSP+)
@@ -1299,7 +1348,7 @@ obs_route
   = obs_domain_list ":"
 
 dot_atom_text
-  = $(atext+ ("." atext+)*)
+  = $(atext+)|1.., "."|
 
 qcontent
   = qtext
@@ -1324,7 +1373,7 @@ CRLF
   = CR LF
 
 obs_FWS
-  = WSP+ (CRLF WSP+)*
+  = /*OBS*/ WSP+ (CRLF WSP+)*
 
 ccontent
   = email_ctext
@@ -1332,7 +1381,7 @@ ccontent
   / email_comment
 
 obs_domain_list
-  = (CFWS / ",")* "@" domain ("," CFWS? ("@" domain)?)*
+  = /*OBS*/ (CFWS / ",")* "@" domain|1.., "," CFWS? "@"|
 
 atext
   = ALPHA
@@ -1368,8 +1417,7 @@ email_quoted_pair
   / obs_qp
 
 obs_dtext
-  = obs_NO_WS_CTL
-  / email_quoted_pair
+  = /*OBS*/ @(obs_NO_WS_CTL / email_quoted_pair)
 
 CR
   = "\r"
@@ -1384,10 +1432,10 @@ email_ctext
   / obs_ctext
 
 obs_qtext
-  = obs_NO_WS_CTL
+  = /*OBS*/ @obs_NO_WS_CTL
 
 obs_qp
-  = "\\" ("\x00" / obs_NO_WS_CTL / LF / CR)
+  = /*OBS*/ "\\" ("\x00" / obs_NO_WS_CTL / LF / CR)
 
 obs_NO_WS_CTL
   = [\x01-\x08]
@@ -1397,7 +1445,10 @@ obs_NO_WS_CTL
   / "\x7f"
 
 obs_ctext
-  = obs_NO_WS_CTL
+  = /*OBS*/ @obs_NO_WS_CTL
 
 EOL
   = [\r\n] / !.
+
+// TODO: options.obs
+// OBS = &{ return true; }
