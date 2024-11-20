@@ -4,6 +4,11 @@ import {testPeggy} from '@peggyjs/coverage';
 
 const PARSER = new URL('../lib/index.js', import.meta.url);
 
+const options = {
+  obsolete: true,
+};
+const invalid = '\r\n';
+
 test('Headers', async() => {
   let startRule = '';
   await testPeggy(PARSER, [
@@ -24,6 +29,8 @@ test('Headers', async() => {
         ],
       },
       invalidInput: 'text/',
+      options,
+      invalid,
     },
     {
       validInput: ', ,,',
@@ -33,6 +40,8 @@ test('Headers', async() => {
         ranges: [],
       },
       startRule,
+      options,
+      invalid,
     },
     {
       validInput: 'text/html;encoding=utf8',
@@ -51,6 +60,8 @@ test('Headers', async() => {
         ],
       },
       startRule,
+      options,
+      invalid,
     },
     {
       validInput: 'text/*;encoding=utf8;q=0.6',
@@ -69,6 +80,8 @@ test('Headers', async() => {
         ],
       },
       startRule,
+      options,
+      invalid,
     },
 
     // #region Accept_Charset
@@ -84,7 +97,9 @@ test('Headers', async() => {
           {charset: '*', weight: 1},
         ],
       },
-      invalid: '* ',
+      invalidInput: '* ',
+      options,
+      invalid,
     },
     {
       startRule,
@@ -96,6 +111,8 @@ test('Headers', async() => {
           {charset: '*', weight: 1},
         ],
       },
+      options,
+      invalid,
     },
 
     // #region Accept_Encoding
@@ -110,6 +127,8 @@ test('Headers', async() => {
           {coding: 'gzip', weight: 1},
         ],
       },
+      options,
+      invalid,
     },
     {
       validInput: 'compress;q=0.5,, gzip;q=1.0,',
@@ -122,6 +141,8 @@ test('Headers', async() => {
         ],
       },
       startRule,
+      options,
+      invalid,
     },
     {
       validInput: 'gzip;q=1.0, identity; q=0.5, *;q=0',
@@ -135,6 +156,8 @@ test('Headers', async() => {
         ],
       },
       startRule,
+      options,
+      invalid,
     },
 
     // #region Accept_Language
@@ -151,6 +174,8 @@ test('Headers', async() => {
           {range: ['es'], weight: 1},
         ],
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -160,6 +185,8 @@ test('Headers', async() => {
         languages: [{range: ['*'], weight: 1}],
         value: '*',
       },
+      options,
+      invalid,
     },
 
     // #region Accept_Ranges
@@ -171,6 +198,8 @@ test('Headers', async() => {
         value: 'bytes,, ,',
         ranges: ['bytes'],
       },
+      options,
+      invalid,
     },
 
     // #region Allow
@@ -182,6 +211,8 @@ test('Headers', async() => {
         value: 'GET, PUT,,',
         methods: ['GET', 'PUT'],
       },
+      options,
+      invalid,
     },
 
     // #region Alt_Svc
@@ -204,6 +235,8 @@ test('Headers', async() => {
           },
         ],
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -219,6 +252,8 @@ test('Headers', async() => {
           },
         ],
       },
+      options,
+      invalid,
     },
 
     // #region Authentication_Info
@@ -233,6 +268,8 @@ test('Headers', async() => {
           {name: 'boo', value: 'bla"'},
         ],
       },
+      options,
+      invalid,
     },
 
     // #region Authorization
@@ -245,6 +282,8 @@ test('Headers', async() => {
         scheme: 'basic',
         token68: 'Zm9vOmJhcg==',
       },
+      options,
+      invalid,
     },
     {
       validInput: 'basic foo=bar',
@@ -255,6 +294,8 @@ test('Headers', async() => {
         params: [{name: 'foo', value: 'bar'}],
       },
       startRule,
+      options,
+      invalid,
     },
 
     // #region Connection
@@ -266,6 +307,8 @@ test('Headers', async() => {
         value: 'upgrade,,,',
         opts: ['upgrade'],
       },
+      options,
+      invalid,
     },
 
     // #region Content_Encoding
@@ -277,6 +320,8 @@ test('Headers', async() => {
         value: 'gzip,,',
         encodings: ['gzip'],
       },
+      options,
+      invalid,
     },
 
     // #region Content_Language
@@ -322,6 +367,8 @@ test('Headers', async() => {
           },
         ],
       },
+      options,
+      invalid,
     },
     {
       // Language subtag plus Script subtag
@@ -365,6 +412,8 @@ test('Headers', async() => {
         ],
       },
       startRule,
+      options,
+      invalid,
     },
     {
       // Extended language subtags and their primary language subtag
@@ -409,6 +458,8 @@ test('Headers', async() => {
         ],
       },
       startRule,
+      options,
+      invalid,
     },
     {
       // Language-Script-Region
@@ -436,6 +487,8 @@ test('Headers', async() => {
         ],
       },
       startRule,
+      options,
+      invalid,
     },
     {
       // Language-Variant
@@ -471,6 +524,8 @@ test('Headers', async() => {
         ],
       },
       startRule,
+      options,
+      invalid,
     },
     {
       // Language-Region-Variant
@@ -498,6 +553,8 @@ test('Headers', async() => {
         ],
       },
       startRule,
+      options,
+      invalid,
     },
     {
       // Language-Script-Region-Variant
@@ -517,6 +574,8 @@ test('Headers', async() => {
         ],
       },
       startRule,
+      options,
+      invalid,
     },
     {
       // Language-Region
@@ -552,6 +611,8 @@ test('Headers', async() => {
         ],
       },
       startRule,
+      options,
+      invalid,
     },
     {
       // Private use subtags
@@ -579,6 +640,8 @@ test('Headers', async() => {
         ],
       },
       startRule,
+      options,
+      invalid,
     },
     {
       // Private use registry values
@@ -630,6 +693,8 @@ test('Headers', async() => {
         ],
       },
       startRule,
+      options,
+      invalid,
     },
     {
       // Tags that use extensions
@@ -665,14 +730,20 @@ test('Headers', async() => {
         ],
       },
       startRule,
+      options,
+      invalid,
     },
     {
       invalidInput: 'de-419-DE',
       startRule,
+      options,
+      invalid,
     },
     {
       invalidInput: 'a-DE',
       startRule,
+      options,
+      invalid,
     },
     // Can't find this one with a parser, and I can't be bothered to implement
     // the semantics layer.
@@ -690,6 +761,8 @@ test('Headers', async() => {
         value: '0',
         length: 0,
       },
+      options,
+      invalid,
     },
     {
       validInput: '01',
@@ -699,6 +772,8 @@ test('Headers', async() => {
         length: 1,
       },
       startRule,
+      options,
+      invalid,
     },
     {
       validInput: '10',
@@ -708,6 +783,8 @@ test('Headers', async() => {
         length: 10,
       },
       startRule,
+      options,
+      invalid,
     },
 
     // #region Content_Location
@@ -720,6 +797,8 @@ test('Headers', async() => {
         uri: 'https://httpwg.org/specs/rfc9110.html',
         absolute: true,
       },
+      options,
+      invalid,
     },
     {
       validInput: '/specs/rfc9110.html',
@@ -730,6 +809,18 @@ test('Headers', async() => {
         absolute: false,
       },
       startRule,
+      options,
+      invalid,
+    },
+    {
+      startRule,
+      invalidInput: '',
+      options: {
+        obsolete: false,
+        peg$failAfter: {
+          peg$f65: 0, // Unstable
+        },
+      },
     },
 
     // #region Content_Range
@@ -744,6 +835,8 @@ test('Headers', async() => {
         last: 1233,
         complete: 1234,
       },
+      options,
+      invalid,
     },
     {
       validInput: 'bytes 42-1233/*',
@@ -756,6 +849,8 @@ test('Headers', async() => {
         complete: NaN,
       },
       startRule,
+      options,
+      invalid,
     },
     {
       validInput: 'bytes */1234',
@@ -767,6 +862,8 @@ test('Headers', async() => {
         unsatisfied: true,
       },
       startRule,
+      options,
+      invalid,
     },
 
     // #region Content_Type
@@ -780,6 +877,8 @@ test('Headers', async() => {
         subtype: 'html',
         parameters: {charset: 'iso-8859-4'},
       },
+      options,
+      invalid,
     },
     {
       validInput: 'text/html;charset=utf-8',
@@ -791,6 +890,8 @@ test('Headers', async() => {
         parameters: {charset: 'utf-8'},
       },
       startRule,
+      options,
+      invalid,
     },
     {
       validInput: 'Text/HTML;Charset="utf-8"',
@@ -802,6 +903,8 @@ test('Headers', async() => {
         parameters: {charset: 'utf-8'},
       },
       startRule,
+      options,
+      invalid,
     },
     {
       validInput: 'text/html; charset="utf-8"',
@@ -813,6 +916,8 @@ test('Headers', async() => {
         parameters: {charset: 'utf-8'},
       },
       startRule,
+      options,
+      invalid,
     },
     {
       validInput: 'text/html;charset=UTF-8',
@@ -824,6 +929,8 @@ test('Headers', async() => {
         parameters: {charset: 'utf-8'},
       },
       startRule,
+      options,
+      invalid,
     },
 
     // #region Date
@@ -836,6 +943,8 @@ test('Headers', async() => {
         value: 'Sun, 06 Nov 1994 08:49:37 GMT',
         date: new Date('1994-11-06T08:49:37.000Z'),
       },
+      options,
+      invalid,
     },
     {
       // Obsolete RFC 850
@@ -846,6 +955,8 @@ test('Headers', async() => {
         value: 'Sunday, 06-Nov-94 08:49:37 GMT',
         date: new Date('1994-11-06T08:49:37.000Z'),
       },
+      options,
+      invalid,
     },
     {
       // Obsolete asctime() format
@@ -856,6 +967,8 @@ test('Headers', async() => {
         value: 'Sun Nov  6 08:49:37 1994',
         date: new Date('1994-11-06T08:49:37.000Z'),
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -865,6 +978,8 @@ test('Headers', async() => {
         value: 'Fri, 06 May 1994 07:49:37 GMT',
         date: new Date('Fri, 06 May 1994 07:49:37 GMT'),
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -874,6 +989,8 @@ test('Headers', async() => {
         value: 'Mon, 06 Jun 1994 07:49:37 GMT',
         date: new Date('Mon, 06 Jun 1994 07:49:37 GMT'),
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -883,6 +1000,8 @@ test('Headers', async() => {
         value: 'Wed, 06 Jul 1994 07:49:37 GMT',
         date: new Date('Wed, 06 Jul 1994 07:49:37 GMT'),
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -892,6 +1011,8 @@ test('Headers', async() => {
         value: 'Sat, 06 Aug 1994 07:49:37 GMT',
         date: new Date('Sat, 06 Aug 1994 07:49:37 GMT'),
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -901,6 +1022,8 @@ test('Headers', async() => {
         value: 'Tue, 06 Sep 1994 07:49:37 GMT',
         date: new Date('Tue, 06 Sep 1994 07:49:37 GMT'),
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -910,6 +1033,8 @@ test('Headers', async() => {
         value: 'Thu, 06 Oct 1994 07:49:37 GMT',
         date: new Date('Thu, 06 Oct 1994 07:49:37 GMT'),
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -919,6 +1044,8 @@ test('Headers', async() => {
         value: 'Tue, 06 Dec 1994 08:49:37 GMT',
         date: new Date('Tue, 06 Dec 1994 08:49:37 GMT'),
       },
+      options,
+      invalid,
     },
 
     // #region ETag
@@ -930,6 +1057,8 @@ test('Headers', async() => {
         value: '"foo"',
         etag: '"foo"',
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -939,6 +1068,8 @@ test('Headers', async() => {
         value: 'W/"foo\x80"',
         etag: 'W/"foo\x80"',
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -948,6 +1079,8 @@ test('Headers', async() => {
         value: '""',
         etag: '""',
       },
+      options,
+      invalid,
     },
 
     // #region Expect
@@ -961,6 +1094,8 @@ test('Headers', async() => {
           {token: '100-continue'},
         ],
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -972,6 +1107,8 @@ test('Headers', async() => {
           {token: '100-continue', value: 'boo', parameters: {}},
         ],
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -983,6 +1120,8 @@ test('Headers', async() => {
           {token: '100-continue', value: 'boo', parameters: {bar: 'baz'}},
         ],
       },
+      options,
+      invalid,
     },
 
     // #region From
@@ -994,6 +1133,8 @@ test('Headers', async() => {
         value: 'spider-admin@example.org',
         address: 'spider-admin@example.org',
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -1003,6 +1144,8 @@ test('Headers', async() => {
         value: 'SPIDER ADMIN <spider-admin@example.org>',
         address: 'spider-admin@example.org',
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -1012,6 +1155,8 @@ test('Headers', async() => {
         value: 'very.common@example.com',
         address: 'very.common@example.com',
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -1021,6 +1166,8 @@ test('Headers', async() => {
         value: 'long.email-address-with-hyphens@and.subdomains.example.com',
         address: 'long.email-address-with-hyphens@and.subdomains.example.com',
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -1030,6 +1177,8 @@ test('Headers', async() => {
         value: 'user.name+tag+sorting@example.com',
         address: 'user.name+tag+sorting@example.com',
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -1039,6 +1188,8 @@ test('Headers', async() => {
         value: 'name/surname@example.com',
         address: 'name/surname@example.com',
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -1048,6 +1199,8 @@ test('Headers', async() => {
         value: '" "@example.org',
         address: '" "@example.org',
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -1057,6 +1210,8 @@ test('Headers', async() => {
         value: '"john..doe"@example.org',
         address: '"john..doe"@example.org',
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -1066,6 +1221,8 @@ test('Headers', async() => {
         value: 'mailhost!username@example.org',
         address: 'mailhost!username@example.org',
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -1075,6 +1232,8 @@ test('Headers', async() => {
         value: '"very.(),:;<>[]\\".VERY.\\"very@\\\\ \\"very\\".unusual"@strange.example.com',
         address: '"very.(),:;<>[]\\".VERY.\\"very@\\\\ \\"very\\".unusual"@strange.example.com',
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -1084,6 +1243,8 @@ test('Headers', async() => {
         value: 'user%example.com@example.org',
         address: 'user%example.com@example.org',
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -1093,6 +1254,8 @@ test('Headers', async() => {
         value: 'user-@example.org',
         address: 'user-@example.org',
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -1102,6 +1265,8 @@ test('Headers', async() => {
         value: 'postmaster@[123.123.123.123]',
         address: 'postmaster@[123.123.123.123]',
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -1111,6 +1276,8 @@ test('Headers', async() => {
         value: 'postmaster@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334]',
         address: 'postmaster@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334]',
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -1120,6 +1287,8 @@ test('Headers', async() => {
         value: '_test@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334]',
         address: '_test@[IPv6:2001:0db8:85a3:0000:0000:8a2e:0370:7334]',
       },
+      options,
+      invalid,
     },
 
     // #region Host
@@ -1132,6 +1301,8 @@ test('Headers', async() => {
         host: 'foo.bar',
         port: null,
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -1142,7 +1313,19 @@ test('Headers', async() => {
         host: 'fooA.bar',
         port: 80,
       },
+      options,
+      invalid,
     },
+    {
+      startRule,
+      invalidInput: '',
+      options: {
+        peg$failAfter: {
+          peg$parseuri_host: 0,
+        },
+      },
+    },
+
     // #region If_Match
     {
       startRule: (startRule = 'If_Match'),
@@ -1152,6 +1335,8 @@ test('Headers', async() => {
         value: '*',
         etags: ['*'],
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -1160,6 +1345,18 @@ test('Headers', async() => {
         kind: 'if-match',
         value: '"xyzzy", "r2d2xxxx", W/"c3piozzzz",',
         etags: ['"xyzzy"', '"r2d2xxxx"', 'W/"c3piozzzz"'],
+      },
+      options,
+      invalid,
+    },
+    {
+      startRule,
+      invalidInput: '',
+      options: {
+        ...options,
+        peg$failAfter: {
+          peg$parseetags_list: 0,
+        },
       },
     },
 
@@ -1172,6 +1369,8 @@ test('Headers', async() => {
         value: 'Thu, 06 Jan 1994 08:49:37 GMT',
         date: new Date('Thu, 06 Jan 1994 08:49:37 GMT'),
       },
+      options,
+      invalid,
     },
 
     // #region If_None_Match
@@ -1183,6 +1382,8 @@ test('Headers', async() => {
         value: '*',
         etags: ['*'],
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -1191,6 +1392,18 @@ test('Headers', async() => {
         kind: 'if-none-match',
         value: '"xyzzy", "r2d2xxxx", W/"c3piozzzz",',
         etags: ['"xyzzy"', '"r2d2xxxx"', 'W/"c3piozzzz"'],
+      },
+      options,
+      invalid,
+    },
+    {
+      startRule,
+      invalidInput: '',
+      options: {
+        ...options,
+        peg$failAfter: {
+          peg$parseetags_list: 0,
+        },
       },
     },
 
@@ -1203,6 +1416,8 @@ test('Headers', async() => {
         value: 'W/"c3piozzzz"',
         etag: 'W/"c3piozzzz"',
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -1212,6 +1427,13 @@ test('Headers', async() => {
         value: 'Sun, 06 Feb 1994 08:49:37 GMT',
         date: new Date('Sun, 06 Feb 1994 08:49:37 GMT'),
       },
+      options,
+      invalid,
+    },
+    {
+      startRule,
+      invalidInput: 'Sun, 06 Feb 1994 08:49:37 GMT\x80',
+      options,
     },
 
     // #region If_Unmodified_Since
@@ -1223,6 +1445,8 @@ test('Headers', async() => {
         value: 'Sun, 06 Mar 1994 08:49:37 GMT',
         date: new Date('Sun, 06 Mar 1994 08:49:37 GMT'),
       },
+      options,
+      invalid,
     },
 
     // #region Last_Modified
@@ -1234,6 +1458,8 @@ test('Headers', async() => {
         value: 'Wed, 06 Apr 1994 07:49:37 GMT',
         date: new Date('Wed, 06 Apr 1994 07:49:37 GMT'),
       },
+      options,
+      invalid,
     },
 
     // #region Location
@@ -1245,6 +1471,8 @@ test('Headers', async() => {
         value: '/People.html#tim',
         uri: '/People.html#tim',
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -1253,6 +1481,17 @@ test('Headers', async() => {
         kind: 'location',
         value: 'http://www.example.net/index.html',
         uri: new URL('http://www.example.net/index.html'),
+      },
+      options,
+      invalid,
+    },
+    {
+      startRule,
+      invalidInput: '',
+      options: {
+        peg$failAfter: {
+          peg$parseURI_reference: 0,
+        },
       },
     },
 
@@ -1265,6 +1504,8 @@ test('Headers', async() => {
         value: '10',
         max: 10,
       },
+      options,
+      invalid,
     },
 
     // #region Proxy_Authenticate
@@ -1287,6 +1528,8 @@ test('Headers', async() => {
           {scheme: 'basic', token68: 'fasdasda'},
         ],
       },
+      options,
+      invalid,
     },
 
     // #region Proxy_Authentication_Info
@@ -1301,6 +1544,8 @@ test('Headers', async() => {
           {name: 'boo', value: 'bla"'},
         ],
       },
+      options,
+      invalid,
     },
 
     // #region Proxy_Authorization
@@ -1313,6 +1558,8 @@ test('Headers', async() => {
         scheme: 'basic',
         token68: 'Zm9vOmJhcg==',
       },
+      options,
+      invalid,
     },
     {
       validInput: 'basic foo=bar',
@@ -1323,6 +1570,8 @@ test('Headers', async() => {
         params: [{name: 'foo', value: 'bar'}],
       },
       startRule,
+      options,
+      invalid,
     },
 
     // #region Range
@@ -1343,18 +1592,30 @@ test('Headers', async() => {
           {other: '12-foo'},
         ],
       },
+      options,
+      invalid,
     },
     {
       startRule,
-      invalidInput: 'bytes=10-1',
+      validInput: 'bytes=10-1',
+      validResult: {
+        kind: 'range',
+        value: 'bytes=10-1',
+        ranges: [{other: '10-1'}],
+        units: 'bytes',
+      },
+      options,
+      invalid,
     },
     {
       startRule,
       invalidInput: 'bytes=10\x80',
+      options,
     },
     {
       startRule,
       invalidInput: 'bytes=-\x80',
+      options,
     },
 
     // #region Referer
@@ -1367,6 +1628,8 @@ test('Headers', async() => {
         uri: 'https://httpwg.org/specs/rfc9110.html',
         absolute: true,
       },
+      options,
+      invalid,
     },
     {
       validInput: '/specs/rfc9110.html',
@@ -1377,6 +1640,17 @@ test('Headers', async() => {
         absolute: false,
       },
       startRule,
+      options,
+      invalid,
+    },
+    {
+      startRule,
+      invalidInput: '',
+      options: {
+        peg$failAfter: {
+          peg$f90: 0, // Unstable
+        },
+      },
     },
 
     // #region Retry_After
@@ -1388,6 +1662,8 @@ test('Headers', async() => {
         value: '30',
         seconds: 30,
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -1397,6 +1673,12 @@ test('Headers', async() => {
         value: 'Fri, 06 May 1994 07:49:37 GMT',
         date: new Date('Fri, 06 May 1994 07:49:37 GMT'),
       },
+      options,
+      invalid,
+    },
+    {
+      startRule,
+      invalidInput: 'Fri, 06 May 1994 07:49:37 GMT\x80',
     },
 
     // #region Server
@@ -1412,6 +1694,8 @@ test('Headers', async() => {
           {product: 'Moo', version: '2.2.2.122332'},
         ],
       },
+      options,
+      invalid,
     },
 
     // #region TE
@@ -1424,6 +1708,8 @@ test('Headers', async() => {
         trailers: true,
         codings: [{encoding: 'deflate', parameters: {}, weight: 0.5}],
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -1434,6 +1720,8 @@ test('Headers', async() => {
         trailers: false,
         codings: [{encoding: 'compress', parameters: {}, weight: 1}],
       },
+      options,
+      invalid,
     },
 
     // #region Trailer
@@ -1445,6 +1733,8 @@ test('Headers', async() => {
         value: 'Expires, Via',
         fields: ['expires', 'via'],
       },
+      options,
+      invalid,
     },
 
     // #region Upgrade
@@ -1459,6 +1749,8 @@ test('Headers', async() => {
           {name: 'foo', version: '2'},
         ],
       },
+      options,
+      invalid,
     },
 
     // #region User_Agent
@@ -1475,6 +1767,8 @@ test('Headers', async() => {
           {product: 'Firefox', version: 'firefox-version'},
         ],
       },
+      options,
+      invalid,
     },
     {
       startRule,
@@ -1489,6 +1783,8 @@ test('Headers', async() => {
           {product: 'Version', version: '10.00'},
         ],
       },
+      options,
+      invalid,
     },
 
     // #region Vary
@@ -1500,6 +1796,8 @@ test('Headers', async() => {
         value: '*, accept, User-Agent',
         fields: ['*', 'accept', 'user-agent'],
       },
+      options,
+      invalid,
     },
 
     // #region Via
@@ -1526,6 +1824,8 @@ test('Headers', async() => {
           },
         ],
       },
+      options,
+      invalid,
     },
 
     // #region WWW_Authenticate
@@ -1547,6 +1847,8 @@ test('Headers', async() => {
           },
         ],
       },
+      options,
+      invalid,
     },
 
     // #region Unknown_Header
@@ -1559,6 +1861,8 @@ test('Headers', async() => {
         value: 'known',
         unknown: true,
       },
+      options,
+      invalid,
     },
     {
       // Bad Accept, fall through to Unknown.
@@ -1569,7 +1873,20 @@ test('Headers', async() => {
         value: '@@',
         unknown: true,
       },
-      startRule,
+      startRule: 'Header',
+      options,
+      invalid,
+    },
+    {
+      invalidInput: 'Content-Location: ',
+      startRule: 'Header',
+      options: {
+        obsolete: false,
+        peg$failAfter: {
+          peg$parseContent_Location: 0,
+        },
+      },
+      invalid,
     },
     {
       startRule,
@@ -1580,6 +1897,8 @@ test('Headers', async() => {
         value: 'f\tb',
         unknown: true,
       },
+      options,
+      invalid,
     },
 
     // #region Unreachable
@@ -1589,7 +1908,309 @@ test('Headers', async() => {
       invalidInput: ' ',
       options: {
         peg$startRuleFunction: 'peg$parseHTAB',
+        obsolete: true,
       },
+      invalid,
+    },
+
+    // #region Random stuff
+    {
+      invalidInput: '//',
+      options: {
+        peg$startRuleFunction: 'peg$parsehier_part',
+        peg$failAfter: {
+          peg$parseauthority: 0,
+        },
+      },
+    },
+    {
+      invalidInput: '//',
+      options: {
+        peg$startRuleFunction: 'peg$parserelative_part',
+        peg$failAfter: {
+          peg$parseauthority: 0,
+        },
+      },
+    },
+    {
+      invalidInput: '',
+      options: {
+        peg$startRuleFunction: 'peg$parseobs_date',
+        peg$failAfter: {
+          peg$parseOBS: 0,
+        },
+      },
+    },
+    {
+      invalidInput: '',
+      options: {
+        peg$startRuleFunction: 'peg$parseaddr_spec',
+        peg$failAfter: {
+          peg$parselocal_part: 0,
+        },
+      },
+    },
+    {
+      invalidInput: '',
+      options: {
+        peg$startRuleFunction: 'peg$parseauthority',
+        peg$failAfter: {
+          peg$parseuri_host: 0,
+        },
+      },
+    },
+    {
+      invalidInput: '-aaa-aaaa',
+      options: {
+        peg$startRuleFunction: 'peg$parselangextss',
+      },
+    },
+    {
+      validInput: 'foo foo foo',
+      validResult: [
+        'foo',
+        'foo',
+        'foo',
+      ],
+      options: {
+        peg$startRuleFunction: 'peg$parsephrase',
+      },
+    },
+    {
+      invalidInput: '',
+      options: {
+        peg$startRuleFunction: 'peg$parseobs_angle_addr',
+      },
+    },
+    {
+      invalidInput: '',
+      options: {
+        peg$startRuleFunction: 'peg$parseobs_local_part',
+        peg$failAfter: {
+          peg$parseOBS: 0,
+        },
+      },
+    },
+    {
+      invalidInput: 'foo',
+      options: {
+        obsolete: false,
+        peg$startRuleFunction: 'peg$parseobs_domain',
+      },
+    },
+    {
+      invalidInput: 'foo.foo.foo.',
+      options: {
+        obsolete: true,
+        peg$startRuleFunction: 'peg$parseobs_domain',
+      },
+    },
+    {
+      validInput: 'foo clap clap . foo "boo" baz',
+      validResult: [
+        undefined,
+        'foo',
+        [
+          'clap',
+          'clap',
+          '.',
+          'foo',
+          'boo',
+          'baz',
+        ],
+      ],
+      //
+      options: {
+        obsolete: true,
+        peg$startRuleFunction: 'peg$parseobs_phrase',
+      },
+    },
+    {
+      validInput: '   \r\n   \r\n   ',
+      options: {
+        obsolete: true,
+        peg$startRuleFunction: 'peg$parseobs_FWS',
+      },
+    },
+    {
+      invalidInput: '   \r\n   \r\n',
+      options: {
+        obsolete: true,
+        peg$startRuleFunction: 'peg$parseobs_FWS',
+      },
+    },
+    {
+      validInput: ',,,@foo',
+      validResult: [['foo']],
+      options: {
+        obsolete: true,
+        peg$startRuleFunction: 'peg$parseobs_domain_list',
+      },
+    },
+    {
+      invalidInput: ',,,@foo,',
+      options: {
+        obsolete: true,
+        peg$startRuleFunction: 'peg$parseobs_domain_list',
+      },
+    },
+    {
+      invalidInput: ',,,@foo,@',
+      options: {
+        obsolete: true,
+        peg$startRuleFunction: 'peg$parseobs_domain_list',
+      },
+    },
+    {
+      invalidInput: '',
+      options: {
+        peg$startRuleFunction: 'peg$parseobs_domain_list',
+      },
+    },
+    {
+      invalidInput: '\\\x80',
+      options: {
+        peg$startRuleFunction: 'peg$parseemail_quoted_pair',
+      },
+    },
+    {
+      validInput: '\x7f',
+      options: {
+        obsolete: true,
+        peg$startRuleFunction: 'peg$parseobs_dtext',
+      },
+    },
+    {
+      invalidInput: '',
+      options: {
+        obsolete: false,
+        peg$startRuleFunction: 'peg$parseobs_dtext',
+      },
+    },
+    {
+      invalidInput: '',
+      options: {
+        obsolete: false,
+        peg$startRuleFunction: 'peg$parseobs_qtext',
+      },
+    },
+    {
+      validInput: '\x7f',
+      options: {
+        obsolete: true,
+        peg$startRuleFunction: 'peg$parseobs_qtext',
+      },
+    },
+    {
+      invalidInput: '\\',
+      options: {
+        obsolete: true,
+        peg$startRuleFunction: 'peg$parseobs_qp',
+      },
+    },
+    {
+      validInput: '\\\x00',
+      validResult: '\x00',
+      options: {
+        obsolete: true,
+        peg$startRuleFunction: 'peg$parseobs_qp',
+      },
+    },
+    {
+      invalidInput: '',
+      options: {
+        obsolete: false,
+        peg$startRuleFunction: 'peg$parseobs_ctext',
+      },
+    },
+    {
+      validInput: '\x7f',
+      options: {
+        obsolete: true,
+        peg$startRuleFunction: 'peg$parseobs_ctext',
+      },
+    },
+    {
+      invalidInput: '\x80',
+      options: {
+        peg$startRuleFunction: 'peg$parsetchar',
+      },
+    },
+    {
+      invalidInput: '\x80',
+      options: {
+        peg$silentFails: -1,
+        peg$startRuleFunction: 'peg$parsetoken68',
+      },
+    },
+    {
+      invalidInput: 'a\x80',
+      options: {
+        peg$silentFails: -1,
+        peg$startRuleFunction: 'peg$parsetoken68',
+      },
+    },
+    {
+      invalidInput: 'a=\x80',
+      options: {
+        peg$silentFails: -1,
+        peg$startRuleFunction: 'peg$parsetoken68',
+      },
+    },
+    {
+      invalidInput: '"a"',
+      options: {
+        peg$silentFails: -1,
+        peg$startRuleFunction: 'peg$parselocal_part',
+      },
+    },
+    {
+      invalidInput: '1-10  \x80',
+      options: {
+        peg$silentFails: -1,
+        peg$startRuleFunction: 'peg$parseint_range',
+      },
+    },
+    {
+      invalidInput: '-10  \x80',
+      options: {
+        peg$silentFails: -1,
+        peg$startRuleFunction: 'peg$parsesuffix_range',
+      },
+    },
+    {
+      invalidInput: '( \x80',
+      options: {
+        peg$startRuleFunction: 'peg$parseemail_comment',
+      },
+    },
+    {
+      invalidInput: '@foo',
+      options: {
+        obsolete: true,
+        peg$startRuleFunction: 'peg$parseobs_route',
+      },
+    },
+    {
+      invalidInput: 'foo.',
+      options: {
+        peg$startRuleFunction: 'peg$parsedot_atom_text',
+      },
+    },
+    {
+      invalidInput: '\r\x80',
+      options: {
+        peg$startRuleFunction: 'peg$parseCRLF',
+      },
+    },
+    {
+      validInput: '',
+      validResult: undefined,
+      options: {
+        peg$silentFails: -1,
+        peg$startRuleFunction: 'peg$parseEOL',
+      },
+      invalid: '',
     },
   ]);
 });
