@@ -5,53 +5,53 @@ Headers_Loose
   = @(@Header CR? LF)+ CR? LF
 
 Header
-  = name:"Accept"i COWS h:Accept &EOL { h.name = name; return h }
-  / name:"Accept-Charset"i COWS h:Accept_Charset &EOL { h.name = name; return h }
-  / name:"Accept-Encoding"i COWS h:Accept_Encoding &EOL { h.name = name; return h }
-  / name:"Accept-Language"i COWS h:Accept_Language &EOL { h.name = name; return h }
-  / name:"Accept-Ranges"i COWS h:Accept_Ranges &EOL { h.name = name; return h }
-  / name:"Allow"i COWS h:Allow &EOL { h.name = name; return h }
-  / name:"Alt-Svc"i COWS h:Alt_Svc &EOL { h.name = name; return h }
-  / name:"Authentication-Info"i COWS h:Authentication_Info &EOL { h.name = name; return h }
-  / name:"Authorization"i COWS h:Authorization &EOL { h.name = name; return h }
-  / name:"Connection"i COWS h:Connection &EOL { h.name = name; return h }
-  / name:"Content-Encoding"i COWS h:Content_Encoding &EOL { h.name = name; return h }
-  / name:"Content-Language"i COWS h:Content_Language &EOL { h.name = name; return h }
-  / name:"Content-Length"i COWS h:Content_Length &EOL { h.name = name; return h }
-  / name:"Content-Location"i COWS h:Content_Location &EOL { h.name = name; return h }
-  / name:"Content-Range"i COWS h:Content_Range &EOL { h.name = name; return h }
-  / name:"Content-Type"i COWS h:Content_Type &EOL { h.name = name; return h }
-  / name:"Date"i COWS h:Date &EOL { h.name = name; return h }
-  / name:"ETag"i COWS h:ETag &EOL { h.name = name; return h }
-  / name:"Expect"i COWS h:Expect &EOL { h.name = name; return h }
-  / name:"From"i COWS h:From &EOL { h.name = name; return h }
-  / name:"Host"i COWS h:Host &EOL { h.name = name; return h }
-  / name:"If-Match"i COWS h:If_Match &EOL { h.name = name; return h }
-  / name:"If-Modified-Since"i COWS h:If_Modified_Since &EOL { h.name = name; return h }
-  / name:"If-None-Match"i COWS h:If_None_Match &EOL { h.name = name; return h }
-  / name:"If-Range"i COWS h:If_Range &EOL { h.name = name; return h }
-  / name:"If-Unmodified-Since"i COWS h:If_Unmodified_Since &EOL { h.name = name; return h }
-  / name:"Last-Modified"i COWS h:Last_Modified &EOL { h.name = name; return h }
-  / name:"Location"i COWS h:Location &EOL { h.name = name; return h }
-  / name:"Max-Forwards"i COWS h:Max_Forwards &EOL { h.name = name; return h }
-  / name:"Proxy-Authenticate"i COWS h:Proxy_Authenticate &EOL { h.name = name; return h }
-  / name:"Proxy-Authentication-Info"i COWS h:Proxy_Authentication_Info &EOL { h.name = name; return h }
-  / name:"Proxy-Authorization"i COWS h:Proxy_Authorization &EOL { h.name = name; return h }
-  / name:"Range"i COWS h:Range &EOL { h.name = name; return h }
-  / name:"Referer"i COWS h:Referer &EOL { h.name = name; return h }
-  / name:"Retry-After"i COWS h:Retry_After &EOL { h.name = name; return h }
-  / name:"Server"i COWS h:Server &EOL { h.name = name; return h }
-  / name:"TE"i COWS h:TE &EOL { h.name = name; return h }
-  / name:"Trailer"i COWS h:Trailer &EOL { h.name = name; return h }
-  / name:"Upgrade"i COWS h:Upgrade &EOL { h.name = name; return h }
-  / name:"User-Agent"i COWS h:User_Agent &EOL { h.name = name; return h }
-  / name:"Vary"i COWS h:Vary &EOL { h.name = name; return h }
-  / name:"Via"i COWS h:Via &EOL { h.name = name; return h }
-  / name:"WWW-Authenticate"i COWS h:WWW_Authenticate &EOL { h.name = name; return h }
+  = name:"Accept"i COWS h:Accept { h.name = name; return h }
+  / name:"Accept-Charset"i COWS h:Accept_Charset { h.name = name; return h }
+  / name:"Accept-Encoding"i COWS h:Accept_Encoding { h.name = name; return h }
+  / name:"Accept-Language"i COWS h:Accept_Language { h.name = name; return h }
+  / name:"Accept-Ranges"i COWS h:Accept_Ranges { h.name = name; return h }
+  / name:"Allow"i COWS h:Allow { h.name = name; return h }
+  / name:"Alt-Svc"i COWS h:Alt_Svc { h.name = name; return h }
+  / name:"Authentication-Info"i COWS h:Authentication_Info { h.name = name; return h }
+  / name:"Authorization"i COWS h:Authorization { h.name = name; return h }
+  / name:"Connection"i COWS h:Connection { h.name = name; return h }
+  / name:"Content-Encoding"i COWS h:Content_Encoding { h.name = name; return h }
+  / name:"Content-Language"i COWS h:Content_Language { h.name = name; return h }
+  / name:"Content-Length"i COWS h:Content_Length { h.name = name; return h }
+  / name:"Content-Location"i COWS h:Content_Location { h.name = name; return h }
+  / name:"Content-Range"i COWS h:Content_Range { h.name = name; return h }
+  / name:"Content-Type"i COWS h:Content_Type { h.name = name; return h }
+  / name:"Date"i COWS h:Date { h.name = name; return h }
+  / name:"ETag"i COWS h:ETag { h.name = name; return h }
+  / name:"Expect"i COWS h:Expect { h.name = name; return h }
+  / name:"From"i COWS h:From { h.name = name; return h }
+  / name:"Host"i COWS h:Host { h.name = name; return h }
+  / name:"If-Match"i COWS h:If_Match { h.name = name; return h }
+  / name:"If-Modified-Since"i COWS h:If_Modified_Since { h.name = name; return h }
+  / name:"If-None-Match"i COWS h:If_None_Match { h.name = name; return h }
+  / name:"If-Range"i COWS h:If_Range { h.name = name; return h }
+  / name:"If-Unmodified-Since"i COWS h:If_Unmodified_Since { h.name = name; return h }
+  / name:"Last-Modified"i COWS h:Last_Modified { h.name = name; return h }
+  / name:"Location"i COWS h:Location { h.name = name; return h }
+  / name:"Max-Forwards"i COWS h:Max_Forwards { h.name = name; return h }
+  / name:"Proxy-Authenticate"i COWS h:Proxy_Authenticate { h.name = name; return h }
+  / name:"Proxy-Authentication-Info"i COWS h:Proxy_Authentication_Info { h.name = name; return h }
+  / name:"Proxy-Authorization"i COWS h:Proxy_Authorization { h.name = name; return h }
+  / name:"Range"i COWS h:Range { h.name = name; return h }
+  / name:"Referer"i COWS h:Referer { h.name = name; return h }
+  / name:"Retry-After"i COWS h:Retry_After { h.name = name; return h }
+  / name:"Server"i COWS h:Server { h.name = name; return h }
+  / name:"TE"i COWS h:TE { h.name = name; return h }
+  / name:"Trailer"i COWS h:Trailer { h.name = name; return h }
+  / name:"Upgrade"i COWS h:Upgrade { h.name = name; return h }
+  / name:"User-Agent"i COWS h:User_Agent { h.name = name; return h }
+  / name:"Vary"i COWS h:Vary { h.name = name; return h }
+  / name:"Via"i COWS h:Via { h.name = name; return h }
+  / name:"WWW-Authenticate"i COWS h:WWW_Authenticate { h.name = name; return h }
   / Unknown_Header
 
 Unknown_Header
-  = name:field_name COWS value:field_content {
+  = name:field_name COWS value:field_content &EOL {
     return {
       kind: name.toLowerCase(),
       name,
@@ -82,7 +82,7 @@ OWS
 
 //  Accept = #( media-range [ weight ] )
 Accept
-  = ranges:(media_range?)|.., OWS "," OWS| {
+  = ranges:(media_range?)|.., OWS "," OWS| &EOL {
     return {
       kind: 'accept',
       value: text(),
@@ -97,7 +97,7 @@ Accept_Charset
       charset,
       weight: weight ?? 1,
     };
-  })?)|.., OWS "," OWS| {
+  })?)|.., OWS "," OWS| &EOL {
     return {
       kind: 'accept-charset',
       value: text(),
@@ -112,7 +112,7 @@ Accept_Encoding
       coding,
       weight: weight ?? 1,
     }
-  })?)|.., OWS "," OWS| {
+  })?)|.., OWS "," OWS| &EOL {
     return {
       kind: 'accept-encoding',
       value: text(),
@@ -127,7 +127,7 @@ Accept_Language
       range,
       weight: weight ?? 1,
     };
-  })?)|.., OWS "," OWS| {
+  })?)|.., OWS "," OWS| &EOL {
     return {
       kind: 'accept-language',
       value: text(),
@@ -136,7 +136,7 @@ Accept_Language
   }
 
 Accept_Ranges
-  = ranges:acceptable_ranges {
+  = ranges:acceptable_ranges &EOL {
     return {
       kind: 'accept-ranges',
       value: text(),
@@ -146,7 +146,7 @@ Accept_Ranges
 
 // Allow = #method
 Allow
-  = methods:(method?)|.., OWS "," OWS| {
+  = methods:(method?)|.., OWS "," OWS| &EOL {
     return {
       kind: 'allow',
       value: text(),
@@ -155,7 +155,7 @@ Allow
   }
 
 Alt_Svc
-  = clear {
+  = clear &EOL {
     return {
       kind: 'alt-svc',
       value: text(),
@@ -164,7 +164,7 @@ Alt_Svc
   }
   / services:(some:(alt_value?)|.., OWS "," OWS| {return some.filter(s => s)}) &{
     return (services.length >= 1)
-  } {
+  } &EOL {
     return {
       kind: 'alt-svc',
       value: text(),
@@ -174,7 +174,7 @@ Alt_Svc
 
 // Authentication-Info = #auth-param
 Authentication_Info
-  = params:(auth_param?)|.., OWS "," OWS| {
+  = params:(auth_param?)|.., OWS "," OWS| &EOL {
     return {
       kind: 'authentication-info',
       value: text(),
@@ -183,7 +183,7 @@ Authentication_Info
   }
 
 Authorization
-  = credentials:credentials {
+  = credentials:credentials &EOL {
     return {
       kind: 'authorization',
       value: text(),
@@ -193,7 +193,7 @@ Authorization
 
 // Connection = #connection-option
 Connection
-  = opts:(connection_option?)|.., OWS "," OWS| {
+  = opts:(connection_option?)|.., OWS "," OWS| &EOL {
     return {
       kind: 'connection',
       value: text(),
@@ -203,7 +203,7 @@ Connection
 
 //  Content-Encoding = #content-coding
 Content_Encoding
-  = codings:(content_coding?)|.., OWS "," OWS| {
+  = codings:(content_coding?)|.., OWS "," OWS| &EOL {
     return {
       kind: 'content-encoding',
       value: text(),
@@ -213,7 +213,7 @@ Content_Encoding
 
 // Content-Language = #language-tag
 Content_Language
-  = tags:(language_tag?)|.., OWS "," OWS| {
+  = tags:(language_tag?)|.., OWS "," OWS| &EOL {
     return {
       kind: 'content-language',
       value: text(),
@@ -222,7 +222,7 @@ Content_Language
   }
 
 Content_Length
-  = num:$DIGIT+ {
+  = num:$DIGIT+ &EOL {
       return {
         kind: 'content-length',
         value: text(),
@@ -231,7 +231,7 @@ Content_Length
     }
 
 Content_Location
-  = absolute:(absolute_URI { return true } / partial_URI { return false }) {
+  = absolute:(absolute_URI { return true } / partial_URI { return false }) &EOL {
       const value = text();
       return {
         kind: 'content-location',
@@ -242,7 +242,7 @@ Content_Location
     }
 
 Content_Range
-  = units:range_unit SP range:(range_resp / unsatisfied_range) {
+  = units:range_unit SP range:(range_resp / unsatisfied_range) &EOL {
     return {
       kind: 'content-range',
       value: text(),
@@ -261,7 +261,7 @@ Content_Type
   }
 
 Date
-  = date:HTTP_date {
+  = date:HTTP_date &EOL {
     return {
       kind: 'date',
       value: text(),
@@ -270,7 +270,7 @@ Date
   }
 
 ETag
-  = etag:entity_tag {
+  = etag:entity_tag &EOL {
     return {
       kind: 'etag',
       value: text(),
@@ -280,7 +280,7 @@ ETag
 
 // Expect = #expectation
 Expect
-  = expectations:(expectation?)|.., OWS "," OWS| {
+  = expectations:(expectation?)|.., OWS "," OWS| &EOL {
     return {
       kind: 'expect',
       value: text(),
@@ -289,7 +289,7 @@ Expect
   }
 
 From
-  = address:mailbox {
+  = address:mailbox &EOL {
     return {
       kind: 'from',
       value: text(),
@@ -298,7 +298,7 @@ From
   }
 
 Host
-  = host:uri_host port:(":" @port)? {
+  = host:uri_host port:(":" @port)? &EOL {
     return {
       kind: 'host',
       value: text(),
@@ -309,7 +309,7 @@ Host
 
 //  If-Match = "*" / #entity-tag
 If_Match
-  = etags:("*" { return ['*'] } / (entity_tag?)|.., OWS "," OWS|) {
+  = etags:(etags_star / etags_list) &EOL {
     return {
       kind: 'if-match',
       value: text(),
@@ -317,8 +317,14 @@ If_Match
     };
   }
 
+etags_star
+  = "*" { return ['*'] }
+
+etags_list
+  = (entity_tag?)|.., OWS "," OWS|
+
 If_Modified_Since
-  = date:HTTP_date {
+  = date:HTTP_date &EOL {
     return {
       kind: 'if-modified-since',
       value: text(),
@@ -328,7 +334,7 @@ If_Modified_Since
 
 // If-None-Match = "*" / #entity-tag
 If_None_Match
-  = etags:("*" { return ['*'] } / (entity_tag?)|.., OWS "," OWS|) {
+  = etags:(etags_star / etags_list) &EOL {
     return {
       kind: 'if-none-match',
       value: text(),
@@ -337,14 +343,14 @@ If_None_Match
   }
 
 If_Range
-  = etag:entity_tag {
+  = etag:entity_tag &EOL {
     return {
       kind: 'if-range',
       value: text(),
       etag
     }
   }
-  / date:HTTP_date {
+  / date:HTTP_date &EOL {
     return {
       kind: 'if-range',
       value: text(),
@@ -353,7 +359,7 @@ If_Range
   }
 
 If_Unmodified_Since
-  = date:HTTP_date {
+  = date:HTTP_date &EOL {
     return {
       kind: 'if-unmodified-since',
       value: text(),
@@ -367,7 +373,7 @@ IMF_fixdate
   }
 
 Last_Modified
-  = date:HTTP_date {
+  = date:HTTP_date &EOL {
     return {
       kind: 'last-modified',
       value: text(),
@@ -376,7 +382,7 @@ Last_Modified
   }
 
 Location
-  = uri:URI_reference {
+  = uri:URI_reference &EOL {
     return {
       kind: 'location',
       value: text(),
@@ -385,7 +391,7 @@ Location
   }
 
 Max_Forwards
-  = num:$DIGIT+ {
+  = num:$DIGIT+ &EOL {
     return {
       kind: 'max-forwards',
       value: text(),
@@ -395,7 +401,7 @@ Max_Forwards
 
 // Proxy-Authenticate = #challenge
 Proxy_Authenticate
-  = challenges:(challenge?)|.., OWS "," OWS| {
+  = challenges:(challenge?)|.., OWS "," OWS| &EOL {
     return {
       kind: 'proxy-authenticate',
       value: text(),
@@ -404,7 +410,7 @@ Proxy_Authenticate
   }
 
 Proxy_Authentication_Info
-  = params:(auth_param?)|.., OWS "," OWS| {
+  = params:(auth_param?)|.., OWS "," OWS| &EOL {
     return {
       kind: 'proxy-authentication-info',
       value: text(),
@@ -413,7 +419,7 @@ Proxy_Authentication_Info
   }
 
 Proxy_Authorization
-  = credentials:credentials {
+  = credentials:credentials &EOL {
     return {
       kind: 'proxy-authorization',
       value: text(),
@@ -422,7 +428,7 @@ Proxy_Authorization
   }
 
 Range
-  = spec:ranges_specifier {
+  = spec:ranges_specifier &EOL {
     return {
       kind: 'range',
       value: text(),
@@ -431,7 +437,7 @@ Range
   }
 
 Referer
-  = absolute:(absolute_URI {return true} / partial_URI {return false}) {
+  = absolute:(absolute_URI {return true} / partial_URI {return false}) &EOL {
     const value = text();
     return {
       kind: 'referer',
@@ -442,14 +448,14 @@ Referer
   }
 
 Retry_After
-  = date:HTTP_date {
+  = date:HTTP_date &EOL {
     return {
       kind: 'retry-after',
       value: text(),
       date,
     }
   }
-  / seconds:delay_seconds {
+  / seconds:delay_seconds &EOL {
     return {
       kind: 'retry-after',
       value: text(),
@@ -458,7 +464,7 @@ Retry_After
   }
 
 Server
-  = first:product last:(RWS @(product / comment))* {
+  = first:product last:(RWS @(product / comment))* &EOL {
     return {
       kind: 'server',
       value: text(),
@@ -467,7 +473,7 @@ Server
   }
 
 TE
-  = codings:(t_codings?)|.., OWS "," OWS| {
+  = codings:(t_codings?)|.., OWS "," OWS| &EOL {
     const trailers = codings.some(t => t?.trailers);
     return {
       kind: 'te',
@@ -478,7 +484,7 @@ TE
   }
 
 Trailer
-  = fields:(field_name?)|.., OWS "," OWS| {
+  = fields:(field_name?)|.., OWS "," OWS| &EOL {
     return {
       kind: 'trailer',
       value: text(),
@@ -487,7 +493,7 @@ Trailer
   }
 
 Upgrade
-  = protocols:(protocol?)|.., OWS "," OWS| {
+  = protocols:(protocol?)|.., OWS "," OWS| &EOL {
     return {
       kind: 'upgrade',
       value: text(),
@@ -496,7 +502,7 @@ Upgrade
   }
 
 User_Agent
-  = first:product last:(RWS @(product / comment))* {
+  = first:product last:(RWS @(product / comment))* &EOL {
     return {
       kind: 'user-agent',
       value: text(),
@@ -505,7 +511,7 @@ User_Agent
   }
 
 Vary
-  = fields:(("*" / field_name)?)|.., OWS "," OWS| {
+  = fields:(("*" / field_name)?)|.., OWS "," OWS| &EOL {
     return {
       kind: 'vary',
       value: text(),
@@ -516,7 +522,7 @@ Vary
 Via
   = via:((proto:received_protocol RWS by:received_by comment:(RWS @comment)? {
     return {...proto, ...by, ...comment}
-  })?)|.., OWS "," OWS| {
+  })?)|.., OWS "," OWS| &EOL {
     return {
       kind: 'via',
       value: text(),
@@ -525,7 +531,7 @@ Via
   }
 
 WWW_Authenticate
-  = challenges:(challenge?)|.., OWS "," OWS| {
+  = challenges:(challenge?)|.., OWS "," OWS| &EOL {
     return {
       kind: 'www-authenticate',
       value: text(),
@@ -923,7 +929,7 @@ complete_length
   = num:$DIGIT+ { return parseInt(num, 10) }
 
 obs_date
-  = /*OBS*/ @(rfc850_date / asctime_date)
+  = OBS @(rfc850_date / asctime_date)
 
 weak
   = "W/"
@@ -1212,7 +1218,7 @@ range_spec
   / other_range
 
 obs_text
-  = /*OBS*/ @[\x80-\xff]
+  = OBS @[\x80-\xff]
 
 VCHAR
   = [\x21-\x7e]
@@ -1279,7 +1285,7 @@ CFWS
   / FWS
 
 obs_angle_addr
-  = /*OBS*/ CFWS? "<" obs_route @addr_spec ">" CFWS?
+  = OBS CFWS? "<" obs_route @addr_spec ">" CFWS?
 
 dot_atom
   = CFWS? dot_atom_text CFWS?
@@ -1288,13 +1294,13 @@ email_quoted_string
   = CFWS? DQUOTE @$(FWS? @qcontent)* FWS? DQUOTE CFWS?
 
 obs_local_part
-  = /*OBS*/ @word|.., "."|
+  = OBS @word|.., "."|
 
 domain_literal
   = CFWS? "[" (FWS? dtext)* FWS? "]" CFWS?
 
 obs_domain
-  = /*OBS*/ @atom|1.., "."|
+  = OBS @atom|1.., "."|
 
 h16
   = HEXDIG|1..4|
@@ -1313,10 +1319,7 @@ HEXDIG
   / "F"i
 
 int_range
-  = first:first_pos "-" last:last_pos? &(OWS "," / EOL) {
-    if ((last != null) && (last < first)) {
-      error('last less than first');
-    }
+  = first:first_pos "-" last:last_pos? &(OWS "," / EOL) &{ return (last === null) || (first <= last)} {
     return { first, last };
   }
 
@@ -1335,7 +1338,7 @@ word
   / email_quoted_string
 
 obs_phrase
-  = /*OBS*/ word (word / "." / CFWS)*
+  = OBS word (word / "." / CFWS)*
 
 FWS
   = ((WSP* CRLF)? WSP+)
@@ -1373,7 +1376,7 @@ CRLF
   = CR LF
 
 obs_FWS
-  = /*OBS*/ WSP+ (CRLF WSP+)*
+  = OBS @$(WSP+)|1.., CRLF|
 
 ccontent
   = email_ctext
@@ -1381,7 +1384,7 @@ ccontent
   / email_comment
 
 obs_domain_list
-  = /*OBS*/ (CFWS / ",")* "@" domain|1.., "," CFWS? "@"|
+  = OBS (CFWS / ",")* "@" @domain|1.., "," CFWS? "@"|
 
 atext
   = ALPHA
@@ -1413,11 +1416,11 @@ qtext
   / obs_qtext
 
 email_quoted_pair
-  = ("\\" (VCHAR / WSP))
+  = "\\" @(VCHAR / WSP)
   / obs_qp
 
 obs_dtext
-  = /*OBS*/ @(obs_NO_WS_CTL / email_quoted_pair)
+  = OBS @(obs_NO_WS_CTL / email_quoted_pair)
 
 CR
   = "\r"
@@ -1432,10 +1435,10 @@ email_ctext
   / obs_ctext
 
 obs_qtext
-  = /*OBS*/ @obs_NO_WS_CTL
+  = OBS @obs_NO_WS_CTL
 
 obs_qp
-  = /*OBS*/ "\\" ("\x00" / obs_NO_WS_CTL / LF / CR)
+  = OBS "\\" @$("\x00" / obs_NO_WS_CTL / LF / CR)
 
 obs_NO_WS_CTL
   = [\x01-\x08]
@@ -1445,10 +1448,9 @@ obs_NO_WS_CTL
   / "\x7f"
 
 obs_ctext
-  = /*OBS*/ @obs_NO_WS_CTL
+  = OBS @obs_NO_WS_CTL
 
 EOL
   = [\r\n] / !.
 
-// TODO: options.obs
-// OBS = &{ return true; }
+OBS = &{ return Boolean(options.obsolete); }
