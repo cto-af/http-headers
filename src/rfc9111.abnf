@@ -1,0 +1,6 @@
+Cache-Control   = #cache-directive
+
+cache-directive = token [ "=" ( token / quoted-string ) ]
+
+Expires = HTTP-date
+

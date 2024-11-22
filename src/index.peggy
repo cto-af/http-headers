@@ -14,6 +14,7 @@ Header
   / name:"Alt-Svc"i COWS h:Alt_Svc { h.name = name; return h }
   / name:"Authentication-Info"i COWS h:Authentication_Info { h.name = name; return h }
   / name:"Authorization"i COWS h:Authorization { h.name = name; return h }
+  / name:"Cache-Control"i COWS h:Cache_Control { h.name = name; return h }
   / name:"Connection"i COWS h:Connection { h.name = name; return h }
   / name:"Content-Encoding"i COWS h:Content_Encoding { h.name = name; return h }
   / name:"Content-Language"i COWS h:Content_Language { h.name = name; return h }
@@ -24,6 +25,7 @@ Header
   / name:"Date"i COWS h:Date { h.name = name; return h }
   / name:"ETag"i COWS h:ETag { h.name = name; return h }
   / name:"Expect"i COWS h:Expect { h.name = name; return h }
+  / name:"Expires"i COWS h:Expires { h.name = name; return h }
   / name:"From"i COWS h:From { h.name = name; return h }
   / name:"Host"i COWS h:Host { h.name = name; return h }
   / name:"If-Match"i COWS h:If_Match { h.name = name; return h }
@@ -191,6 +193,15 @@ Authorization
     }
   }
 
+Cache_Control
+  = some:(cache_directive?)|.., OWS "," OWS| &EOL {
+    return {
+      kind: 'cache-control',
+      value: text(),
+      controls: some.filter(s => s)
+    }
+  }
+
 // Connection = #connection-option
 Connection
   = opts:(connection_option?)|.., OWS "," OWS| &EOL {
@@ -231,7 +242,7 @@ Content_Length
     }
 
 Content_Location
-  = absolute:(absolute_URI { return true } / partial_URI { return false }) &EOL {
+  = absolute:(absolute_URI { return true } / partial_URI { return options.failContentLocation ? peg$FAILED : false }) &EOL {
       const value = text();
       return {
         kind: 'content-location',
@@ -286,6 +297,15 @@ Expect
       value: text(),
       expectations: expectations.filter(e => e),
     };
+  }
+
+Expires
+  = date:HTTP_date &EOL {
+    return {
+      kind: 'expires',
+      value: text(),
+      date,
+    }
   }
 
 From
@@ -437,7 +457,7 @@ Range
   }
 
 Referer
-  = absolute:(absolute_URI {return true} / partial_URI {return false}) &EOL {
+  = absolute:(absolute_URI {return true} / partial_URI {return options.failReferer ? peg$FAILED : false}) &EOL {
     const value = text();
     return {
       kind: 'referer',
@@ -612,6 +632,25 @@ credentials
       ...t
     };
   }
+
+cache_directive
+  = "max-age"i "=" sec:delta_seconds { return ['max-age', sec] }
+  / "no-cache"i fields:("=" @quoted_fields)? {
+    return ['no-cache', fields?.filter(f => f) ?? []]
+  }
+  / "private"i fields:("=" @quoted_fields)? {
+    return ['private', fields?.filter(f => f) ?? []]
+  }
+  / "s-maxage"i "=" sec:delta_seconds { return ['s-maxage', sec] }
+  / token:token value:("=" @(token / quoted_string))? {
+    return [token.toLowerCase(), value];
+  }
+
+quoted_fields
+  = DQUOTE @((n:field_name {return n.toLowerCase()})?)|.., OWS "," OWS| DQUOTE
+
+delta_seconds
+  = num:$DIGIT+ {return parseInt(num, 10)}
 
 auth_params_or_token68
   = auth_params

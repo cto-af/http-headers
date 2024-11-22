@@ -63,6 +63,7 @@ test('Header: known', () => {
   known('Authentication-Info: ,', startRule);
   known('Authorization: basic Zm9vOmJhcg==', startRule);
   unknown('Authorization: basic Zm9vOmJhcg==\x80', startRule);
+  known('Cache-Control: ,', startRule);
   known('Connection: ,', startRule);
   known('Content-Encoding: ,', startRule);
   known('Content-Language: ,', startRule);
@@ -79,6 +80,7 @@ test('Header: known', () => {
   known('ETag: ""', startRule);
   unknown('ETag: ""\x80', startRule);
   known('Expect: ,', startRule);
+  known('Expires: Sun, 06 Nov 1994 08:49:37 GMT', startRule);
   known('From: a@b', startRule);
   unknown('From: a@b\x80', startRule);
   known('Host: ,', startRule);
@@ -138,6 +140,7 @@ test('Header: unknown', () => {
   unknown('Alt-Svc: ;', startRule);
   unknown('Authentication-Info: ;', startRule);
   unknown('Authorization: ,', startRule);
+  unknown('Cache-Control: ;', startRule);
   unknown('Connection: ;', startRule);
   unknown('Content-Encoding: ;', startRule);
   unknown('Content-Language: ;', startRule);
@@ -150,6 +153,7 @@ test('Header: unknown', () => {
   unknown('Date: ,', startRule);
   unknown('ETag: ,', startRule);
   unknown('Expect: ;', startRule);
+  unknown('Expires: ;', startRule);
   unknown('From: ,', startRule);
   unknown('Host: {', startRule);
   unknown('If-Match: ;', startRule);
@@ -223,13 +227,16 @@ alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000\r
       kind: 'expires',
       name: 'expires',
       value: 'Thu, 12 Dec 2024 17:36:02 GMT',
-      unknown: true,
+      date: new Date('Thu, 12 Dec 2024 17:36:02 GMT'),
     },
     {
       kind: 'cache-control',
       name: 'cache-control',
       value: 'public, max-age=2592000',
-      unknown: true,
+      controls: [
+        ['public', null],
+        ['max-age', 2592000],
+      ],
     },
     {
       kind: 'server',
@@ -301,6 +308,7 @@ test('Header edge cases', () => {
   fails('Alt-Svc', startRule);
   fails('Authentication-Info', startRule);
   fails('Authorization', startRule);
+  fails('Cache-Control', startRule);
   fails('Connection', startRule);
   fails('Content-Encoding', startRule);
   fails('Content-Language', startRule);
@@ -311,6 +319,7 @@ test('Header edge cases', () => {
   fails('Date', startRule);
   fails('ETag', startRule);
   fails('Expect', startRule);
+  fails('Expires', startRule);
   fails('From', startRule);
   fails('Host', startRule);
   fails('If-Match', startRule);

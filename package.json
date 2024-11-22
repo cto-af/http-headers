@@ -32,13 +32,13 @@
     "lint": "eslint .",
     "pretest": "npm run parser",
     "test": "c8 node --test",
-    "abnf": "abnf_gen -c src/original.abnf src/rfc9110.abnf src/rfc3986.abnf src/rfc4647.abnf src/rfc5646.abnf src/rfc5322.abnf src/rfc7838.abnf -s Headers -s Headers-Loose",
+    "abnf": "abnf_gen -c src/original.abnf src/rfc9110.abnf src/rfc9111.abnf src/rfc3986.abnf src/rfc4647.abnf src/rfc5646.abnf src/rfc5322.abnf src/rfc7838.abnf -s Headers -s Headers-Loose",
     "parser": "peggy -c peggy.config.js && mkdir -p lib && cat src/types.d.ts src/index.d.ts > lib/index.d.ts && cp src/index.js lib",
     "build": "npm run test && npm run lint && npm pack --dry-run"
   },
   "devDependencies": {
     "@cto.af/eslint-config": "5.0.5",
-    "@peggyjs/coverage": "1.3.0",
+    "@peggyjs/coverage": "1.3.2",
     "abnf": "4.2.0",
     "c8": "10.1.2",
     "eslint-plugin-jsdoc": "50.5.0",
