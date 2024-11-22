@@ -14,6 +14,7 @@ Header
   / "Alt-Svc"i COWS Alt_Svc
   / "Authentication-Info"i COWS Authentication_Info
   / "Authorization"i COWS Authorization
+  / "Cache-Control"i COWS Cache_Control
   / "Connection"i COWS Connection
   / "Content-Encoding"i COWS Content_Encoding
   / "Content-Language"i COWS Content_Language
@@ -24,6 +25,7 @@ Header
   / "Date"i COWS Date
   / "ETag"i COWS ETag
   / "Expect"i COWS Expect
+  / "Expires"i COWS Expires
   / "From"i COWS From
   / "Host"i COWS Host
   / "If-Match"i COWS If_Match
@@ -91,6 +93,9 @@ Authentication_Info
 Authorization
   = credentials
 
+Cache_Control
+  = some:(cache_directive?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}
+
 Connection
   = (connection_option (OWS "," OWS connection_option)*)?
 
@@ -121,6 +126,9 @@ ETag
 
 Expect
   = (expectation (OWS "," OWS expectation)*)?
+
+Expires
+  = HTTP_date
 
 From
   = mailbox
@@ -243,6 +251,9 @@ auth_param
 
 credentials
   = auth_scheme (SP+ (token68 / (auth_param (OWS "," OWS auth_param)*)?))?
+
+cache_directive
+  = token ("=" (token / quoted_string))?
 
 connection_option
   = token

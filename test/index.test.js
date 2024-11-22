@@ -11,7 +11,7 @@ const invalid = '\r\n';
 
 test('Headers', async() => {
   let startRule = '';
-  await testPeggy(PARSER, [
+  const results = await testPeggy(PARSER, [
     // #region Accept
     {
       startRule: (startRule = 'Accept'),
@@ -296,6 +296,72 @@ test('Headers', async() => {
       startRule,
       options,
       invalid,
+    },
+
+    // #region Cache_Control
+    {
+      startRule: (startRule = 'Cache_Control'),
+      validInput: 'max-age=300, s-maxage=300, public,, no-cache="Date,Via", private="Date,Via", foo, bar=baz, BOO="BOAR"',
+      validResult: {
+        kind: 'cache-control',
+        value: 'max-age=300, s-maxage=300, public,, no-cache="Date,Via", private="Date,Via", foo, bar=baz, BOO="BOAR"',
+        controls: [
+          ['max-age', 300],
+          ['s-maxage', 300],
+          ['public', null],
+          ['no-cache', ['date', 'via']],
+          ['private', ['date', 'via']],
+          ['foo', null],
+          ['bar', 'baz'],
+          ['boo', 'BOAR'],
+        ],
+      },
+      options,
+      invalid,
+    },
+    {
+      startRule: (startRule = 'Cache_Control'),
+      validInput: 'max-age, max-age=abc, no-cache',
+      validResult: {
+        kind: 'cache-control',
+        value: 'max-age, max-age=abc, no-cache',
+        controls: [
+          ['max-age', null],
+          ['max-age', 'abc'],
+          ['no-cache', []],
+        ],
+      },
+      options,
+      invalid,
+    },
+    {
+      startRule,
+      invalidInput: 'no-cache="',
+    },
+    {
+      startRule,
+      invalidInput: 'private\x80',
+    },
+    {
+      startRule,
+      invalidInput: 'private=\x80',
+    },
+
+    {
+      startRule,
+      invalidInput: 'private="',
+    },
+    {
+      startRule,
+      invalidInput: 'private="foo,\x80',
+    },
+    {
+      startRule,
+      invalidInput: 's-maxage\x80',
+    },
+    {
+      startRule,
+      invalidInput: 's-maxage=\x80',
     },
 
     // #region Connection
@@ -817,9 +883,7 @@ test('Headers', async() => {
       invalidInput: '',
       options: {
         obsolete: false,
-        peg$failAfter: {
-          peg$f65: 0, // Unstable
-        },
+        failContentLocation: true,
       },
     },
 
@@ -1122,6 +1186,12 @@ test('Headers', async() => {
       },
       options,
       invalid,
+    },
+
+    // #region Expires
+    {
+      startRule: (startRule = 'Expires'),
+      invalidInput: 'Sun, 06 Nov 1994 08:49:37 GMT\x80',
     },
 
     // #region From
@@ -1647,9 +1717,7 @@ test('Headers', async() => {
       startRule,
       invalidInput: '',
       options: {
-        peg$failAfter: {
-          peg$f90: 0, // Unstable
-        },
+        failReferer: true,
       },
     },
 
@@ -2213,4 +2281,8 @@ test('Headers', async() => {
       invalid: '',
     },
   ]);
+  delete results.grammarPath;
+  delete results.modifiedPath;
+  // eslint-disable-next-line no-console
+  console.log(results);
 });

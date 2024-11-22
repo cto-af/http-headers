@@ -80,6 +80,14 @@ export interface Authorization extends Header<'authorization'> {
   token68?: string;
 }
 
+export type CacheDirective = [
+  name: string,
+  value: string | string[] | number | null,
+];
+export interface Cache_Control extends Header<'cache-control'> {
+  controls: CacheDirective[];
+}
+
 export interface Connection extends Header<'connection'> {
   opts: string[];
 }
@@ -134,6 +142,10 @@ export interface Expectation {
 }
 export interface Expect extends Header<'expect'> {
   expectations: Expectation[];
+}
+
+export interface Expires extends Header<'expires'> {
+  date: Date;
 }
 
 export interface From extends Header<'from'> {
@@ -283,6 +295,7 @@ export type AnyHeader
   | Alt_Svc
   | Authentication_Info
   | Authorization
+  | Cache_Control
   | Connection
   | Content_Encoding
   | Content_Language
@@ -293,6 +306,7 @@ export type AnyHeader
   | Date
   | ETag
   | Expect
+  | Expires
   | From
   | Host
   | If_Match
