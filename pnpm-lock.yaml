@@ -15,8 +15,8 @@ importers:
         specifier: 5.0.5
         version: 5.0.5(eslint@9.14.0)(typescript@5.6.3)
       '@peggyjs/coverage':
-        specifier: 1.3.1
-        version: 1.3.1
+        specifier: 1.3.2
+        version: 1.3.2
       abnf:
         specifier: 4.2.0
         version: 4.2.0
@@ -144,8 +144,8 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
-  '@peggyjs/coverage@1.3.1':
-    resolution: {integrity: sha512-ogOFpGWpMMqtchiBKJXNtzbHrLqGZywc+DnJV1a+vcU06ng/8+koiVuoFDXYWWYgr7i52/YPnKRKPx07rD6fVA==}
+  '@peggyjs/coverage@1.3.2':
+    resolution: {integrity: sha512-8yh9Bbq9EtDXo/jVBL7PGUzo6tC69cK+3pARDq7vwlksLMPOcUQkJfnHS58U2YeBqNvB4OgB1O4FWH8xPNvVTA==}
     engines: {node: '>=18'}
 
   '@peggyjs/from-mem@1.3.5':
@@ -1036,7 +1036,7 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.17.1
 
-  '@peggyjs/coverage@1.3.1':
+  '@peggyjs/coverage@1.3.2':
     dependencies:
       peggy: 4.2.0
       source-map-generator: 0.8.0
