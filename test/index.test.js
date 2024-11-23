@@ -202,6 +202,12 @@ test('Headers', async() => {
       invalid,
     },
 
+    // #region Age
+    {
+      startRule: (startRule = 'Age'),
+      invalidInput: '20\x80',
+    },
+
     // #region Allow
     {
       startRule: (startRule = 'Allow'),
@@ -213,6 +219,16 @@ test('Headers', async() => {
       },
       options,
       invalid,
+    },
+
+    // #region ALPN
+    {
+      startRule: (startRule = 'ALPN'),
+      invalidInput: 'foo, \x80',
+    },
+    {
+      startRule,
+      invalidInput: '',
     },
 
     // #region Alt_Svc
@@ -1764,6 +1780,136 @@ test('Headers', async() => {
       },
       options,
       invalid,
+    },
+
+    // # Region Set_Cookie
+    {
+      startRule: (startRule = 'Set_Cookie'),
+      validInput: 'lang=en-US; Expires=Wed, 09 Jun 2021 10:18:14 GMT; max-age=20; HttpOnly',
+      validResult: {
+        kind: 'set-cookie',
+        value: 'lang=en-US; Expires=Wed, 09 Jun 2021 10:18:14 GMT; max-age=20; HttpOnly',
+        cookieName: 'lang',
+        cookieValue: 'en-US',
+        attributes: [
+          ['expires', new Date('Wed, 09 Jun 2021 10:18:14 GMT')],
+          ['max-age', 20],
+          ['httponly', null],
+        ],
+      },
+      options,
+      invalid,
+    },
+    {
+      startRule,
+      validInput: 'foo=bar',
+      validResult: {
+        kind: 'set-cookie',
+        value: 'foo=bar',
+        cookieName: 'foo',
+        cookieValue: 'bar',
+        attributes: [],
+      },
+      invalid,
+    },
+    {
+      startRule,
+      invalidInput: 'foo',
+    },
+    {
+      startRule,
+      invalidInput: 'foo=\x00',
+    },
+    {
+      startRule,
+      invalidInput: 'foo="\x00',
+    },
+    {
+      startRule,
+      invalidInput: 'foo=bar;\x80',
+    },
+    {
+      startRule,
+      invalidInput: 'foo=bar; ',
+    },
+    {
+      startRule,
+      invalidInput: 'foo=bar; baz;',
+    },
+    {
+      startRule,
+      invalidInput: 'foo="bar"; baz; ',
+    },
+    {
+      startRule,
+      invalidInput: 'foo="a\x00',
+    },
+    {
+      startRule,
+      invalidInput: 'foo=bar',
+      options: {
+        peg$failAfter: {
+          peg$parsecookie_value: 0,
+        },
+      },
+    },
+    {
+      startRule,
+      invalidInput: 'foo=bar; Expires=\x00',
+    },
+    {
+      startRule,
+      invalidInput: 'foo=bar; max-age=a\x00',
+    },
+    {
+      startRule,
+      invalidInput: 'foo=bar; domain=\x00',
+    },
+    {
+      startRule,
+      invalidInput: 'foo=bar; path=\x00',
+    },
+    {
+      startRule,
+      invalidInput: 'foo=bar; HttpOnlo\x00',
+    },
+
+    // #region Strict_Transport_Security
+    {
+      startRule: (startRule = 'Strict_Transport_Security'),
+      invalidInput: '\x80',
+    },
+    {
+      startRule,
+      invalidInput: 'foo; \x80',
+    },
+    {
+      startRule,
+      validInput: 'max-age',
+      validResult: {
+        kind: 'strict-transport-security',
+        value: 'max-age',
+        directives: [
+          ['max-age', null],
+        ],
+      },
+      invalid,
+    },
+    {
+      startRule,
+      validInput: 'max-age=a',
+      validResult: {
+        kind: 'strict-transport-security',
+        value: 'max-age=a',
+        directives: [
+          ['max-age', 'a'],
+        ],
+      },
+      invalid,
+    },
+    {
+      startRule,
+      invalidInput: 'foo=',
     },
 
     // #region TE

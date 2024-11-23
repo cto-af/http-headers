@@ -6,11 +6,13 @@ Headers_Loose
 
 Header
   = name:"Accept"i COWS h:Accept { h.name = name; return h }
+  / name:"Age"i COWS h:Age { h.name = name; return h }
   / name:"Accept-Charset"i COWS h:Accept_Charset { h.name = name; return h }
   / name:"Accept-Encoding"i COWS h:Accept_Encoding { h.name = name; return h }
   / name:"Accept-Language"i COWS h:Accept_Language { h.name = name; return h }
   / name:"Accept-Ranges"i COWS h:Accept_Ranges { h.name = name; return h }
   / name:"Allow"i COWS h:Allow { h.name = name; return h }
+  / name:"ALPN"i COWS h:ALPN { h.name = name; return h }
   / name:"Alt-Svc"i COWS h:Alt_Svc { h.name = name; return h }
   / name:"Authentication-Info"i COWS h:Authentication_Info { h.name = name; return h }
   / name:"Authorization"i COWS h:Authorization { h.name = name; return h }
@@ -44,6 +46,8 @@ Header
   / name:"Retry-After"i COWS h:Retry_After { h.name = name; return h }
   / name:"Server"i COWS h:Server { h.name = name; return h }
   / name:"TE"i COWS h:TE { h.name = name; return h }
+  / name:"Set-Cookie"i COWS h:Set_Cookie { h.name = name; return h }
+  / name:"Strict-Transport-Security"i COWS h:Strict_Transport_Security { h.name = name; return h }
   / name:"Trailer"i COWS h:Trailer { h.name = name; return h }
   / name:"Upgrade"i COWS h:Upgrade { h.name = name; return h }
   / name:"User-Agent"i COWS h:User_Agent { h.name = name; return h }
@@ -153,6 +157,24 @@ Allow
       kind: 'allow',
       value: text(),
       methods: methods.filter(m => m),
+    };
+  }
+
+ALPN
+  = protocols:(some:(aprotocol_id?)|.., OWS "," OWS| {return some.filter(s => s)}) &EOL &{ return (protocols.length >= 1) } {
+    return {
+      kind: 'alpn',
+      value: text(),
+      protocols,
+    }
+  }
+
+Age
+  = secs:delta_seconds &EOL {
+    return {
+      kind: 'age',
+      value: text(),
+      secs,
     };
   }
 
@@ -492,6 +514,25 @@ Server
     }
   }
 
+Set_Cookie
+  = pair:cookie_pair attributes:(";" SP @cookie_av)* &EOL {
+    return {
+      kind: 'set-cookie',
+      value: text(),
+      ...pair,
+      attributes,
+    }
+  }
+
+Strict_Transport_Security
+  = directives:(directive?)|.., OWS ";" OWS| &EOL {
+    return {
+      kind: 'strict-transport-security',
+      value: text(),
+      directives: directives.filter(d => d),
+    };
+  }
+
 TE
   = codings:(t_codings?)|.., OWS "," OWS| &EOL {
     const trailers = codings.some(t => t?.trailers);
@@ -649,6 +690,9 @@ cache_directive
 quoted_fields
   = DQUOTE @((n:field_name {return n.toLowerCase()})?)|.., OWS "," OWS| DQUOTE
 
+aprotocol_id
+  = chars:(pct_encoded / tchar)+ { return chars.join('') }
+
 delta_seconds
   = num:$DIGIT+ {return parseInt(num, 10)}
 
@@ -737,6 +781,93 @@ media_type
       parameters: Object.fromEntries(parameters),
     }
   }
+
+cookie_pair
+  = cookieName:cookie_name "=" cookieValue:cookie_value {
+    return {cookieName, cookieValue}
+  }
+
+cookie_av
+  = expires_av
+  / max_age_av
+  / domain_av
+  / path_av
+  / secure_av
+  / httponly_av
+  / equals_av
+  / extension_av
+
+cookie_name
+  = token
+
+cookie_value
+  = DQUOTE @$cookie_octet* DQUOTE
+  / $cookie_octet*
+
+expires_av
+  = "Expires="i date:sane_cookie_date {
+    return ['expires', date]
+  }
+
+max_age_av
+  = "Max-Age="i n:$(non_zero_digit DIGIT*) {
+    return ['max-age', parseInt(n, 10)];
+  }
+
+domain_av
+  = "Domain="i val:domain_value {
+    return ['domain', val];
+  }
+
+path_av
+  = "Path="i path:$path_value {
+    return ['path', path];
+  }
+
+secure_av
+  = "Secure"i { return ['secure', null] }
+
+httponly_av
+  = "HttpOnly"i { return ['httponly', null] }
+
+equals_av
+  = name:$cookie_any_equals+ value:("=" @$cookie_any+) {
+    return [name.toLowerCase(), value];
+  }
+
+extension_av
+  = $cookie_any+
+
+// any CHAR except CTLs or ";" (\x3b)
+cookie_any
+  = [\x20-\x3a\x3c-\x7e\x80-\xff]
+
+// any CHAR except CTLs, ";" (\x3b), or "=" (\x3d)
+cookie_any_equals
+  =  [\x20-\x3a\x3c\x3e-\x7e\x80-\xff]
+
+cookie_octet
+  = "!"
+  / [\x23-\x2b]
+  / [\x2d-\x3a]
+  / [\x3c-\x5b]
+  / [\x5d-\x7e]
+
+sane_cookie_date
+  = HTTP_date
+
+non_zero_digit
+  = [\x31-\x39]
+
+// (Note that a leading %x2E ("."), if present,
+//  is ignored even though that character is not permitted, but a
+//  trailing %x2E ("."), if present, will cause the user agent to ignore
+//  the attribute.)
+domain_value
+  = d:$("."? domain) { return d.toLowerCase() }
+
+path_value
+  = $cookie_any+
 
 HTTP_date
   = IMF_fixdate
@@ -832,6 +963,19 @@ comment
     }
     return { comment: cmt }
   }
+
+directive
+  = "max-age"i OWS "=" OWS secs:delta_seconds { return ['max-age', secs] }
+  / name:directive_name OWS value:("=" OWS @directive_value)? {
+    return [name.toLowerCase(), value]
+  }
+
+directive_name
+  = token
+
+directive_value
+  = token
+  / quoted_string
 
 t_codings
   = "trailers"i { return {trailers: true} }

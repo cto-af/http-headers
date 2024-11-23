@@ -10,7 +10,9 @@ Header
   / "Accept-Encoding"i COWS Accept_Encoding
   / "Accept-Language"i COWS Accept_Language
   / "Accept-Ranges"i COWS Accept_Ranges
+  / "Age"i COWS Age
   / "Allow"i COWS Allow
+  / "ALPN"i COWS ALPN
   / "Alt-Svc"i COWS Alt_Svc
   / "Authentication-Info"i COWS Authentication_Info
   / "Authorization"i COWS Authorization
@@ -44,6 +46,8 @@ Header
   / "Referer"i COWS Referer
   / "Retry-After"i COWS Retry_After
   / "Server"i COWS Server
+  / "Set-Cookie"i COWS set_cookie_string
+  / "Strict-Transport-Security"i COWS Strict_Transport_Security
   / "TE"i COWS TE
   / "Trailer"i COWS Trailer
   / "Upgrade"i COWS Upgrade
@@ -80,8 +84,14 @@ Accept_Language
 Accept_Ranges
   = acceptable_ranges
 
+Age
+  = delta_seconds
+
 Allow
   = (method (OWS "," OWS method)*)?
+
+ALPN
+  = @count:(some:(protocol_id?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}) &{ return (count.length >= 1) }
 
 Alt_Svc
   = clear
@@ -189,6 +199,12 @@ Retry_After
 Server
   = product (RWS (product / comment))*
 
+set_cookie_string
+  = cookie_pair (";" SP cookie_av)*
+
+Strict_Transport_Security
+  = directive? (";" directive?)*
+
 TE
   = (t_codings (OWS "," OWS t_codings)*)?
 
@@ -237,7 +253,13 @@ language_range
 acceptable_ranges
   = range_unit (OWS "," OWS range_unit)*
 
+delta_seconds
+  = DIGIT+
+
 method
+  = token
+
+protocol_id
   = token
 
 clear
@@ -351,6 +373,21 @@ RWS
 
 comment
   = "(" (ctext / quoted_pair / comment)* ")"
+
+cookie_pair
+  = cookie_name "=" cookie_value
+
+cookie_av
+  = expires_av
+  / max_age_av
+  / domain_av
+  / path_av
+  / secure_av
+  / httponly_av
+  / extension_av
+
+directive
+  = directive_name ("=" directive_value)?
 
 t_codings
   = "trailers"i
@@ -543,6 +580,41 @@ ctext
 quoted_pair
   = "\\" (HTAB / SP / VCHAR / obs_text)
 
+cookie_name
+  = token
+
+cookie_value
+  = cookie_octet*
+  / (DQUOTE cookie_octet* DQUOTE)
+
+expires_av
+  = "Expires="i sane_cookie_date
+
+max_age_av
+  = "Max-Age="i non_zero_digit DIGIT*
+
+domain_av
+  = "Domain="i domain_value
+
+path_av
+  = "Path="i path_value
+
+secure_av
+  = "Secure"i
+
+httponly_av
+  = "HttpOnly"i
+
+extension_av
+  = . { error(`Can't convert prose description to peggy grammar: "any CHAR except CTLs or ";""`) }
+
+directive_name
+  = token
+
+directive_value
+  = token
+  / quoted_string
+
 transfer_coding
   = token (OWS ";" OWS transfer_parameter)*
 
@@ -561,9 +633,6 @@ field_vchar
 
 parameter
   = parameter_name "=" parameter_value
-
-protocol_id
-  = token
 
 alt_authority
   = quoted_string
@@ -745,6 +814,25 @@ obs_text
 
 VCHAR
   = [\x21-\x7e]
+
+cookie_octet
+  = "!"
+  / [\x23-\x2b]
+  / [\x2d-\x3a]
+  / [\x3c-\x5b]
+  / [\x5d-\x7e]
+
+sane_cookie_date
+  = HTTP_date
+
+non_zero_digit
+  = [\x31-\x39]
+
+domain_value
+  = . { error(`Can't convert prose description to peggy grammar: "subdomain"`) }
+
+path_value
+  = . { error(`Can't convert prose description to peggy grammar: "any CHAR except CTLs or ";""`) }
 
 transfer_parameter
   = token BWS "=" BWS (token / quoted_string)

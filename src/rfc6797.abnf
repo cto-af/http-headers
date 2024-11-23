@@ -1,0 +1,8 @@
+     Strict-Transport-Security = [ directive ]  *( ";" [ directive ] )
+
+     directive                 = directive-name [ "=" directive-value ]
+
+     directive-name            = token
+
+     directive-value           = token / quoted-string
+

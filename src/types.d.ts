@@ -52,8 +52,16 @@ export interface Accept_Ranges extends Header<'accept-ranges'> {
   ranges: string[];
 }
 
+export interface Age extends Header<'age'> {
+  secs: number;
+}
+
 export interface Allow extends Header<'allow'> {
   methods: string[];
+}
+
+export interface ALPN extends Header<'alpn'> {
+  protocols: string[];
 }
 
 export interface Service {
@@ -241,6 +249,24 @@ export interface Server extends Header<'server'> {
   products: (Product | Comment)[];
 }
 
+export type CookieAttribute = [
+  name: string,
+  value: string | number | Date | null
+];
+export interface Set_Cookie extends Header<'set-cookie'> {
+  cookieName: string;
+  cookieValue: string;
+  attributes: CookieAttribute[];
+}
+
+export type STSDirective = [
+  name: string,
+  value: string | number | null,
+];
+export interface Strict_Transport_Security extends Header<'strict-transport-security'> {
+  directives: STSDirective[];
+}
+
 export interface TransferEncoding {
   encoding: string;
   parameters: Parameters;
@@ -291,7 +317,9 @@ export type AnyHeader
   | Accept_Encoding
   | Accept_Language
   | Accept_Ranges
+  | Age
   | Allow
+  | ALPN
   | Alt_Svc
   | Authentication_Info
   | Authorization
@@ -324,6 +352,8 @@ export type AnyHeader
   | Referer
   | Retry_After
   | Server
+  | Set_Cookie
+  | Strict_Transport_Security
   | TE
   | Trailer
   | Upgrade
