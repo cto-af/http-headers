@@ -4,3 +4,7 @@ cache-directive = token [ "=" ( token / quoted-string ) ]
 
 Expires = HTTP-date
 
+Age = delta-seconds
+
+delta-seconds = 1*DIGIT
+

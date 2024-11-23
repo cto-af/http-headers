@@ -57,9 +57,11 @@ test('Header: known', () => {
   unknown('Accept-Language: aaa-', startRule);
   known('Accept-Ranges: bytes', startRule);
   unknown('Accept-Ranges: bytes\x80', startRule);
+  known('Age: 12', startRule);
   known('Allow: ,', startRule);
   known('Alt-Svc: clear', startRule);
   unknown('Alt-Svc: clear\x80', startRule);
+  known('ALPN: h2, http%%2F1.1', startRule);
   known('Authentication-Info: ,', startRule);
   known('Authorization: basic Zm9vOmJhcg==', startRule);
   unknown('Authorization: basic Zm9vOmJhcg==\x80', startRule);
@@ -113,6 +115,8 @@ test('Header: known', () => {
   unknown('Retry-After: 0\x80', startRule);
   known('Server: foo', startRule);
   unknown('Server: foo\x80', startRule);
+  known('Set-Cookie: stateCode=CO; Domain=.cnn.com; Path=/; SameSite=None; Secure', startRule);
+  known('Strict-Transport-Security: max-age=31536000; includeSubdomains; preload', startRule);
   known('TE: ,', startRule);
   known('Trailer: ,', startRule);
   known('Upgrade: ,', startRule);
@@ -136,7 +140,9 @@ test('Header: unknown', () => {
   unknown('Accept-Encoding: ;', startRule);
   unknown('Accept-Language: ;', startRule);
   unknown('Accept-Ranges: ,', startRule);
+  unknown('Age: a', startRule);
   unknown('Allow: ;', startRule);
+  unknown('ALPN: ;', startRule);
   unknown('Alt-Svc: ;', startRule);
   unknown('Authentication-Info: ;', startRule);
   unknown('Authorization: ,', startRule);
@@ -173,6 +179,8 @@ test('Header: unknown', () => {
   unknown('Retry-After: ,', startRule);
   unknown('Server: ,', startRule);
   unknown('TE: ;', startRule);
+  unknown('Set-Cookie: ;', startRule);
+  unknown('Strict-Transport-Security: \x80', startRule);
   unknown('Trailer: ;', startRule);
   unknown('Upgrade: ;', startRule);
   unknown('User-Agent: ,', startRule);
@@ -304,7 +312,9 @@ test('Header edge cases', () => {
   fails('accept-encoding', startRule);
   fails('Accept-Language', startRule);
   fails('Accept-Ranges', startRule);
+  fails('Age', startRule);
   fails('Allow', startRule);
+  fails('ALPN', startRule);
   fails('Alt-Svc', startRule);
   fails('Authentication-Info', startRule);
   fails('Authorization', startRule);
@@ -337,6 +347,8 @@ test('Header edge cases', () => {
   fails('Referer', startRule);
   fails('Retry-After', startRule);
   fails('Server', startRule);
+  fails('Set-Cookie', startRule);
+  fails('Strict-Transport-Security', startRule);
   fails('TE', startRule);
   fails('Trailer', startRule);
   fails('Upgrade', startRule);

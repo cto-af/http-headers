@@ -8,7 +8,9 @@ Header
   / "Accept-Encoding" COWS Accept-Encoding
   / "Accept-Language" COWS Accept-Language
   / "Accept-Ranges" COWS Accept-Ranges
+  / "Age" COWS Age
   / "Allow" COWS Allow
+  / "ALPN" COWS ALPN
   / "Alt-Svc" COWS Alt-Svc
   / "Authentication-Info" COWS Authentication-Info
   / "Authorization" COWS Authorization
@@ -42,6 +44,8 @@ Header
   / "Referer" COWS Referer
   / "Retry-After" COWS Retry-After
   / "Server" COWS Server
+  / "Set-Cookie" COWS set-cookie-string
+  / "Strict-Transport-Security" COWS Strict-Transport-Security
   / "TE" COWS TE
   / "Trailer" COWS Trailer
   / "Upgrade" COWS Upgrade
