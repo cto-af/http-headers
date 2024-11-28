@@ -2,5 +2,7 @@ coverage/
 docs/
 lib/
 node_modules/
-src/index.js
+sites.js
+sites/
 src/index.d.ts
+src/index.js

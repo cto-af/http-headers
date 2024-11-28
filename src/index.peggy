@@ -23,6 +23,7 @@ Header
   / name:"Content-Length"i COWS h:Content_Length { h.name = name; return h }
   / name:"Content-Location"i COWS h:Content_Location { h.name = name; return h }
   / name:"Content-Range"i COWS h:Content_Range { h.name = name; return h }
+  / name:"Content-Security-Policy"i COWS h:Content_Security_Policy { h.name = name; return h }
   / name:"Content-Type"i COWS h:Content_Type { h.name = name; return h }
   / name:"Date"i COWS h:Date { h.name = name; return h }
   / name:"ETag"i COWS h:ETag { h.name = name; return h }
@@ -281,6 +282,15 @@ Content_Range
       value: text(),
       units,
       ...range,
+    }
+  }
+
+Content_Security_Policy
+  = policies:(some:(serialized_policy?)|.., optional_ascii_whitespace "," optional_ascii_whitespace| {return some.filter(s => s)}) &{ return (policies.length >= 1) } &EOL {
+    return {
+      kind: 'content-security-policy',
+      value: text(),
+      directives: policies.filter(p => p).flat(1),
     }
   }
 
@@ -773,6 +783,9 @@ unsatisfied_range
     };
   }
 
+serialized_policy
+  = @directives:(some:(serialized_directive?)|.., optional_ascii_whitespace ";" optional_ascii_whitespace| { return some.filter(s => s) }) &{return directives.length > 0}
+
 media_type
   = type:type "/" subtype:subtype parameters:parameters {
     return {
@@ -897,6 +910,11 @@ uri_host
   / $IPv4address
   / reg_name
 
+uri_host_csp
+  = $IP_literal
+  / $IPv4address
+  / reg_name_csp
+
 port
   = num:$DIGIT* { return parseInt(num, 10) }
 
@@ -923,6 +941,12 @@ URI_reference
   // second is the loose WHATWG style.
   = u:$URI { return new URL(u) }
   / $relative_ref
+
+URI_reference_csp
+  // This re-parses, but the first is for conformance with this spec, the
+  // second is the loose WHATWG style.
+  = u:$URI_csp { return new URL(u) }
+  / $relative_ref_csp
 
 challenge
   = scheme:auth_scheme t:(SP+ @auth_params_or_token68)? {
@@ -1097,19 +1121,137 @@ hier_part
   / path_absolute
   / path_rootless)?
 
+hier_part_csp
+  = (("//" authority_csp path_abempty_csp)
+  / path_absolute_csp
+  / path_rootless_csp)?
+
 query
   = (pchar / "/" / "?")*
+
+query_csp
+  = (pchar_csp / "/" / "?")*
 
 relative_part
   = ("//" authority path_abempty
   / path_absolute
   / path_noscheme)?
 
+relative_part_csp
+  = ("//" authority_csp path_abempty_csp
+  / path_absolute_csp
+  / path_noscheme_csp)?
+
 incl_range
   = @first_pos "-" @last_pos
 
 complete_length
   = num:$DIGIT+ { return parseInt(num, 10) }
+
+serialized_directive
+  = name:source_list_directive required_ascii_whitespace list:serialized_source_list {
+    return {name: name.toLowerCase(), values: list}
+  }
+  / webrtc_directive
+  / sandbox_directive
+  / frame_ancestors_directive
+  / report_uri_directive
+  / report_to_directive
+  / require_trusted_types_directive
+  / trusted_types_directive
+  / upgrade_insecure_directive
+  / name:csp_directive_name value:(required_ascii_whitespace @csp_directive_value)? {
+    return {name: name.toLowerCase(), values: value ? [{kind: 'unknown', value}] : [], unknown: true};
+  }
+
+// See: https://www.w3.org/TR/upgrade-insecure-requests/#delivery
+upgrade_insecure_directive
+  = "upgrade-insecure-requests"i {
+    return { name: 'upgrade-insecure-requests', values: [] };
+  }
+
+// See: https://w3c.github.io/trusted-types/dist/spec/#require-trusted-types-for-csp-directive
+require_trusted_types_directive
+   = "require-trusted-types-for"i required_ascii_whitespace values:"'script'"|1.., required_ascii_whitespace| {
+    return {
+      name: 'require-trusted-types-for',
+      values: values.filter(v => v).map(value => ({kind: 'keyword', value})),
+    };
+   }
+
+trusted_types_directive
+  = "trusted-types"i required_ascii_whitespace values:serialized_tt_configuration {
+    return {
+      name: 'trusted-types',
+      values
+    };
+  }
+
+serialized_tt_configuration
+  = tt_expression|1.., required_ascii_whitespace|
+
+tt_expression
+  = value:tt_keyword { return {kind: 'keyword', value: value.toLowerCase()} }
+  / tt_wildcard { return {kind: 'token', value: '*'} }
+  / value:tt_policy_name { return {kind: 'token', value} }
+
+tt_policy_name
+  = $(ALPHA / DIGIT / "-" / "#" / "=" / "_" / "/" / "@" / "." / "%")+
+
+tt_keyword
+  = "'allow-duplicates'"i
+  / "'none'"i
+
+tt_wildcard
+  = "*"
+
+webrtc_directive
+  = "webrtc"i required_ascii_whitespace value:("'allow'"i / "'block'"i) {
+    return {name: 'webrtc', values: [{kind: 'keyword', value:value.toLowerCase()}]}
+  }
+
+sandbox_directive
+  = "sandbox"i required_ascii_whitespace value:(token|0.., required_ascii_whitespace|) {
+    return {name: 'sandbox', values: [{kind: 'keyword', value}]};
+  }
+
+frame_ancestors_directive
+  = "frame-ancestors"i required_ascii_whitespace values:ancestor_source_list {
+    return {name: 'frame-ancestors', values }
+  }
+
+report_uri_directive
+  = "report-uri"i required_ascii_whitespace values:URI_reference_csp|1.., required_ascii_whitespace| {
+    return {name: 'report-uri', values: values.map(value => ({kind: 'host', value: value.toString()}))}
+  }
+
+report_to_directive
+  = "report-to"i required_ascii_whitespace value:token {
+    return {name: 'report-to', values: [{kind: 'token', value}] }
+  }
+
+source_list_directive
+  = "base-uri"i
+  / "child-src"i
+  / "connect-src"i
+  / "default-src"i
+  / "font-src"i
+  / "form-action"i
+  / "frame-src"i
+  / "img-src"i
+  / "manifest-src"i
+  / "media-src"i
+  / "object-src"i
+  / "script-src-attr"i
+  / "script-src"i
+  / "style-src-attr"i
+  / "style-src-elem"i
+  / "style-src"i
+  / "worker-src"i
+
+optional_ascii_whitespace
+  // = ("\t" / "\n" / "\x0c" / "\r" / " ")*
+  = [\f\t ]*
 
 obs_date
   = OBS @(rfc850_date / asctime_date)
@@ -1134,6 +1276,9 @@ IPv4address
 
 reg_name
   = parts:(unreserved / pct_encoded / sub_delims)* { return parts.join('') }
+
+reg_name_csp
+  = parts:(unreserved / pct_encoded / sub_delims_csp)* { return parts.join('') }
 
 day
   = num:$DIGIT|2| { return parseInt(num, 10) }
@@ -1167,8 +1312,14 @@ second
 URI
   = scheme ":" hier_part ("?" query)? ("#" fragment)?
 
+URI_csp
+  = scheme ":" hier_part_csp ("?" query_csp)? ("#" fragment_csp)?
+
 relative_ref
   = relative_part ("?" query)? ("#" fragment)?
+
+relative_ref_csp
+  = relative_part_csp ("?" query_csp)? ("#" fragment_csp)?
 
 // range-set = 1#range-spec
 range_set
@@ -1290,14 +1441,26 @@ irregular
 authority
   = (@userinfo "@")? uri_host (":" port)?
 
+authority_csp
+  = (@userinfo "@")? uri_host_csp (":" port)?
+
 path_abempty
   = ("/" segment)*
+
+path_abempty_csp
+  = ("/" segment_csp)*
 
 path_absolute
   = "/" @(segment_nz ("/" @segment)*)?
 
+path_absolute_csp
+  = "/" @(segment_nz_csp ("/" @segment_csp)*)?
+
 path_rootless
   = segment_nz ("/" segment)*
+
+path_rootless_csp
+  = segment_nz_csp ("/" segment_csp)*
 
 pchar
   = unreserved
@@ -1306,14 +1469,47 @@ pchar
   / ":"
   / "@"
 
+pchar_csp
+  = unreserved
+  / pct_encoded
+  / sub_delims_csp
+  / ":"
+  / "@"
+
 path_noscheme
   = segment_nz_nc ("/" segment)*
+
+path_noscheme_csp
+  = segment_nz_nc_csp ("/" segment_csp)*
 
 first_pos
   = num:$DIGIT+ { return parseInt(num, 10) }
 
 last_pos
   = num:$DIGIT+ { return parseInt(num, 10) }
+
+csp_directive_name
+  = $(ALPHA / DIGIT / "-")+
+
+required_ascii_whitespace
+  // Inclulding \r and \n has got to be a mistake, or there's no way
+  // to find the end of a CSP
+  // = ("\t" / "\n" / "\x0c" / "\r" / " ")+
+  = [\f\t ]+
+
+serialized_source_list
+  = "'none'"i { return [ {kind: 'keyword', value: "'none'"} ] }
+  / source_expression|1.., required_ascii_whitespace|
+
+ancestor_source_list
+  = "'none'"i { return [ {kind: 'keyword', value: "'none'"} ] }
+  / ancestor_source|1.., required_ascii_whitespace|
+
+csp_directive_value
+  = value:$(required_ascii_whitespace / ([\x21-\x2b] / [\x2d-\x3a] / [\x3c-\x7e]))* {
+    // Could be ''
+    return value || null;
+  }
 
 rfc850_date
   = dt:$(day_name_l "," SP date2 SP time_of_day SP GMT) {
@@ -1392,8 +1588,25 @@ sub_delims
   / ";"
   / "="
 
+sub_delims_csp
+  = "!"
+  / "$"
+  / "&"
+  / "'"
+  / "("
+  / ")"
+  / "*"
+  / "+"
+  / "="
+  // Except "," and ";"
+  // ","
+  // ";"
+
 fragment
   = $(pchar / "/" / "?")*
+
+fragment_csp
+  = $(pchar_csp / "/" / "?")*
 
 range_spec
   = int_range
@@ -1436,11 +1649,32 @@ userinfo
 segment
   = $pchar*
 
+segment_csp
+  = $pchar_csp*
+
 segment_nz
   = $pchar+
 
+segment_nz_csp
+  = $pchar_csp+
+
 segment_nz_nc
   = char:(unreserved / pct_encoded / sub_delims / "@")+ { return char.join('') }
+
+segment_nz_nc_csp
+  = char:(unreserved / pct_encoded / sub_delims_csp / "@")+ { return char.join('') }
+
+source_expression
+  = value:scheme_source { return { kind: 'scheme', value } }
+  / value:keyword_source { return { kind: 'keyword', value } }
+  / value:nonce_source { return { kind: 'nonce', value } }
+  / value:hash_source { return { kind: 'hash', value } }
+  / value:host_source { return { kind: 'host', value } }
+
+ancestor_source
+  = "'self'"i { return {kind: 'keyword', value: 'self'} }
+  / value:scheme_source { return { kind: 'scheme', value } }
+  / value:host_source { return { kind: 'host', value } }
 
 day_name_l
   = "Monday"
@@ -1516,6 +1750,28 @@ other_range // VCHAR excluding comma
     return {other};
   }
 
+scheme_source
+  = @$(scheme_part ":") &(required_ascii_whitespace / ";" / EOL)
+
+host_source
+  = $((scheme_part "://")? host_part (":" port_part)? path_part?)
+
+keyword_source
+  = "'self'"i
+  / "'unsafe-inline'"i
+  / "'unsafe-eval'"i
+  / "'strict-dynamic'"i
+  / "'unsafe-hashes'"i
+  / "'report-sample'"i
+  / "'unsafe-allow-redirects'"i
+  / "'wasm-unsafe-eval'"i
+
+nonce_source
+  = $("'nonce-"i base64_value "'")
+
+hash_source
+  = $("'" hash_algorithm "-" base64_value "'")
+
 word
   = atom
   / email_quoted_string
@@ -1550,6 +1806,28 @@ atom
 
 suffix_length
   = num:$DIGIT+ { return parseInt(num, 10); }
+
+scheme_part
+  = scheme
+
+host_part
+  = "*."? (host_char+)|1.., "."| "."?
+  / "*"
+
+port_part
+  = DIGIT+
+  / "*"
+
+path_part
+  = path_absolute_csp
+
+base64_value
+  = $((ALPHA / DIGIT / "+" / "/" / "-" / "_")+ ("=")|..2|)
+
+hash_algorithm
+  = "sha256"i
+  / "sha384"i
+  / "sha512"i
 
 WSP
   = SP
@@ -1604,6 +1882,11 @@ email_quoted_pair
 
 obs_dtext
   = OBS @(obs_NO_WS_CTL / email_quoted_pair)
+
+host_char
+  = ALPHA
+  / DIGIT
+  / "-"
 
 CR
   = "\r"

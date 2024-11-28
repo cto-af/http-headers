@@ -9,7 +9,7 @@ const options = {
 };
 const invalid = '\r\n';
 
-test('Headers', async() => {
+test('Headers testPeggy', async() => {
   let startRule = '';
   const results = await testPeggy(PARSER, [
     // #region Accept
@@ -944,6 +944,118 @@ test('Headers', async() => {
       startRule,
       options,
       invalid,
+    },
+
+    // #region Content_Security_Policy
+    {
+      startRule: (startRule = 'Content_Security_Policy'),
+      // From bing.com
+      validInput: 'script-src https: \'strict-dynamic\' \'report-sample\' \'wasm-unsafe-eval\' \'nonce-4YYA6/wuMp3dRsmB0reDgiSUDofJrQu/FKWOPTvFspQ=\'; base-uri \'self\';',
+      validResult: {
+        kind: 'content-security-policy',
+        value: "script-src https: 'strict-dynamic' 'report-sample' 'wasm-unsafe-eval' 'nonce-4YYA6/wuMp3dRsmB0reDgiSUDofJrQu/FKWOPTvFspQ='; base-uri 'self';",
+        directives: [
+          {
+            name: 'script-src',
+            values: [
+              {kind: 'scheme', value: 'https:'},
+              {kind: 'keyword', value: "'strict-dynamic'"},
+              {kind: 'keyword', value: "'report-sample'"},
+              {kind: 'keyword', value: "'wasm-unsafe-eval'"},
+              {
+                kind: 'nonce',
+                value: "'nonce-4YYA6/wuMp3dRsmB0reDgiSUDofJrQu/FKWOPTvFspQ='",
+              },
+            ],
+          },
+          {name: 'base-uri', values: [{kind: 'keyword', value: "'self'"}]},
+        ],
+      },
+      invalid,
+    },
+    {
+      startRule,
+      invalidInput: 'foo, bar\x00',
+      options: {
+        peg$silentFails: -1,
+      },
+    },
+    {
+      invalidInput: '//',
+      options: {
+        peg$startRuleFunction: 'peg$parsehier_part_csp',
+        peg$failAfter: {
+          peg$parseauthority_csp: 0,
+        },
+      },
+    },
+    {
+      invalidInput: '//foo',
+      options: {
+        peg$startRuleFunction: 'peg$parserelative_part_csp',
+        peg$failAfter: {
+          peg$parseauthority_csp: 0,
+        },
+      },
+    },
+    {
+      invalidInput: 'report-uri // foo',
+      options: {
+        peg$startRuleFunction: 'peg$parsereport_uri_directive',
+        peg$failAfter: {
+          peg$parseURI_reference_csp: 0,
+        },
+      },
+    },
+    {
+      invalidInput: 'report-uri // foo',
+      options: {
+        peg$startRuleFunction: 'peg$parsereport_uri_directive',
+        peg$failAfter: {
+          peg$parseURI_reference_csp: 1,
+        },
+      },
+    },
+    {
+      invalidInput: '',
+      options: {
+        peg$startRuleFunction: 'peg$parseauthority_csp',
+        peg$failAfter: {
+          peg$parseuri_host_csp: 0,
+        },
+      },
+    },
+    {
+      invalidInput: "'nonce-foo\x00",
+      options: {
+        peg$startRuleFunction: 'peg$parsenonce_source',
+        peg$failAfter: {
+          peg$parsebase64_value: 0,
+        },
+      },
+    },
+    {
+      invalidInput: "'sha256-foo\x00",
+      options: {
+        peg$startRuleFunction: 'peg$parsehash_source',
+        peg$failAfter: {
+          peg$parsebase64_value: 0,
+        },
+      },
+    },
+    {
+      invalidInput: 'foo:\x00',
+      options: {
+        peg$startRuleFunction: 'peg$parsescheme_source',
+        peg$silentFails: -1,
+      },
+    },
+    {
+      validInput: '',
+      validResult: null,
+      options: {
+        peg$startRuleFunction: 'peg$parsehier_part_csp',
+      },
     },
 
     // #region Content_Type

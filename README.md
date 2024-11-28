@@ -75,6 +75,7 @@ Here are the supported values for `startRule`:
   - 'Content_Length'
   - 'Content_Location'
   - 'Content_Range'
+  - 'Content_Security_Policy'
   - 'Content_Type'
   - 'Date'
   - 'ETag'
