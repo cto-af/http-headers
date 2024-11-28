@@ -6,6 +6,7 @@ Headers_Loose
 
 Header
   = "Accept"i COWS Accept
+  / "Accept-CH"i COWS Accept_CH
   / "Accept-Charset"i COWS Accept_Charset
   / "Accept-Encoding"i COWS Accept_Encoding
   / "Accept-Language"i COWS Accept_Language
@@ -72,6 +73,9 @@ COWS
 
 Accept
   = ((media_range weight?) (OWS "," OWS (media_range weight?))*)?
+
+Accept_CH
+  = sf_list
 
 Accept_Charset
   = (((token / "*") weight?) (OWS "," OWS ((token / "*") weight?))*)?
@@ -241,6 +245,9 @@ media_range
 
 weight
   = OWS ";" OWS "q="i qvalue
+
+sf_list
+  = list_member (OWS "," OWS list_member)*
 
 token
   = tchar+
@@ -430,6 +437,10 @@ parameters
 qvalue
   = ("0" ("." DIGIT|..3|)?)
   / ("1" ("." "0"|..3|)?)
+
+list_member
+  = sf_item
+  / sf_inner_list
 
 tchar
   = "!"
@@ -669,6 +680,12 @@ field_vchar
 parameter
   = parameter_name "=" parameter_value
 
+sf_item
+  = sf_bare_item sf_parameters
+
+sf_inner_list
+  = "(" SP* (sf_item (SP+ sf_item)* SP*)? ")" sf_parameters
+
 alt_authority
   = quoted_string
 
@@ -895,6 +912,17 @@ parameter_name
 parameter_value
   = (token / quoted_string)
 
+sf_bare_item
+  = sf_integer
+  / sf_decimal
+  / sf_string
+  / sf_token
+  / sf_binary
+  / sf_boolean
+
+sf_parameters
+  = (";" SP* sf_parameter)*
+
 extlang
   = ALPHA|3| ("-" ALPHA|3|)|..2|
 
@@ -995,6 +1023,27 @@ suffix_range
 other_range
   = ([\x21-\x2b] / [\x2d-\x7e])+
 
+sf_integer
+  = "-"? DIGIT|1..15|
+
+sf_decimal
+  = "-"? DIGIT|1..12| "." DIGIT|1..3|
+
+sf_string
+  = DQUOTE sf_chr* DQUOTE
+
+sf_token
+  = (ALPHA / "*") (tchar / ":" / "/")*
+
+sf_binary
+  = ":" (sf_base64)* ":"
+
+sf_boolean
+  = "?" ("0" / "1")
+
+sf_parameter
+  = sf_param_key ("=" sf_param_value)?
+
 scheme_source
   = scheme_part ":"
 
@@ -1051,6 +1100,23 @@ atom
 
 suffix_length
   = DIGIT+
+
+sf_chr
+  = sf_unescaped
+  / sf_escaped
+
+sf_base64
+  = ALPHA
+  / DIGIT
+  / "+"
+  / "/"
+  / "="
+
+sf_param_key
+  = sf_key
+
+sf_param_value
+  = sf_bare_item
 
 scheme_part
   = scheme
@@ -1126,6 +1192,17 @@ obs_dtext
   = obs_NO_WS_CTL
   / email_quoted_pair
 
+sf_unescaped
+  = [\x20-\x21]
+  / [\x23-\x5b]
+  / [\x5d-\x7e]
+
+sf_escaped
+  = "\\" (DQUOTE / "\\")
+
+sf_key
+  = (lcalpha / "*") (lcalpha / DIGIT / "_" / "-" / "." / "*")*
+
 host_char
   = ALPHA
   / DIGIT
@@ -1149,6 +1226,9 @@ obs_NO_WS_CTL
   / "\x0c"
   / [\x0e-\x1f]
   / "\x7f"
+
+lcalpha
+  = [\x61-\x7a]
 
 obs_ctext
   = obs_NO_WS_CTL

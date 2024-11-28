@@ -2538,6 +2538,13 @@ test('Headers testPeggy', async() => {
       },
       invalid: '',
     },
+    {
+      invalidInput: 'f;',
+      options: {
+        peg$silentFails: -1,
+        peg$startRuleFunction: 'peg$parsesf_token',
+      },
+    },
   ]);
   delete results.grammarPath;
   delete results.modifiedPath;
