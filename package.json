@@ -32,7 +32,7 @@
     "lint": "eslint .",
     "pretest": "npm run parser",
     "test": "c8 node --test",
-    "abnf": "abnf_gen -c src/original.abnf src/rfc9110.abnf src/rfc9111.abnf src/rfc3986.abnf src/rfc4647.abnf src/rfc5646.abnf src/rfc5322.abnf src/rfc6797.abnf src/rfc7639.abnf src/rfc7838.abnf src/rfc6265.abnf -s Headers -s Headers-Loose",
+    "abnf": "abnf_gen -c src/original.abnf src/rfc9110.abnf src/rfc9111.abnf src/rfc3986.abnf src/rfc4647.abnf src/rfc5646.abnf src/rfc5322.abnf src/rfc6797.abnf src/rfc7639.abnf src/rfc7838.abnf src/rfc6265.abnf src/CSP.abnf -s Headers -s Headers-Loose",
     "parser": "peggy -c peggy.config.js && mkdir -p lib && cat src/types.d.ts src/index.d.ts > lib/index.d.ts && cp src/index.js lib",
     "build": "npm run test && npm run lint && npm pack --dry-run"
   },
@@ -41,11 +41,11 @@
     "@peggyjs/coverage": "1.3.2",
     "abnf": "4.2.0",
     "c8": "10.1.2",
-    "eslint-plugin-jsdoc": "50.5.0",
+    "eslint-plugin-jsdoc": "50.6.0",
     "eslint-plugin-markdown": "5.1.0",
     "peggy": "4.2.0",
-    "typescript": "5.6.3",
-    "typescript-eslint": "8.15.0"
+    "typescript": "5.7.2",
+    "typescript-eslint": "8.16.0"
   },
   "packageManager": "pnpm@9.14.2",
   "pnpm": {
@@ -54,6 +54,6 @@
     }
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=18.8"
   }
 }

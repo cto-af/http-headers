@@ -129,6 +129,19 @@ export interface Content_Range extends Header<'content-range'> {
   unsatisfied?: boolean; // True if no first/last
 }
 
+export interface CSPValue {
+  kind: 'scheme' | 'keyword' | 'nonce' | 'hash' | 'host' | 'token' | 'unknown';
+  value: string;
+}
+export interface CSPDirective {
+  name: string;
+  values: CSPValue[];
+  unknown?: true;
+}
+export interface Content_Security_Policy extends Header<'content-security-policy'> {
+  directives: CSPDirective[];
+}
+
 export interface Content_Type extends Header<'content-type'> {
   type: string;
   subtype: string;
@@ -251,7 +264,7 @@ export interface Server extends Header<'server'> {
 
 export type CookieAttribute = [
   name: string,
-  value: string | number | Date | null
+  value: string | number | Date | null,
 ];
 export interface Set_Cookie extends Header<'set-cookie'> {
   cookieName: string;
@@ -330,6 +343,7 @@ export type AnyHeader
   | Content_Length
   | Content_Location
   | Content_Range
+  | Content_Security_Policy
   | Content_Type
   | Date
   | ETag

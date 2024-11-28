@@ -11,12 +11,15 @@ function known(input, startRule, obsolete = true) {
   try {
     obj = parse(input, {startRule, grammarSource: source, obsolete});
   } catch (e) {
-    e.message = e.format([{source, text: input}]);
+    if (e.format) {
+      e.message = e.format([{source, text: input}]);
+    }
     throw e;
   }
   assert(obj, input);
   assert.equal(typeof obj, 'object', input);
   assert.notEqual(obj.unknown, true, input);
+  return obj;
 }
 
 function unknown(input, startRule, obsolete = true) {
@@ -25,17 +28,37 @@ function unknown(input, startRule, obsolete = true) {
   try {
     obj = parse(input, {startRule, grammarSource: source, obsolete});
   } catch (e) {
-    e.message = e.format([{source, text: input}]);
+    if (e.format) {
+      e.message = e.format([{source, text: input}]);
+    }
     throw e;
   }
   assert(obj, input);
   assert.equal(typeof obj, 'object', input);
-  assert.equal(obj.unknown, true, inspect(obj), input);
+  assert.equal(obj.unknown, true, inspect(obj));
+  return obj;
 }
 
+// For debugging
+// eslint-disable-next-line no-unused-vars
+function out(s) {
+  // eslint-disable-next-line no-console
+  console.log(inspect(s, {
+    colors: process.stdout.isTTY,
+    depth: Infinity,
+    maxArrayLength: Infinity,
+    maxStringLength: Infinity,
+  }));
+}
 function fails(input, startRule, obsolete = true) {
+  count++;
   assert.throws(() => parse(input, {startRule, obsolete}), input);
 }
+
+test.after(() => {
+  // eslint-disable-next-line no-console
+  console.log(`Headers: ${count} tests`);
+});
 
 test('Header: known', () => {
   const startRule = 'Header';
@@ -75,6 +98,7 @@ test('Header: known', () => {
   unknown('Content-Location: :', startRule);
   known('Content-Range: bytes */0', startRule);
   unknown('Content-Range: bytes */0\x80', startRule);
+  known('Content-Security-Policy: foo', startRule);
   known('Content-Type: foo/bar', startRule);
   fails('Content-Type: foo/bar\x80', startRule);
   known('Date: Sun, 06 Nov 1994 08:49:37 GMT', startRule);
@@ -155,6 +179,7 @@ test('Header: unknown', () => {
   unknown('Content-Range: ,', startRule);
   unknown('Content-Range: bytes,', startRule);
   unknown('Content-Range: bytes ,', startRule);
+  unknown('Content-Security-Policy: \x80', startRule);
   unknown('Content-Type: ,', startRule);
   unknown('Date: ,', startRule);
   unknown('ETag: ,', startRule);
@@ -496,6 +521,101 @@ test('Content_Range', () => {
   fails('bytes *', startRule);
   fails('bytes */', startRule);
   fails('bytes */a', startRule);
+});
+
+test('Content_Security_Policy', () => {
+  const startRule = 'Content_Security_Policy';
+  known('foo   ,   \t bar', startRule);
+  known("webrtc 'block'", startRule);
+  known("webrtc 'allow'", startRule);
+  known("webrtc 'foo'", startRule);
+  fails('webrtc\x00', startRule);
+  known('sandbox', startRule);
+  known('sandbox;', startRule);
+  known('sandbox ', startRule);
+  known('sandbox allow-downloads', startRule);
+  known('sandbox allow-forms allow-modals', startRule);
+  fails('sandbox allow-forms \x00', startRule);
+  fails('sandbox "foo"');
+  known("frame-ancestors 'none';", startRule);
+  known("frame-ancestors 'self';", startRule);
+  known('frame-ancestors foo: http://example.com;', startRule);
+  known('frame-ancestors', startRule);
+  known('frame-ancestors ', startRule);
+  fails('frame-ancestors \x00', startRule);
+  fails('frame-ancestors foo: ', startRule);
+  known('report-uri   \t\fhttp://example.com https://example.com#bar;', startRule);
+  known('report-uri http://foo@192.168.1.1/foo/baz/bo!o?bar=foo&baz=1 http://[::1]:443/ / /boo /boo/bar /boo/bar/baz/boop boo boo/bar boo/bar/baz f://! xmpp:example-node@example.com/some-resource/deep/there boop!%3b %3bblah @at !at;', startRule);
+  known('report-uri mailto:foo@bar', startRule);
+  known('report-uri', startRule);
+  known('report-uri //???#?', startRule);
+  known('report-uri /#', startRule);
+  known('report-uri /#???', startRule);
+  fails('report-uri /?\x00', startRule);
+  fails('report-uri \x00', startRule);
+  fails('report-uri //foo bar\x00', startRule);
+  known('report-to foo', startRule);
+  known('report-to', startRule);
+  known('report-to ', startRule);
+  known("base-uri 'none'", startRule);
+  known('base-uri /', startRule);
+  known('base-uri / ', startRule);
+  fails('base-uri foo: / ', startRule);
+  known('base-uri', startRule);
+  known('child-src /', startRule);
+  known('connect-src /', startRule);
+  known('default-src /', startRule);
+  known('font-src /', startRule);
+  known('form-action /', startRule);
+  known('form-src /', startRule);
+  known("frame-src 'nonce-Zm9vOmJhcg=='", startRule);
+  known("frame-src 'nonce-Zm9vOmJhcg==", startRule);
+  known("frame-src 'sha256-Zm9vOmJhcg=='", startRule);
+  known("frame-src 'sha384-Zm9vOmJhcg==", startRule);
+  known("frame-src 'sha512", startRule);
+  fails("frame-src 'sha256-\x00", startRule);
+  fails("frame-src 'sha256-Z\x00", startRule);
+  known('img-src *.example.com.', startRule);
+  known('img-src *.example.com:400/foo/bar', startRule);
+  fails('img-src *.example.\x00', startRule);
+  fails('img-src *.example.com:400/\x00', startRule);
+  fails('img-src *.example.com:400/foo\x00', startRule);
+  fails('img-src *.example.com:400/foo/bar/\x00', startRule);
+  fails('img-src *.example.com:400/foo/bar\x00', startRule);
+  fails('img-src *.\x00', startRule);
+  fails('img-src *.ex\x00', startRule);
+  fails('img-src ex\x00', startRule);
+  known("img-src 'wasm-unsafe-eval'", startRule);
+  known("manifest-src 'unsafe-allow-redirects'", startRule);
+  known("media-src 'report-sample'", startRule);
+  known('object-src http://foo:*/', startRule);
+  known('script-src-attr http://foo:444/', startRule);
+  fails('script-src-attr http://foo:a/', startRule);
+  known('script-src foo:;', startRule);
+  known('script-src foo-.bar: foo;', startRule);
+  known("style-src-attr 'unsafe-inline'", startRule);
+  known("style-src-elem 'unsafe-eval'", startRule);
+  known("style-src 'strict-dynamic'", startRule);
+  known("worker-src 'unsafe-hashes'", startRule);
+  known('upgrade-insecure-requests', startRule);
+  known("require-trusted-types-for 'script'", startRule);
+  known("require-trusted-types-for 'script' 'script'", startRule);
+  fails("require-trusted-types-for 'script' 'script' ", startRule);
+  fails("require-trusted-types-for 'script' ", startRule);
+  known("require-trusted-types-for 'foo'", startRule);
+  known('require-trusted-types-for', startRule);
+  fails('require-trusted-types-for\x00', startRule);
+  known('require-trusted-types-for ', startRule);
+  known("trusted-types foo * 'none'", startRule);
+  known('trusted-types', startRule);
+  known('trusted-types ', startRule);
+  fails('trusted-types \x00', startRule);
+  fails("trusted-types 'allow-duplicates' \x00", startRule);
+  known('foo ', startRule);
+  known('foo, bar', startRule);
+  fails(',', startRule);
+  fails(';;', startRule);
+  fails('foo, bar\x00');
 });
 
 test('Content_Type', () => {

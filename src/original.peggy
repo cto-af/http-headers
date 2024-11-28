@@ -23,6 +23,7 @@ Header
   / "Content-Length"i COWS Content_Length
   / "Content-Location"i COWS Content_Location
   / "Content-Range"i COWS Content_Range
+  / "Content-Security-Policy"i COWS Content_Security_Policy
   / "Content-Type"i COWS Content_Type
   / "Date"i COWS Date
   / "ETag"i COWS ETag
@@ -124,6 +125,9 @@ Content_Location
 
 Content_Range
   = range_unit SP (range_resp / unsatisfied_range)
+
+Content_Security_Policy
+  = @count:(some:(serialized_policy?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}) &{ return (count.length >= 1) }
 
 Content_Type
   = media_type
@@ -308,6 +312,9 @@ range_resp
 
 unsatisfied_range
   = "*/" complete_length
+
+serialized_policy
+  = serialized_directive (optional_ascii_whitespace ";" (optional_ascii_whitespace serialized_directive)?)*
 
 media_type
   = type "/" subtype parameters
@@ -502,6 +509,34 @@ incl_range
 
 complete_length
   = DIGIT+
+
+serialized_directive
+  = "child-src"i required_ascii_whitespace serialized_source_list
+  / "connect-src"i required_ascii_whitespace serialized_source_list
+  / "default-src"i required_ascii_whitespace serialized_source_list
+  / "font-src"i required_ascii_whitespace serialized_source_list
+  / "frame-src"i required_ascii_whitespace serialized_source_list
+  / "img-src"i required_ascii_whitespace serialized_source_list
+  / "manifest-src"i required_ascii_whitespace serialized_source_list
+  / "media-src"i required_ascii_whitespace serialized_source_list
+  / "object-src"i required_ascii_whitespace serialized_source_list
+  / "script-src"i required_ascii_whitespace serialized_source_list
+  / "script-src-attr"i required_ascii_whitespace serialized_source_list
+  / "style-src"i required_ascii_whitespace serialized_source_list
+  / "style-src-elem"i required_ascii_whitespace serialized_source_list
+  / "style-src-attr"i required_ascii_whitespace serialized_source_list
+  / "webrtc"i required_ascii_whitespace ("'allow'"i / "'block'"i)
+  / "worker-src"i required_ascii_whitespace serialized_source_list
+  / "base-uri"i required_ascii_whitespace serialized_source_list
+  / "sandbox"i required_ascii_whitespace ("" / token (required_ascii_whitespace token)*)
+  / "form-action"i required_ascii_whitespace serialized_source_list
+  / "frame-ancestors"i required_ascii_whitespace ancestor_source_list
+  / "report-uri"i required_ascii_whitespace URI_reference (required_ascii_whitespace URI_reference)*
+  / "report-to"i required_ascii_whitespace token
+  / csp_directive_name (required_ascii_whitespace csp_directive_value)?
+
+optional_ascii_whitespace
+  = ("\t" / "\n" / "\x0c" / "\r" / " ")*
 
 obs_date
   = rfc850_date
@@ -728,6 +763,23 @@ first_pos
 last_pos
   = DIGIT+
 
+required_ascii_whitespace
+  = ("\t" / "\n" / "\x0c" / "\r" / " ")+
+
+serialized_source_list
+  = (source_expression (required_ascii_whitespace source_expression)*)
+  / "'none'"i
+
+ancestor_source_list
+  = (ancestor_source (required_ascii_whitespace ancestor_source)*)
+  / "'none'"i
+
+csp_directive_name
+  = (ALPHA / DIGIT / "-")+
+
+csp_directive_value
+  = (required_ascii_whitespace / ([\x21-\x2b] / [\x2d-\x3a] / [\x3c-\x7e]))*
+
 rfc850_date
   = day_name_l "," SP date2 SP time_of_day SP GMT
 
@@ -865,6 +917,18 @@ segment_nz
 segment_nz_nc
   = (unreserved / pct_encoded / sub_delims / "@")+
 
+source_expression
+  = scheme_source
+  / host_source
+  / keyword_source
+  / nonce_source
+  / hash_source
+
+ancestor_source
+  = scheme_source
+  / host_source
+  / "'self'"i
+
 day_name_l
   = "Monday"
   / "Tuesday"
@@ -931,6 +995,28 @@ suffix_range
 other_range
   = ([\x21-\x2b] / [\x2d-\x7e])+
 
+scheme_source
+  = scheme_part ":"
+
+host_source
+  = (scheme_part "://")? host_part (":" port_part)? path_part?
+
+keyword_source
+  = "'self'"i
+  / "'unsafe-inline'"i
+  / "'unsafe-eval'"i
+  / "'strict-dynamic'"i
+  / "'unsafe-hashes'"i
+  / "'report-sample'"i
+  / "'unsafe-allow-redirects'"i
+  / "'wasm-unsafe-eval'"i
+
+nonce_source
+  = "'nonce-"i base64_value "'"
+
+hash_source
+  = "'" hash_algorithm "-" base64_value "'"
+
 word
   = atom
   / email_quoted_string
@@ -965,6 +1051,28 @@ atom
 
 suffix_length
   = DIGIT+
+
+scheme_part
+  = scheme
+
+host_part
+  = "*"
+  / "*."? host_char+ ("." host_char+)* "."?
+
+port_part
+  = DIGIT+
+  / "*"
+
+path_part
+  = path_absolute
+
+base64_value
+  = (ALPHA / DIGIT / "+" / "/" / "-" / "_")+ ("=")|..2|
+
+hash_algorithm
+  = "sha256"i
+  / "sha384"i
+  / "sha512"i
 
 WSP
   = SP
@@ -1017,6 +1125,11 @@ email_quoted_pair
 obs_dtext
   = obs_NO_WS_CTL
   / email_quoted_pair
+
+host_char
+  = ALPHA
+  / DIGIT
+  / "-"
 
 email_ctext
   = [\x21-\x27]
