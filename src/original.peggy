@@ -41,6 +41,7 @@ Header
   / "Last-Modified"i COWS Last_Modified
   / "Location"i COWS Location
   / "Max-Forwards"i COWS Max_Forwards
+  / "NEL"i COWS NEL
   / "Proxy-Authenticate"i COWS Proxy_Authenticate
   / "Proxy-Authentication-Info"i COWS Proxy_Authentication_Info
   / "Proxy-Authorization"i COWS Proxy_Authorization
@@ -183,6 +184,9 @@ Location
 
 Max_Forwards
   = DIGIT+
+
+NEL
+  = json_field_value
 
 Proxy_Authenticate
   = (challenge (OWS "," OWS challenge)*)?
@@ -369,6 +373,9 @@ GMT
 URI_reference
   = URI
   / relative_ref
+
+json_field_value
+  = some:(json_field_item?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}
 
 challenge
   = auth_scheme (SP+ (token68 / (auth_param (OWS "," OWS auth_param)*)?))?
@@ -608,6 +615,9 @@ URI
 
 relative_ref
   = relative_part ("?" query)? ("#" fragment)?
+
+json_field_item
+  = VCHAR+
 
 range_set
   = range_spec (OWS "," OWS range_spec)*
@@ -873,6 +883,9 @@ sub_delims
 fragment
   = (pchar / "/" / "?")*
 
+VCHAR
+  = [\x21-\x7e]
+
 range_spec
   = int_range
   / suffix_range
@@ -880,9 +893,6 @@ range_spec
 
 obs_text
   = [\x80-\xff]
-
-VCHAR
-  = [\x21-\x7e]
 
 cookie_octet
   = "!"

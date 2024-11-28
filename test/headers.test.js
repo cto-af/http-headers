@@ -129,6 +129,7 @@ test('Header: known', () => {
   known('Location: ', startRule); // Can't fail
   known('Max-Forwards: 0', startRule);
   unknown('Max-Forwards: 0\x80', startRule);
+  known('NEL: ""', startRule);
   known('Proxy-Authenticate: ,', startRule);
   known('Proxy-Authentication-Info: ,', startRule);
   known('Proxy-Authorization: basic Zm9vOmJhcg==', startRule);
@@ -203,6 +204,7 @@ test('Header: unknown', () => {
   unknown('Last-Modified: ,', startRule);
   unknown('Location: {', startRule);
   unknown('Max-Forwards: ,', startRule);
+  unknown('NEL: "', startRule);
   unknown('Proxy-Authenticate: ;', startRule);
   unknown('Proxy-Authentication-Info: ;', startRule);
   unknown('Proxy-Authorization: ,', startRule);
@@ -357,6 +359,7 @@ test('Header edge cases', () => {
   fails('Content-Length', startRule);
   fails('Content-Location', startRule);
   fails('Content-Range', startRule);
+  fails('Content-Security-Policy', startRule);
   fails('Content-Type', startRule);
   fails('Date', startRule);
   fails('ETag', startRule);
@@ -372,6 +375,7 @@ test('Header edge cases', () => {
   fails('Last-Modified', startRule);
   fails('Location', startRule);
   fails('Max-Forwards', startRule);
+  fails('NEL', startRule);
   fails('Proxy-Authenticate', startRule);
   fails('Proxy-Authentication-Info', startRule);
   fails('Proxy-Authorization', startRule);
@@ -786,6 +790,11 @@ test('Location', () => {
   known('http://foo/?bar', startRule);
   known('/#bar', startRule);
   known('/?bar', startRule);
+});
+
+test('NEL', () => {
+  const startRule = 'NEL';
+  fails('\x00', startRule);
 });
 
 test('Range', () => {

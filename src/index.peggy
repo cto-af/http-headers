@@ -5,58 +5,62 @@ Headers_Loose
   = @(@Header CR? LF)+ CR? LF
 
 Header
-  = name:"Accept"i COWS h:Accept { h.name = name; return h }
-  / name:"Accept-CH"i COWS h:Accept_CH { h.name = name; return h }
-  / name:"Age"i COWS h:Age { h.name = name; return h }
-  / name:"Accept-Charset"i COWS h:Accept_Charset { h.name = name; return h }
-  / name:"Accept-Encoding"i COWS h:Accept_Encoding { h.name = name; return h }
-  / name:"Accept-Language"i COWS h:Accept_Language { h.name = name; return h }
-  / name:"Accept-Ranges"i COWS h:Accept_Ranges { h.name = name; return h }
-  / name:"Allow"i COWS h:Allow { h.name = name; return h }
-  / name:"ALPN"i COWS h:ALPN { h.name = name; return h }
-  / name:"Alt-Svc"i COWS h:Alt_Svc { h.name = name; return h }
-  / name:"Authentication-Info"i COWS h:Authentication_Info { h.name = name; return h }
-  / name:"Authorization"i COWS h:Authorization { h.name = name; return h }
-  / name:"Cache-Control"i COWS h:Cache_Control { h.name = name; return h }
-  / name:"Connection"i COWS h:Connection { h.name = name; return h }
-  / name:"Content-Encoding"i COWS h:Content_Encoding { h.name = name; return h }
-  / name:"Content-Language"i COWS h:Content_Language { h.name = name; return h }
-  / name:"Content-Length"i COWS h:Content_Length { h.name = name; return h }
-  / name:"Content-Location"i COWS h:Content_Location { h.name = name; return h }
-  / name:"Content-Range"i COWS h:Content_Range { h.name = name; return h }
-  / name:"Content-Security-Policy"i COWS h:Content_Security_Policy { h.name = name; return h }
-  / name:"Content-Type"i COWS h:Content_Type { h.name = name; return h }
-  / name:"Date"i COWS h:Date { h.name = name; return h }
-  / name:"ETag"i COWS h:ETag { h.name = name; return h }
-  / name:"Expect"i COWS h:Expect { h.name = name; return h }
-  / name:"Expires"i COWS h:Expires { h.name = name; return h }
-  / name:"From"i COWS h:From { h.name = name; return h }
-  / name:"Host"i COWS h:Host { h.name = name; return h }
-  / name:"If-Match"i COWS h:If_Match { h.name = name; return h }
-  / name:"If-Modified-Since"i COWS h:If_Modified_Since { h.name = name; return h }
-  / name:"If-None-Match"i COWS h:If_None_Match { h.name = name; return h }
-  / name:"If-Range"i COWS h:If_Range { h.name = name; return h }
-  / name:"If-Unmodified-Since"i COWS h:If_Unmodified_Since { h.name = name; return h }
-  / name:"Last-Modified"i COWS h:Last_Modified { h.name = name; return h }
-  / name:"Location"i COWS h:Location { h.name = name; return h }
-  / name:"Max-Forwards"i COWS h:Max_Forwards { h.name = name; return h }
-  / name:"Proxy-Authenticate"i COWS h:Proxy_Authenticate { h.name = name; return h }
-  / name:"Proxy-Authentication-Info"i COWS h:Proxy_Authentication_Info { h.name = name; return h }
-  / name:"Proxy-Authorization"i COWS h:Proxy_Authorization { h.name = name; return h }
-  / name:"Range"i COWS h:Range { h.name = name; return h }
-  / name:"Referer"i COWS h:Referer { h.name = name; return h }
-  / name:"Retry-After"i COWS h:Retry_After { h.name = name; return h }
-  / name:"Server"i COWS h:Server { h.name = name; return h }
-  / name:"TE"i COWS h:TE { h.name = name; return h }
-  / name:"Set-Cookie"i COWS h:Set_Cookie { h.name = name; return h }
-  / name:"Strict-Transport-Security"i COWS h:Strict_Transport_Security { h.name = name; return h }
-  / name:"Trailer"i COWS h:Trailer { h.name = name; return h }
-  / name:"Upgrade"i COWS h:Upgrade { h.name = name; return h }
-  / name:"User-Agent"i COWS h:User_Agent { h.name = name; return h }
-  / name:"Vary"i COWS h:Vary { h.name = name; return h }
-  / name:"Via"i COWS h:Via { h.name = name; return h }
-  / name:"WWW-Authenticate"i COWS h:WWW_Authenticate { h.name = name; return h }
+  = kn:Known_Header { kn[1].name = kn[0]; return kn[1] }
   / Unknown_Header
+
+Known_Header
+  = @"Accept"i COWS @Accept
+  / @"Accept-CH"i COWS @Accept_CH
+  / @"Age"i COWS @Age
+  / @"Accept-Charset"i COWS @Accept_Charset
+  / @"Accept-Encoding"i COWS @Accept_Encoding
+  / @"Accept-Language"i COWS @Accept_Language
+  / @"Accept-Ranges"i COWS @Accept_Ranges
+  / @"Allow"i COWS @Allow
+  / @"ALPN"i COWS @ALPN
+  / @"Alt-Svc"i COWS @Alt_Svc
+  / @"Authentication-Info"i COWS @Authentication_Info
+  / @"Authorization"i COWS @Authorization
+  / @"Cache-Control"i COWS @Cache_Control
+  / @"Connection"i COWS @Connection
+  / @"Content-Encoding"i COWS @Content_Encoding
+  / @"Content-Language"i COWS @Content_Language
+  / @"Content-Length"i COWS @Content_Length
+  / @"Content-Location"i COWS @Content_Location
+  / @"Content-Range"i COWS @Content_Range
+  / @"Content-Security-Policy"i COWS @Content_Security_Policy
+  / @"Content-Type"i COWS @Content_Type
+  / @"Date"i COWS @Date
+  / @"ETag"i COWS @ETag
+  / @"Expect"i COWS @Expect
+  / @"Expires"i COWS @Expires
+  / @"From"i COWS @From
+  / @"Host"i COWS @Host
+  / @"If-Match"i COWS @If_Match
+  / @"If-Modified-Since"i COWS @If_Modified_Since
+  / @"If-None-Match"i COWS @If_None_Match
+  / @"If-Range"i COWS @If_Range
+  / @"If-Unmodified-Since"i COWS @If_Unmodified_Since
+  / @"Last-Modified"i COWS @Last_Modified
+  / @"Location"i COWS @Location
+  / @"Max-Forwards"i COWS @Max_Forwards
+  / @"NEL"i COWS @NEL
+  / @"Proxy-Authentication-Info"i COWS @Proxy_Authentication_Info
+  / @"Proxy-Authenticate"i COWS @Proxy_Authenticate
+  / @"Proxy-Authorization"i COWS @Proxy_Authorization
+  / @"Range"i COWS @Range
+  / @"Referer"i COWS @Referer
+  / @"Retry-After"i COWS @Retry_After
+  / @"Server"i COWS @Server
+  / @"TE"i COWS @TE
+  / @"Set-Cookie"i COWS @Set_Cookie
+  / @"Strict-Transport-Security"i COWS @Strict_Transport_Security
+  / @"Trailer"i COWS @Trailer
+  / @"Upgrade"i COWS @Upgrade
+  / @"User-Agent"i COWS @User_Agent
+  / @"Vary"i COWS @Vary
+  / @"Via"i COWS @Via
+  / @"WWW-Authenticate"i COWS @WWW_Authenticate
 
 Unknown_Header
   = name:field_name COWS value:field_content &EOL {
@@ -459,6 +463,16 @@ Max_Forwards
       value: text(),
       max: parseInt(num, 10)
     }
+  }
+
+// See: https://www.w3.org/TR/network-error-logging/
+NEL
+  = json:JSON &EOL {
+    return {
+      kind: 'nel',
+      value: text(),
+      json,
+    };
   }
 
 // Proxy-Authenticate = #challenge
@@ -957,6 +971,19 @@ URI_reference_csp
   // second is the loose WHATWG style.
   = u:$URI_csp { return new URL(u) }
   / $relative_ref_csp
+
+JSON
+  = json:(txt:$(VCHAR / SP)* {return {txt}}) &{
+    // Hack to make sure we only JSON_parse once.
+    try {
+      json.parsed = JSON.parse(`[${json.txt}]`);
+    } catch (_ignored) {
+      return false
+    }
+    return true
+  } {
+    return json.parsed
+  }
 
 challenge
   = scheme:auth_scheme t:(SP+ @auth_params_or_token68)? {

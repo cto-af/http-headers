@@ -1,0 +1,7 @@
+  json-field-value = #json-field-item
+
+  json-field-item  = 1*VCHAR
+                   ; see [RFC8259], Section 2,
+                   ; post-processed so that only VCHAR characters
+                   ; are used
+
