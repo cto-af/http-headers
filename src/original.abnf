@@ -4,6 +4,7 @@ Headers-Loose = 1*(Header [CR] LF) [CR] LF
 
 Header
   = "Accept" COWS Accept
+  / "Accept-CH" COWS Accept-CH
   / "Accept-Charset" COWS Accept-Charset
   / "Accept-Encoding" COWS Accept-Encoding
   / "Accept-Language" COWS Accept-Language

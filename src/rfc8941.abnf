@@ -1,0 +1,54 @@
+sf-list       = list-member *( OWS "," OWS list-member )
+
+list-member   = sf-item / sf-inner-list
+
+sf-inner-list    = "(" *SP [ sf-item *( 1*SP sf-item ) *SP ] ")"
+                sf-parameters
+
+sf-parameters    = *( ";" *SP sf-parameter )
+
+sf-parameter     = sf-param-key [ "=" sf-param-value ]
+
+sf-param-key     = sf-key
+
+sf-key           = ( lcalpha / "*" )
+                *( lcalpha / DIGIT / "_" / "-" / "." / "*" )
+
+lcalpha          = %x61-7A ; a-z
+
+sf-param-value   = sf-bare-item
+
+sf-dictionary  = sf-dict-member *( OWS "," OWS sf-dict-member )
+
+sf-dict-member    = sf-member-key ( sf-parameters / ( "=" sf-member-value ))
+
+sf-member-key     = sf-key
+
+sf-member-value   = sf-item / sf-inner-list
+
+sf-item   = sf-bare-item sf-parameters
+
+sf-bare-item = sf-integer / sf-decimal / sf-string / sf-token
+            / sf-binary / sf-boolean
+
+sf-integer = ["-"] 1*15DIGIT
+
+sf-decimal  = ["-"] 1*12DIGIT "." 1*3DIGIT
+
+sf-string = DQUOTE *sf-chr DQUOTE
+
+sf-chr       = sf-unescaped / sf-escaped
+
+sf-unescaped = %x20-21 / %x23-5B / %x5D-7E
+
+sf-escaped   = "\" ( DQUOTE / "\" )
+
+sf-token = ( ALPHA / "*" ) *( tchar / ":" / "/" )
+
+sf-binary = ":" *(sf-base64) ":"
+
+sf-base64    = ALPHA / DIGIT / "+" / "/" / "="
+
+sf-boolean = "?" ("0" / "1")
+
+

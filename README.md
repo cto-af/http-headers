@@ -58,6 +58,7 @@ Here are the supported values for `startRule`:
   - 'Headers_Loose': Accept "\r\n" or "\n" at the end of lines
   - 'Header': Any single header line
   - 'Accept'
+  - 'Accept_CH'
   - 'Accept_Charset'
   - 'Accept_Encoding'
   - 'Accept_Language'

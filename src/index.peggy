@@ -6,6 +6,7 @@ Headers_Loose
 
 Header
   = name:"Accept"i COWS h:Accept { h.name = name; return h }
+  / name:"Accept-CH"i COWS h:Accept_CH { h.name = name; return h }
   / name:"Age"i COWS h:Age { h.name = name; return h }
   / name:"Accept-Charset"i COWS h:Accept_Charset { h.name = name; return h }
   / name:"Accept-Encoding"i COWS h:Accept_Encoding { h.name = name; return h }
@@ -95,6 +96,15 @@ Accept
       value: text(),
       ranges: ranges.filter(r => r),
     }
+  }
+
+Accept_CH
+  = hints:sf_token|1.., OWS "," OWS| &EOL {
+    return {
+      kind: 'accept-ch',
+      value: text(),
+      hints,
+    };
   }
 
 //  Accept-Charset = #( ( token / "*" ) [ weight ] )
@@ -1749,6 +1759,9 @@ other_range // VCHAR excluding comma
   = other:$([\x21-\x2b] / [\x2d-\x7e])+ {
     return {other};
   }
+
+sf_token
+  = $((ALPHA / "*") (tchar / ":" / "/")*)
 
 scheme_source
   = @$(scheme_part ":") &(required_ascii_whitespace / ";" / EOL)

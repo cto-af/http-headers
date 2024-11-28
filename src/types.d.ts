@@ -24,6 +24,10 @@ export interface Accept extends Header<'accept'> {
   ranges: MediaRange[];
 }
 
+export interface Accept_CH extends Header<'accept-ch'> {
+  hints: string[];
+}
+
 export interface Charset {
   charset: string;
   weight: number;
@@ -326,6 +330,7 @@ export interface WWW_Authenticate extends Header<'www-authenticate'> {
 
 export type AnyHeader
   = Accept
+  | Accept_CH
   | Accept_Charset
   | Accept_Encoding
   | Accept_Language

@@ -69,6 +69,8 @@ test('Header: known', () => {
     ranges: [],
     value: ',',
   });
+  known('Accept-CH: foo', startRule);
+  known('Accept-CH: foo, bar', startRule);
   known('Accept-Charset: ,', startRule);
   unknown('Accept-Charset: ,\x80', startRule);
   known('Accept-Encoding: ,', startRule);
@@ -160,7 +162,12 @@ test('Header: unknown', () => {
     value: 'foo',
     unknown: true,
   });
+  unknown('Accept-CH: ;', startRule);
+  unknown('Accept-CH: f;', startRule);
+  unknown('Accept-CH: foo;', startRule);
+  unknown('Accept-CH: foo,;', startRule);
   unknown('Accept-Charset: ;', startRule);
+  unknown('Accept-Charset: foo ;', startRule);
   unknown('Accept-Encoding: ;', startRule);
   unknown('Accept-Language: ;', startRule);
   unknown('Accept-Ranges: ,', startRule);
