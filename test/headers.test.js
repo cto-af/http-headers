@@ -395,76 +395,71 @@ test('Header edge cases', () => {
   fails('unknown:   ', startRule);
 });
 
-test('Accept', () => {
-  const startRule = 'Accept';
-  known('*/*, test/*', startRule);
+test('Accept', t => {
+  known('*/*, test/*', t.name);
 
-  fails('test', startRule);
-  fails('test/', startRule);
-  fails('*', startRule);
-  fails('*/', startRule);
-  fails('foo/bar;foo\x80', startRule);
-  fails('foo/bar;foo=\x80', startRule);
+  fails('test', t.name);
+  fails('test/', t.name);
+  fails('*', t.name);
+  fails('*/', t.name);
+  fails('foo/bar;foo\x80', t.name);
+  fails('foo/bar;foo=\x80', t.name);
 });
 
-test('Accept_Charset', () => {
-  const startRule = 'Accept_Charset';
-  fails('*?', startRule);
-  fails('*?-', startRule);
-  fails('*;?', startRule);
-  fails('*;-', startRule);
-  fails('*;q', startRule);
-  fails('*;q=', startRule);
-  fails('*;q=2', startRule);
-  fails('*;q=0.0001', startRule);
-  fails('*;q=1a', startRule);
-  fails('*;q=1.a', startRule);
-  fails('*;q=1.0000', startRule);
+test('Accept_Charset', t => {
+  fails('*?', t.name);
+  fails('*?-', t.name);
+  fails('*;?', t.name);
+  fails('*;-', t.name);
+  fails('*;q', t.name);
+  fails('*;q=', t.name);
+  fails('*;q=2', t.name);
+  fails('*;q=0.0001', t.name);
+  fails('*;q=1a', t.name);
+  fails('*;q=1.a', t.name);
+  fails('*;q=1.0000', t.name);
 });
 
-test('Alt_Svc', () => {
-  const startRule = 'Alt_Svc';
-  known('h3=":443"', startRule);
-  fails('h3=":443"; ma', startRule);
-  known('h3=":443";ma=1;mb=2', startRule);
-  fails('h3=":443"; ma=1;mb=2;', startRule);
-  fails('h3=":443"; ma=1;mb=2;mc', startRule);
-  fails('h3\x80', startRule);
-  fails('h3=\x80', startRule);
-  fails('h3=":443"; ma=\x80', startRule);
+test('Alt_Svc', t => {
+  known('h3=":443"', t.name);
+  fails('h3=":443"; ma', t.name);
+  known('h3=":443";ma=1;mb=2', t.name);
+  fails('h3=":443"; ma=1;mb=2;', t.name);
+  fails('h3=":443"; ma=1;mb=2;mc', t.name);
+  fails('h3\x80', t.name);
+  fails('h3=\x80', t.name);
+  fails('h3=":443"; ma=\x80', t.name);
 });
 
-test('Authorization', () => {
-  const startRule = 'Authorization';
-  known('foo', startRule);
-  fails('\x80', startRule);
-  fails('foo \x80', startRule);
+test('Authorization', t => {
+  known('foo', t.name);
+  fails('\x80', t.name);
+  fails('foo \x80', t.name);
 });
 
-test('Content_Language', () => {
-  const startRule = 'Content_Language';
-  fails('sl-rozaj-roza\x80', startRule);
-  fails('x\x80', startRule);
-  fails('x-', startRule);
-  fails('x-abcdefghi', startRule);
-  fails('x-abc\x80', startRule);
-  fails('x-abc-', startRule);
-  fails('x-abc-abcdefghi', startRule);
-  fails('abcdefghi', startRule);
-  fails('foo-abcdefghi', startRule);
-  fails('foo-1a', startRule);
-  fails('foo-1-a', startRule);
-  fails('foo-1-aa-a', startRule);
-  fails('foo-1-aa-abcdefghi', startRule);
-  known('foot', startRule);
-  known('footb', startRule);
-  known('en-yyy', startRule);
-  known('en-yyy-zzz', startRule);
-  known('en-xxx-yyy-zzz', startRule);
-  known('en-xx', startRule);
-  known('en-xxx-yy', startRule);
-  known('en-xxx-yyy-zz', startRule);
-  fails('en-xxz-yy1', startRule);
+test('Content_Language', t => {
+  fails('sl-rozaj-roza\x80', t.name);
+  fails('x\x80', t.name);
+  fails('x-', t.name);
+  fails('x-abcdefghi', t.name);
+  fails('x-abc\x80', t.name);
+  fails('x-abc-', t.name);
+  fails('x-abc-abcdefghi', t.name);
+  fails('abcdefghi', t.name);
+  fails('foo-abcdefghi', t.name);
+  fails('foo-1a', t.name);
+  fails('foo-1-a', t.name);
+  fails('foo-1-aa-a', t.name);
+  fails('foo-1-aa-abcdefghi', t.name);
+  known('foot', t.name);
+  known('footb', t.name);
+  known('en-yyy', t.name);
+  known('en-yyy-zzz', t.name);
+  known('en-xxx-yyy-zzz', t.name);
+  known('en-xx', t.name);
+  known('en-xxx-yy', t.name);
+  known('en-xxx-yyy-zz', t.name);
+  fails('en-xxz-yy1', t.name);
 
   for (const lang of [
     // Irregular
@@ -496,384 +491,371 @@ test('Content_Language', () => {
     'zh-min-nan',
     'zh-xiang',
   ]) {
-    known(lang, startRule);
+    known(lang, t.name);
   }
 });
 
-test('Content_Location', () => {
-  const startRule = 'Content_Location';
-  known('http://foo:80/bar/baz/boo', startRule);
-  known('foo', startRule);
-  known('http://foo/bar?baz', startRule);
-  known('http://$@foo/', startRule);
-  known('foo?baz', startRule);
-  known('/foo?baz', startRule);
-  known('http:/foo?baz', startRule);
-  known('file:/foo/bar/baz', startRule);
-  known('file:', startRule);
-  known('file:foo', startRule);
-  known('file:foo/bar', startRule);
-  known('file:foo/bar/baz-%ff:', startRule);
-  known('foo/bar/baz', startRule);
-  known('foo!', startRule);
-  fails('http://foo@\x80', startRule);
-  fails('http://foo/bar?/?\x80', startRule);
-  fails('http://foo/bar?%f', startRule);
-  fails('foo\x80', startRule);
-  fails('f{', startRule);
+test('Content_Location', t => {
+  known('http://foo:80/bar/baz/boo', t.name);
+  known('foo', t.name);
+  known('http://foo/bar?baz', t.name);
+  known('http://$@foo/', t.name);
+  known('foo?baz', t.name);
+  known('/foo?baz', t.name);
+  known('http:/foo?baz', t.name);
+  known('file:/foo/bar/baz', t.name);
+  known('file:', t.name);
+  known('file:foo', t.name);
+  known('file:foo/bar', t.name);
+  known('file:foo/bar/baz-%ff:', t.name);
+  known('foo/bar/baz', t.name);
+  known('foo!', t.name);
+  fails('http://foo@\x80', t.name);
+  fails('http://foo/bar?/?\x80', t.name);
+  fails('http://foo/bar?%f', t.name);
+  fails('foo\x80', t.name);
+  fails('f{', t.name);
 });
 
-test('Content_Range', () => {
-  const startRule = 'Content_Range';
-  fails('bytes 1-2', startRule);
-  fails('bytes 1a', startRule);
-  fails('bytes 1-a', startRule);
-  fails('bytes 1-2/a', startRule);
-  fails('bytes *', startRule);
-  fails('bytes */', startRule);
-  fails('bytes */a', startRule);
+test('Content_Range', t => {
+  fails('bytes 1-2', t.name);
+  fails('bytes 1a', t.name);
+  fails('bytes 1-a', t.name);
+  fails('bytes 1-2/a', t.name);
+  fails('bytes *', t.name);
+  fails('bytes */', t.name);
+  fails('bytes */a', t.name);
 });
 
-test('Content_Security_Policy', () => {
-  const startRule = 'Content_Security_Policy';
-  known('foo   ,   \t bar', startRule);
-  known("webrtc 'block'", startRule);
-  known("webrtc 'allow'", startRule);
-  known("webrtc 'foo'", startRule);
-  fails('webrtc\x00', startRule);
-  known('sandbox', startRule);
-  known('sandbox;', startRule);
-  known('sandbox ', startRule);
-  known('sandbox allow-downloads', startRule);
-  known('sandbox allow-forms allow-modals', startRule);
-  fails('sandbox allow-forms \x00', startRule);
+test('Content_Security_Policy', t => {
+  known('foo   ,   \t bar', t.name);
+  known("webrtc 'block'", t.name);
+  known("webrtc 'allow'", t.name);
+  known("webrtc 'foo'", t.name);
+  fails('webrtc\x00', t.name);
+  known('sandbox', t.name);
+  known('sandbox;', t.name);
+  known('sandbox ', t.name);
+  known('sandbox allow-downloads', t.name);
+  known('sandbox allow-forms allow-modals', t.name);
+  fails('sandbox allow-forms \x00', t.name);
   fails('sandbox "foo"');
-  known("frame-ancestors 'none';", startRule);
-  known("frame-ancestors 'self';", startRule);
-  known('frame-ancestors foo: http://example.com;', startRule);
-  known('frame-ancestors', startRule);
-  known('frame-ancestors ', startRule);
-  fails('frame-ancestors \x00', startRule);
-  fails('frame-ancestors foo: ', startRule);
-  known('report-uri   \t\fhttp://example.com https://example.com#bar;', startRule);
-  known('report-uri http://foo@192.168.1.1/foo/baz/bo!o?bar=foo&baz=1 http://[::1]:443/ / /boo /boo/bar /boo/bar/baz/boop boo boo/bar boo/bar/baz f://! xmpp:example-node@example.com/some-resource/deep/there boop!%3b %3bblah @at !at;', startRule);
-  known('report-uri mailto:foo@bar', startRule);
-  known('report-uri', startRule);
-  known('report-uri //???#?', startRule);
-  known('report-uri /#', startRule);
-  known('report-uri /#???', startRule);
-  fails('report-uri /?\x00', startRule);
-  fails('report-uri \x00', startRule);
-  fails('report-uri //foo bar\x00', startRule);
-  known('report-to foo', startRule);
-  known('report-to', startRule);
-  known('report-to ', startRule);
-  known("base-uri 'none'", startRule);
-  known('base-uri /', startRule);
-  known('base-uri / ', startRule);
-  fails('base-uri foo: / ', startRule);
-  known('base-uri', startRule);
-  known('child-src /', startRule);
-  known('connect-src /', startRule);
-  known('default-src /', startRule);
-  known('font-src /', startRule);
-  known('form-action /', startRule);
-  known('form-src /', startRule);
-  known("frame-src 'nonce-Zm9vOmJhcg=='", startRule);
-  known("frame-src 'nonce-Zm9vOmJhcg==", startRule);
-  known("frame-src 'sha256-Zm9vOmJhcg=='", startRule);
-  known("frame-src 'sha384-Zm9vOmJhcg==", startRule);
-  known("frame-src 'sha512", startRule);
-  fails("frame-src 'sha256-\x00", startRule);
-  fails("frame-src 'sha256-Z\x00", startRule);
-  known('img-src *.example.com.', startRule);
-  known('img-src *.example.com:400/foo/bar', startRule);
-  fails('img-src *.example.\x00', startRule);
-  fails('img-src *.example.com:400/\x00', startRule);
-  fails('img-src *.example.com:400/foo\x00', startRule);
-  fails('img-src *.example.com:400/foo/bar/\x00', startRule);
-  fails('img-src *.example.com:400/foo/bar\x00', startRule);
-  fails('img-src *.\x00', startRule);
-  fails('img-src *.ex\x00', startRule);
-  fails('img-src ex\x00', startRule);
-  known("img-src 'wasm-unsafe-eval'", startRule);
-  known("manifest-src 'unsafe-allow-redirects'", startRule);
-  known("media-src 'report-sample'", startRule);
-  known('object-src http://foo:*/', startRule);
-  known('script-src-attr http://foo:444/', startRule);
-  fails('script-src-attr http://foo:a/', startRule);
-  known('script-src foo:;', startRule);
-  known('script-src foo-.bar: foo;', startRule);
-  known("style-src-attr 'unsafe-inline'", startRule);
-  known("style-src-elem 'unsafe-eval'", startRule);
-  known("style-src 'strict-dynamic'", startRule);
-  known("worker-src 'unsafe-hashes'", startRule);
-  known('upgrade-insecure-requests', startRule);
-  known("require-trusted-types-for 'script'", startRule);
-  known("require-trusted-types-for 'script' 'script'", startRule);
-  fails("require-trusted-types-for 'script' 'script' ", startRule);
-  fails("require-trusted-types-for 'script' ", startRule);
-  known("require-trusted-types-for 'foo'", startRule);
-  known('require-trusted-types-for', startRule);
-  fails('require-trusted-types-for\x00', startRule);
-  known('require-trusted-types-for ', startRule);
-  known("trusted-types foo * 'none'", startRule);
-  known('trusted-types', startRule);
-  known('trusted-types ', startRule);
-  fails('trusted-types \x00', startRule);
-  fails("trusted-types 'allow-duplicates' \x00", startRule);
-  known('foo ', startRule);
-  known('foo, bar', startRule);
-  fails(',', startRule);
-  fails(';;', startRule);
+  known("frame-ancestors 'none';", t.name);
+  known("frame-ancestors 'self';", t.name);
+  known('frame-ancestors foo: http://example.com;', t.name);
+  known('frame-ancestors', t.name);
+  known('frame-ancestors ', t.name);
+  fails('frame-ancestors \x00', t.name);
+  fails('frame-ancestors foo: ', t.name);
+  known('report-uri   \t\fhttp://example.com https://example.com#bar;', t.name);
+  known('report-uri http://foo@192.168.1.1/foo/baz/bo!o?bar=foo&baz=1 http://[::1]:443/ / /boo /boo/bar /boo/bar/baz/boop boo boo/bar boo/bar/baz f://! xmpp:example-node@example.com/some-resource/deep/there boop!%3b %3bblah @at !at;', t.name);
+  known('report-uri mailto:foo@bar', t.name);
+  known('report-uri', t.name);
+  known('report-uri //???#?', t.name);
+  known('report-uri /#', t.name);
+  known('report-uri /#???', t.name);
+  fails('report-uri /?\x00', t.name);
+  fails('report-uri \x00', t.name);
+  fails('report-uri //foo bar\x00', t.name);
+  known('report-to foo', t.name);
+  known('report-to', t.name);
+  known('report-to ', t.name);
+  known("base-uri 'none'", t.name);
+  known('base-uri /', t.name);
+  known('base-uri / ', t.name);
+  fails('base-uri foo: / ', t.name);
+  known('base-uri', t.name);
+  known('child-src /', t.name);
+  known('connect-src /', t.name);
+  known('default-src /', t.name);
+  known('font-src /', t.name);
+  known('form-action /', t.name);
+  known('form-src /', t.name);
+  known("frame-src 'nonce-Zm9vOmJhcg=='", t.name);
+  known("frame-src 'nonce-Zm9vOmJhcg==", t.name);
+  known("frame-src 'sha256-Zm9vOmJhcg=='", t.name);
+  known("frame-src 'sha384-Zm9vOmJhcg==", t.name);
+  known("frame-src 'sha512", t.name);
+  fails("frame-src 'sha256-\x00", t.name);
+  fails("frame-src 'sha256-Z\x00", t.name);
+  known('img-src *.example.com.', t.name);
+  known('img-src *.example.com:400/foo/bar', t.name);
+  fails('img-src *.example.\x00', t.name);
+  fails('img-src *.example.com:400/\x00', t.name);
+  fails('img-src *.example.com:400/foo\x00', t.name);
+  fails('img-src *.example.com:400/foo/bar/\x00', t.name);
+  fails('img-src *.example.com:400/foo/bar\x00', t.name);
+  fails('img-src *.\x00', t.name);
+  fails('img-src *.ex\x00', t.name);
+  fails('img-src ex\x00', t.name);
+  known("img-src 'wasm-unsafe-eval'", t.name);
+  known("manifest-src 'unsafe-allow-redirects'", t.name);
+  known("media-src 'report-sample'", t.name);
+  known('object-src http://foo:*/', t.name);
+  known('script-src-attr http://foo:444/', t.name);
+  fails('script-src-attr http://foo:a/', t.name);
+  known('script-src foo:;', t.name);
+  known('script-src foo-.bar: foo;', t.name);
+  known("style-src-attr 'unsafe-inline'", t.name);
+  known("style-src-elem 'unsafe-eval'", t.name);
+  known("style-src 'strict-dynamic'", t.name);
+  known("worker-src 'unsafe-hashes'", t.name);
+  known('upgrade-insecure-requests', t.name);
+  known("require-trusted-types-for 'script'", t.name);
+  known("require-trusted-types-for 'script' 'script'", t.name);
+  fails("require-trusted-types-for 'script' 'script' ", t.name);
+  fails("require-trusted-types-for 'script' ", t.name);
+  known("require-trusted-types-for 'foo'", t.name);
+  known('require-trusted-types-for', t.name);
+  fails('require-trusted-types-for\x00', t.name);
+  known('require-trusted-types-for ', t.name);
+  known("trusted-types foo * 'none'", t.name);
+  known('trusted-types', t.name);
+  known('trusted-types ', t.name);
+  fails('trusted-types \x00', t.name);
+  fails("trusted-types 'allow-duplicates' \x00", t.name);
+  known('foo ', t.name);
+  known('foo, bar', t.name);
+  fails(',', t.name);
+  fails(';;', t.name);
   fails('foo, bar\x00');
 });
 
-test('Content_Type', () => {
-  const startRule = 'Content_Type';
-  fails('foo', startRule);
-  fails('foo/', startRule);
-  fails('foo/\x80', startRule);
-  fails('foo/bar   \x80', startRule);
-  fails('foo/bar;\x80', startRule);
-  fails('foo/bar;a=b;\x80', startRule);
+test('Content_Type', t => {
+  fails('foo', t.name);
+  fails('foo/', t.name);
+  fails('foo/\x80', t.name);
+  fails('foo/bar   \x80', t.name);
+  fails('foo/bar;\x80', t.name);
+  fails('foo/bar;a=b;\x80', t.name);
 });
 
-test('Date', () => {
-  const startRule = 'Date';
+test('Date', t => {
   let d = 'Sun, 06 Nov 1994 08:49:37 GMT';
   for (let i = 0; i < (d.length - 1); i++) {
-    fails(d.slice(0, i), startRule);
+    fails(d.slice(0, i), t.name);
   }
   d = 'Sunday, 06-Nov-94 08:49:37 GMT';
   for (let i = 0; i < (d.length - 1); i++) {
-    fails(d.slice(0, i), startRule);
+    fails(d.slice(0, i), t.name);
   }
   d = 'Sun Nov  6 08:49:37 1994';
   for (let i = 0; i < (d.length - 1); i++) {
-    fails(d.slice(0, i), startRule);
+    fails(d.slice(0, i), t.name);
   }
-  known('Sunday, 06-Nov-94 08:49:37 GMT', startRule);
-  known('Monday, 07-Nov-94 08:49:37 GMT', startRule);
-  known('Tuesday, 08-Nov-94 08:49:37 GMT', startRule);
-  known('Wednesday, 09-Nov-94 08:49:37 GMT', startRule);
-  known('Thursday, 10-Nov-94 08:49:37 GMT', startRule);
-  known('Friday, 11-Nov-94 08:49:37 GMT', startRule);
-  known('Saturday, 12-Nov-94 08:49:37 GMT', startRule);
+  known('Sunday, 06-Nov-94 08:49:37 GMT', t.name);
+  known('Monday, 07-Nov-94 08:49:37 GMT', t.name);
+  known('Tuesday, 08-Nov-94 08:49:37 GMT', t.name);
+  known('Wednesday, 09-Nov-94 08:49:37 GMT', t.name);
+  known('Thursday, 10-Nov-94 08:49:37 GMT', t.name);
+  known('Friday, 11-Nov-94 08:49:37 GMT', t.name);
+  known('Saturday, 12-Nov-94 08:49:37 GMT', t.name);
 
-  known('Sun Nov 13 08:49:37 1994', startRule);
+  known('Sun Nov 13 08:49:37 1994', t.name);
 });
 
-test('Expect', () => {
-  const startRule = 'Expect';
-  fails('100-Continue=', startRule);
-  fails('100-Continue="\x80', startRule);
-  fails('100-Continue="\\"', startRule);
+test('Expect', t => {
+  fails('100-Continue=', t.name);
+  fails('100-Continue="\x80', t.name);
+  fails('100-Continue="\\"', t.name);
 });
 
-test('From', () => {
-  const startRule = 'From';
-  known('Foo <boo@example>', startRule);
-  known('<@example1.org,@example2.org:joe@example.org>', startRule);
-  known('"boo"@example', startRule);
-  known('"boo"."bar"@example', startRule);
-  known('bar@[example]', startRule);
-  known('bar@(comment)example', startRule);
-  known('bar@(foo) bar. (boo) (blu)baz (boo). buzz', startRule);
+test('From', t => {
+  known('Foo <boo@example>', t.name);
+  known('<@example1.org,@example2.org:joe@example.org>', t.name);
+  known('"boo"@example', t.name);
+  known('"boo"."bar"@example', t.name);
+  known('bar@[example]', t.name);
+  known('bar@(comment)example', t.name);
+  known('bar@(foo) bar. (boo) (blu)baz (boo). buzz', t.name);
 
-  fails('', startRule);
-  fails('\x80', startRule);
-  fails('foo\x80', startRule);
-  fails('foo@\x80', startRule);
-  fails('Foo <foo@\x80', startRule);
-  fails('Foo <foo@example\x80', startRule);
-  fails('Foo <foo@example', startRule);
-  fails('(foo) (bar)<foo@example', startRule);
-  fails('Foo <"foo', startRule);
-  fails('<@example1.org,@example2.org:joe@example.org', startRule);
-  fails('<@:', startRule);
-  fails('<\x80', startRule);
-  fails('<@example1.org,@example2.org:joe@\x80', startRule);
-  fails('"foo"."bar', startRule);
-  fails('bar@[example\x80', startRule);
-  fails('bar@[[', startRule);
+  fails('', t.name);
+  fails('\x80', t.name);
+  fails('foo\x80', t.name);
+  fails('foo@\x80', t.name);
+  fails('Foo <foo@\x80', t.name);
+  fails('Foo <foo@example\x80', t.name);
+  fails('Foo <foo@example', t.name);
+  fails('(foo) (bar)<foo@example', t.name);
+  fails('Foo <"foo', t.name);
+  fails('<@example1.org,@example2.org:joe@example.org', t.name);
+  fails('<@:', t.name);
+  fails('<\x80', t.name);
+  fails('<@example1.org,@example2.org:joe@\x80', t.name);
+  fails('"foo"."bar', t.name);
+  fails('bar@[example\x80', t.name);
+  fails('bar@[[', t.name);
 });
 
-test('Host', () => {
-  const startRule = 'Host';
-  known('1.2.3.4', startRule);
-  known('255.240.199.84', startRule);
-  known('256', startRule);
-  known('266', startRule);
-  known('24a', startRule);
-  known('[::]', startRule);
-  known('[::1]', startRule);
-  known('[2001:0db8:85a3:0000:0000:8a2e:192.0.2.128]', startRule);
-  known('[2001:0db8:85a3:0000:0000:8a2e:0370:7334]', startRule);
-  known('[::0db8:85a3:0000:0000:8a2e:0370:7334]', startRule);
-  known('[::85a3:0000:0000:8a2e:0370:7334]', startRule);
-  known('[1::85a3:0000:0000:8a2e:0370:7334]', startRule);
-  known('[::0000:0000:8a2e:0370:7334]', startRule);
-  known('[1::0000:0000:8a2e:0370:7334]', startRule);
-  known('[1:2::0000:0000:8a2e:0370:7334]', startRule);
-  known('[::0000:8a2e:0370:7334]', startRule);
-  known('[1::0000:8a2e:0370:7334]', startRule);
-  known('[1:2::0000:8a2e:0370:7334]', startRule);
-  known('[1:2:3::0000:8a2e:0370:7334]', startRule);
-  known('[1::8a2e:0370:7334]', startRule);
-  known('[1:2::8a2e:0370:7334]', startRule);
-  known('[1:2:3::8a2e:0370:7334]', startRule);
-  known('[1:2:3:4::8a2e:0370:7334]', startRule);
-  known('[1::0370:7334]', startRule);
-  known('[1:2::0370:7334]', startRule);
-  known('[1:2:3::0370:7334]', startRule);
-  known('[1:2:3:4::0370:7334]', startRule);
-  known('[1:2:3:4:5::0370:7334]', startRule);
-  known('[1::7334]', startRule);
-  known('[1:2::7334]', startRule);
-  known('[1:2:3::7334]', startRule);
-  known('[1:2:3:4::7334]', startRule);
-  known('[1:2:3:4:5::7334]', startRule);
-  known('[1:2:3:4:5:6::7334]', startRule);
-  known('[1:2:3:4:5:6::7334]', startRule);
-  known('[2001::85a3:0000:0000:8a2e:0370:7334]', startRule);
-  known('[::85a3:0000:0000:8a2e:0370:7334]', startRule);
-  known('[2001:0db8::0000:0000:8a2e:0370:7334]', startRule);
-  known('[2001::0000:0000:8a2e:0370:7334]', startRule);
-  known('[::0000:0000:8a2e:0370:7334]', startRule);
-  known('[2001:db8::1]', startRule);
-  known('[2001:0db8::]', startRule);
-  known('[2001:0db8:85a3::]', startRule);
-  known('[2001:0db8:85a3:0000::]', startRule);
-  known('[2001:0db8:85a3:0000:0000::]', startRule);
-  known('[2001:0db8:85a3:0000:0000:8a2e::]', startRule);
-  known('[2001:0db8:85a3:0000:0000:8a2e:0370::]', startRule);
-  known('[va.::1]', startRule);
-  known('%ff', startRule);
+test('Host', t => {
+  known('1.2.3.4', t.name);
+  known('255.240.199.84', t.name);
+  known('256', t.name);
+  known('266', t.name);
+  known('24a', t.name);
+  known('[::]', t.name);
+  known('[::1]', t.name);
+  known('[2001:0db8:85a3:0000:0000:8a2e:192.0.2.128]', t.name);
+  known('[2001:0db8:85a3:0000:0000:8a2e:0370:7334]', t.name);
+  known('[::0db8:85a3:0000:0000:8a2e:0370:7334]', t.name);
+  known('[::85a3:0000:0000:8a2e:0370:7334]', t.name);
+  known('[1::85a3:0000:0000:8a2e:0370:7334]', t.name);
+  known('[::0000:0000:8a2e:0370:7334]', t.name);
+  known('[1::0000:0000:8a2e:0370:7334]', t.name);
+  known('[1:2::0000:0000:8a2e:0370:7334]', t.name);
+  known('[::0000:8a2e:0370:7334]', t.name);
+  known('[1::0000:8a2e:0370:7334]', t.name);
+  known('[1:2::0000:8a2e:0370:7334]', t.name);
+  known('[1:2:3::0000:8a2e:0370:7334]', t.name);
+  known('[1::8a2e:0370:7334]', t.name);
+  known('[1:2::8a2e:0370:7334]', t.name);
+  known('[1:2:3::8a2e:0370:7334]', t.name);
+  known('[1:2:3:4::8a2e:0370:7334]', t.name);
+  known('[1::0370:7334]', t.name);
+  known('[1:2::0370:7334]', t.name);
+  known('[1:2:3::0370:7334]', t.name);
+  known('[1:2:3:4::0370:7334]', t.name);
+  known('[1:2:3:4:5::0370:7334]', t.name);
+  known('[1::7334]', t.name);
+  known('[1:2::7334]', t.name);
+  known('[1:2:3::7334]', t.name);
+  known('[1:2:3:4::7334]', t.name);
+  known('[1:2:3:4:5::7334]', t.name);
+  known('[1:2:3:4:5:6::7334]', t.name);
+  known('[1:2:3:4:5:6::7334]', t.name);
+  known('[2001::85a3:0000:0000:8a2e:0370:7334]', t.name);
+  known('[::85a3:0000:0000:8a2e:0370:7334]', t.name);
+  known('[2001:0db8::0000:0000:8a2e:0370:7334]', t.name);
+  known('[2001::0000:0000:8a2e:0370:7334]', t.name);
+  known('[::0000:0000:8a2e:0370:7334]', t.name);
+  known('[2001:db8::1]', t.name);
+  known('[2001:0db8::]', t.name);
+  known('[2001:0db8:85a3::]', t.name);
+  known('[2001:0db8:85a3:0000::]', t.name);
+  known('[2001:0db8:85a3:0000:0000::]', t.name);
+  known('[2001:0db8:85a3:0000:0000:8a2e::]', t.name);
+  known('[2001:0db8:85a3:0000:0000:8a2e:0370::]', t.name);
+  known('[va.::1]', t.name);
+  known('%ff', t.name);
 
-  fails('[::1', startRule);
-  fails('\x80', startRule);
-  fails('1.\x80', startRule);
-  fails('1.2\x80', startRule);
-  fails('1.2.\x80', startRule);
-  fails('1.2.3\x80', startRule);
-  fails('1.2.3.\x80', startRule);
-  fails('[2001]', startRule);
-  fails('[2001:0db8]', startRule);
-  fails('[2001:0db8:85a]', startRule);
-  fails('[2001:0db8:85a3]', startRule);
-  fails('[2001:0db8:85a3:0000:0000:8a2e:0370:7334:2001]', startRule);
-  fails('[2001:0db8:85a3:0000:0000:8a2e:0370:7334:2001:0db8]', startRule);
-  fails('[20011]', startRule);
-  fails('[aaaa:20011]', startRule);
-  fails('[::\x80]', startRule);
-  fails('[::1:\x80]', startRule);
-  fails('[v]', startRule);
-  fails('[z]', startRule);
-  fails('[v\x80]', startRule);
-  fails('[vaaa\x80]', startRule);
-  fails('[vaaa.\x80]', startRule);
-  fails('%zf', startRule);
+  fails('[::1', t.name);
+  fails('\x80', t.name);
+  fails('1.\x80', t.name);
+  fails('1.2\x80', t.name);
+  fails('1.2.\x80', t.name);
+  fails('1.2.3\x80', t.name);
+  fails('1.2.3.\x80', t.name);
+  fails('[2001]', t.name);
+  fails('[2001:0db8]', t.name);
+  fails('[2001:0db8:85a]', t.name);
+  fails('[2001:0db8:85a3]', t.name);
+  fails('[2001:0db8:85a3:0000:0000:8a2e:0370:7334:2001]', t.name);
+  fails('[2001:0db8:85a3:0000:0000:8a2e:0370:7334:2001:0db8]', t.name);
+  fails('[20011]', t.name);
+  fails('[aaaa:20011]', t.name);
+  fails('[::\x80]', t.name);
+  fails('[::1:\x80]', t.name);
+  fails('[v]', t.name);
+  fails('[z]', t.name);
+  fails('[v\x80]', t.name);
+  fails('[vaaa\x80]', t.name);
+  fails('[vaaa.\x80]', t.name);
+  fails('%zf', t.name);
 
   const d = '[2001:0db8:85a3:0000:0000:8a2e:0370:7334]';
   for (let i = 0; i < d.length; i++) {
-    fails(`${d.slice(0, i)}\x80`, startRule);
+    fails(`${d.slice(0, i)}\x80`, t.name);
   }
 });
 
-test('Location', () => {
-  const startRule = 'Location';
-  fails('foo\x80', startRule);
-  fails('http://foo/#/\x80', startRule);
-  fails('http://foo/#\x80', startRule);
-  known('http://foo/#bar/', startRule);
-  known('http://foo/?bar', startRule);
-  known('/#bar', startRule);
-  known('/?bar', startRule);
+test('Location', t => {
+  fails('foo\x80', t.name);
+  fails('http://foo/#/\x80', t.name);
+  fails('http://foo/#\x80', t.name);
+  known('http://foo/#bar/', t.name);
+  known('http://foo/?bar', t.name);
+  known('/#bar', t.name);
+  known('/?bar', t.name);
 });
 
-test('NEL', () => {
-  const startRule = 'NEL';
-  fails('\x00', startRule);
+test('NEL', t => {
+  fails('\x00', t.name);
 });
 
-test('Range', () => {
-  const startRule = 'Range';
-  fails('bytes\x80', startRule);
-  fails('bytes=', startRule);
-  fails('bytes=,', startRule);
+test('Range', t => {
+  fails('bytes\x80', t.name);
+  fails('bytes=', t.name);
+  fails('bytes=,', t.name);
 });
 
-test('Server', () => {
-  const startRule = 'Server';
-  fails('', startRule);
-  fails('\x80', startRule);
-  fails('foo \x80', startRule);
-  fails('foo bar \x80', startRule);
-  fails('foo/', startRule);
-  fails('foo/\x80', startRule);
-  fails('foo (\\\x00', startRule);
-  known('foo  \t  bar (((more comment \\))))', startRule);
+test('Server', t => {
+  fails('', t.name);
+  fails('\x80', t.name);
+  fails('foo \x80', t.name);
+  fails('foo bar \x80', t.name);
+  fails('foo/', t.name);
+  fails('foo/\x80', t.name);
+  fails('foo (\\\x00', t.name);
+  known('foo  \t  bar (((more comment \\))))', t.name);
 });
 
-test('TE', () => {
-  const startRule = 'TE';
-  known('deflate;a="foo"', startRule);
-  fails('deflate\x80', startRule);
-  fails('deflate;\x80', startRule);
-  fails('deflate;a\x80', startRule);
-  fails('deflate;a=b;\x80', startRule);
-  fails('deflate;a=b;c=d;\x80', startRule);
-  fails('deflate;a="foo', startRule);
+test('Set_Cookie', t => {
+  known('foo="bar"', t.name);
+  known('foo="bar";boo;', t.name);
+  fails('foo=bar; \x00', t.name);
 });
 
-test('Upgrade', () => {
-  const startRule = 'Upgrade';
-  fails('foo\x80', startRule);
-  fails('foo/\x80', startRule);
+test('TE', t => {
+  known('deflate;a="foo"', t.name);
+  fails('deflate\x80', t.name);
+  fails('deflate;\x80', t.name);
+  fails('deflate;a\x80', t.name);
+  fails('deflate;a=b;\x80', t.name);
+  fails('deflate;a=b;c=d;\x80', t.name);
+  fails('deflate;a="foo', t.name);
 });
 
-test('User_Agent', () => {
-  const startRule = 'User_Agent';
-  fails('', startRule);
-  fails('\x80', startRule);
-  fails('foo \x80', startRule);
-  fails('foo bar \x80', startRule);
+test('Upgrade', t => {
+  fails('foo\x80', t.name);
+  fails('foo/\x80', t.name);
 });
 
-test('Vary', () => {
-  const startRule = 'Vary';
-  fails('\x80', startRule);
-  fails('foo, \x80', startRule);
-  fails('foo, bar, \x80', startRule);
-  fails('foo, *,,\x80', startRule);
+test('User_Agent', t => {
+  fails('', t.name);
+  fails('\x80', t.name);
+  fails('foo \x80', t.name);
+  fails('foo bar \x80', t.name);
 });
 
-test('Via', () => {
-  const startRule = 'Via';
-  fails('\x80', startRule);
-  fails('1.1\x80', startRule);
-  fails('1.1 \x80', startRule);
-  fails('1.1 foo\x80', startRule);
-  fails('1.1 foo \x80', startRule);
-  fails('1.1 foo (\x80', startRule);
-
-  fails('https/1.0 fred,\x80', startRule);
-  fails('https/1.0 fred, 1.1\x80', startRule);
-  fails('https/1.0 fred, 1.1 \x80', startRule);
-  fails('https/1.0 fred, 1.1 foo\x80', startRule);
-  fails('https/1.0 fred, 1.1 foo \x80', startRule);
-  fails('https/1.0 fred, 1.1 foo (\x80', startRule);
+test('Vary', t => {
+  fails('\x80', t.name);
+  fails('foo, \x80', t.name);
+  fails('foo, bar, \x80', t.name);
+  fails('foo, *,,\x80', t.name);
 });
 
-test('WWW_Authenticate', () => {
-  const startRule = 'WWW_Authenticate';
-  fails('basic ', startRule);
-  fails('\x80 ', startRule);
-  fails('basic\x80', startRule);
+test('Via', t => {
+  fails('\x80', t.name);
+  fails('1.1\x80', t.name);
+  fails('1.1 \x80', t.name);
+  fails('1.1 foo\x80', t.name);
+  fails('1.1 foo \x80', t.name);
+  fails('1.1 foo (\x80', t.name);
+
+  fails('https/1.0 fred,\x80', t.name);
+  fails('https/1.0 fred, 1.1\x80', t.name);
+  fails('https/1.0 fred, 1.1 \x80', t.name);
+  fails('https/1.0 fred, 1.1 foo\x80', t.name);
+  fails('https/1.0 fred, 1.1 foo \x80', t.name);
+  fails('https/1.0 fred, 1.1 foo (\x80', t.name);
 });
 
-test('Unknown', () => {
-  const startRule = 'Unknown_Header';
-  fails('f: f\u1000', startRule);
+test('WWW_Authenticate', t => {
+  fails('basic ', t.name);
+  fails('\x80 ', t.name);
+  fails('basic\x80', t.name);
+});
+
+test('Unknown_Header', t => {
+  fails('f: f\u1000', t.name);
 });
