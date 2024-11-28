@@ -548,8 +548,11 @@ Server
     }
   }
 
+// Note:
+// - the space is required in the spec but some sites don't always include it.
+// - the spec does not allow a trailing semi, but some sites add it.
 Set_Cookie
-  = pair:cookie_pair attributes:(";" SP @cookie_av)* &EOL {
+  = pair:cookie_pair attributes:(";" SP? @cookie_av)* ";"? &EOL {
     return {
       kind: 'set-cookie',
       value: text(),
