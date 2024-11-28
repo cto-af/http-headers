@@ -92,6 +92,7 @@ Here are the supported values for `startRule`:
   - 'Last_Modified'
   - 'Location'
   - 'Max_Forwards'
+  - 'NEL'
   - 'Proxy_Authenticate'
   - 'Proxy_Authentication_Info'
   - 'Proxy_Authorization'

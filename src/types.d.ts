@@ -215,6 +215,10 @@ export interface Max_Forwards extends Header<'max-forwards'> {
   max: number;
 }
 
+export interface NEL extends Header<'nel'> {
+  json: unknown[];
+}
+
 export interface Challenge {
   scheme: string;
   params?: AuthParam[];
@@ -364,6 +368,7 @@ export type AnyHeader
   | Last_Modified
   | Location
   | Max_Forwards
+  | NEL
   | Proxy_Authenticate
   | Proxy_Authentication_Info
   | Proxy_Authorization
