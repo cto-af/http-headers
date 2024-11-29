@@ -266,6 +266,10 @@ export interface Referer extends Header<'referer'> {
   absolute: boolean;
 }
 
+export interface Referrer_Policy extends Header<'referer-policy'> {
+  tokens: string[];
+}
+
 export interface Retry_After extends Header<'retry-after'> {
   date?: Date;
   seconds?: number;
@@ -387,6 +391,7 @@ export type AnyHeader
   | Proxy_Authorization
   | Range
   | Referer
+  | Referrer_Policy
   | Retry_After
   | Server
   | Set_Cookie

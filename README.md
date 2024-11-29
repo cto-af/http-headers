@@ -99,6 +99,7 @@ Here are the supported values for `startRule`:
   - 'Proxy_Authorization'
   - 'Range'
   - 'Referer'
+  - 'Referrer_Policy'
   - 'Retry_After'
   - 'Server'
   - 'Set_Cookie'

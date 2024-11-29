@@ -48,6 +48,7 @@ Header
   / "Proxy-Authorization"i COWS Proxy_Authorization
   / "Range"i COWS Range
   / "Referer"i COWS Referer
+  / "Referrer-Policy"i COWS Referrer_Policy
   / "Retry-After"i COWS Retry_After
   / "Server"i COWS Server
   / "Set-Cookie"i COWS set_cookie_string
@@ -207,6 +208,9 @@ Range
 Referer
   = absolute_URI
   / partial_URI
+
+Referrer_Policy
+  = @count:(some:(policy_token?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}) &{ return (count.length >= 1) }
 
 Retry_After
   = HTTP_date
@@ -389,6 +393,16 @@ challenge
 
 ranges_specifier
   = range_unit "=" OWS range_set
+
+policy_token
+  = "no-referrer"i
+  / "no-referrer-when-downgrade"i
+  / "strict-origin"i
+  / "strict-origin-when-cross-origin"i
+  / "same-origin"i
+  / "origin"i
+  / "origin-when-cross-origin"i
+  / "unsafe-url"i
 
 delay_seconds
   = DIGIT+

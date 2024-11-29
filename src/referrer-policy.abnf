@@ -1,0 +1,4 @@
+Referrer-Policy = 1#policy-token
+
+policy-token   = "no-referrer" / "no-referrer-when-downgrade" / "strict-origin" / "strict-origin-when-cross-origin" / "same-origin" / "origin" / "origin-when-cross-origin" / "unsafe-url"
+

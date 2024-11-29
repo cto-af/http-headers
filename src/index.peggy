@@ -66,6 +66,7 @@ Known_Header
   / @"Proxy-Authorization"i COWS @Proxy_Authorization
   / @"Range"i COWS @Range
   / @"Referer"i COWS @Referer
+  / @"Referrer-Policy"i COWS @Referrer_Policy
   / @"Retry-After"i COWS @Retry_After
   / @"Server"i COWS @Server
   / @"TE"i COWS @TE
@@ -667,6 +668,25 @@ Referer
       absolute,
     };
   }
+
+Referrer_Policy
+  = tokens:(some:(policy_token?)|.., OWS "," OWS| {return some.filter(s => s)}) &{ return (tokens.length >= 1) } &EOL {
+    return {
+      kind: 'referer-policy',
+      value: text(),
+      tokens: tokens.map(t => t.toLowerCase()),
+    }
+  }
+
+policy_token
+  = "no-referrer-when-downgrade"i
+  / "no-referrer"i
+  / "strict-origin-when-cross-origin"i
+  / "strict-origin"i
+  / "same-origin"i
+  / "origin-when-cross-origin"i
+  / "origin"i
+  / "unsafe-url"i
 
 Retry_After
   = date:HTTP_date &EOL {
