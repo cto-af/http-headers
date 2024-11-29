@@ -46,6 +46,7 @@ Header
   / "Proxy-Authorization" COWS Proxy-Authorization
   / "Range" COWS Range
   / "Referer" COWS Referer
+  / "Referrer-Policy" COWS Referrer-Policy
   / "Retry-After" COWS Retry-After
   / "Server" COWS Server
   / "Set-Cookie" COWS set-cookie-string

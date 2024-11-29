@@ -142,6 +142,7 @@ test('Header: known', () => {
   unknown('Range: bytes=-0\x80', startRule);
   known('Referer: ,', startRule);
   known('Referer: ', startRule); // Can't fail
+  known('Referrer-Policy: no-referrer', startRule);
   known('Retry-After: 0', startRule);
   unknown('Retry-After: 0\x80', startRule);
   known('Server: foo', startRule);
@@ -215,6 +216,7 @@ test('Header: unknown', () => {
   unknown('Proxy-Authorization: ,', startRule);
   unknown('Range: ,', startRule);
   unknown('Referer: {', startRule);
+  unknown('Referrer-Policy: foo', startRule);
   unknown('Retry-After: ,', startRule);
   unknown('Server: ,', startRule);
   unknown('TE: ;', startRule);
@@ -387,6 +389,7 @@ test('Header edge cases', () => {
   fails('Proxy-Authorization', startRule);
   fails('Range', startRule);
   fails('Referer', startRule);
+  fails('Referrer-Policy', startRule);
   fails('Retry-After', startRule);
   fails('Server', startRule);
   fails('Set-Cookie', startRule);
@@ -827,6 +830,21 @@ test('Range', t => {
   fails('bytes\x80', t.name);
   fails('bytes=', t.name);
   fails('bytes=,', t.name);
+});
+
+test('Referrer_Policy', t => {
+  known('no-referrer-when-downgrade', t.name);
+  known('no-referrer', t.name);
+  known('strict-origin-when-cross-origin', t.name);
+  known('strict-origin', t.name);
+  known('same-origin', t.name);
+  known('origin-when-cross-origin', t.name);
+  known('origin,,', t.name);
+  known('unsafe-url,', t.name);
+  known('unsafe-url, origin, same-origin', t.name);
+  fails('', t.name);
+  fails('foo', t.name);
+  fails('unsafe-url\x80', t.name);
 });
 
 test('Server', t => {
