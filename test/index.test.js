@@ -1706,6 +1706,56 @@ test('Headers testPeggy', async() => {
       invalid,
     },
 
+    // #region Permissions_Policy
+    {
+      startRule: (startRule = 'Permissions_Policy'),
+      validInput: 'fullscreen=(), geolocation=()',
+      validResult: {
+        kind: 'permissions-policy',
+        value: 'fullscreen=(), geolocation=()',
+        directives: [
+          ['fullscreen', {items: []}],
+          ['geolocation', {items: []}],
+        ],
+      },
+      invalid,
+    },
+    {
+      startRule,
+      validInput: 'geolocation=(self "https://example.com")',
+      validResult: {
+        kind: 'permissions-policy',
+        value: 'geolocation=(self "https://example.com")',
+        directives: [
+          [
+            'geolocation',
+            {
+              items: [{item: 'self'}, {item: 'https://example.com'}],
+            },
+          ],
+        ],
+      },
+      invalid,
+    },
+    {
+      invalidInput: 'foo;b',
+      options: {
+        peg$startRuleFunction: 'peg$parsesf_dict_member',
+        peg$failAfter: {
+          peg$parsesf_parameters: 0,
+        },
+      },
+    },
+    {
+      invalidInput: ';foo;b',
+      options: {
+        peg$startRuleFunction: 'peg$parsesf_parameters',
+        peg$failAfter: {
+          peg$parsesf_parameter: 1,
+        },
+      },
+    },
+
     // #region Proxy_Authenticate
     {
       startRule: (startRule = 'Proxy_Authenticate'),
@@ -1940,22 +1990,6 @@ test('Headers testPeggy', async() => {
       startRule,
       invalidInput: 'foo="bar',
     },
-    // {
-    //   startRule,
-    //   invalidInput: 'foo=bar1;\x80',
-    // },
-    // {
-    //   startRule,
-    //   invalidInput: 'foo=bar; ',
-    // },
-    // {
-    //   startRule,
-    //   invalidInput: 'foo=bar2; baz;',
-    // },
-    // {
-    //   startRule,
-    //   invalidInput: 'foo="bar"; baz; ',
-    // },
     {
       startRule,
       invalidInput: 'foo="a\x00',
@@ -2547,6 +2581,13 @@ test('Headers testPeggy', async() => {
       options: {
         peg$silentFails: -1,
         peg$startRuleFunction: 'peg$parsesf_token',
+      },
+    },
+    {
+      validInput: 'a',
+      invalidInput: 'A',
+      options: {
+        peg$startRuleFunction: 'peg$parselcalpha',
       },
     },
   ]);

@@ -1,3 +1,18 @@
+{{
+/**
+ * Convert from Base64 to bytes in an unexciting way.
+ *
+ * @param base64 Base64-encoded string.
+ * @returns String decoded into bytes.
+ */
+function base64ToBytes(base64) {
+  const binString = atob(base64);
+  return Uint8Array.from(
+    binString,
+    m => m.codePointAt(0)
+  );
+}
+}}
 Headers
   = @(@Header CRLF)+ CRLF
 
@@ -45,6 +60,7 @@ Known_Header
   / @"Location"i COWS @Location
   / @"Max-Forwards"i COWS @Max_Forwards
   / @"NEL"i COWS @NEL
+  / @"Permissions-Policy"i COWS @Permissions_Policy
   / @"Proxy-Authentication-Info"i COWS @Proxy_Authentication_Info
   / @"Proxy-Authenticate"i COWS @Proxy_Authenticate
   / @"Proxy-Authorization"i COWS @Proxy_Authorization
@@ -102,12 +118,14 @@ Accept
     }
   }
 
+// See: https://www.rfc-editor.org/rfc/rfc8942.html#section-3.1
+// Ignore parameters, inner lists, etc.
 Accept_CH
-  = hints:sf_token|1.., OWS "," OWS| &EOL {
+  = hints:sf_list &EOL {
     return {
       kind: 'accept-ch',
       value: text(),
-      hints,
+      hints: hints.filter(h => h?.item).map(h => h.item),
     };
   }
 
@@ -474,6 +492,133 @@ NEL
       json,
     };
   }
+
+// See: https://w3c.github.io/webappsec-permissions-policy/#ascii-serialization
+Permissions_Policy
+  = directives:sf_dictionary &EOL {
+    directives = directives.map(
+      ([name, items]) => (items?.item != null) ? [name, { items: [items]}] : [name, items ?? {items: []}]
+    );
+    for (const [name, items] of directives) {
+      if (items.items) {
+        items.items = items.items.filter(i => typeof i.item === 'string');
+      }
+    }
+    return {
+      kind: 'permissions-policy',
+      value: text(),
+      directives,
+    }
+  }
+
+sf_list
+  = list_member|1.., OWS "," OWS|
+
+list_member
+  = sf_item
+  / sf_inner_list
+
+sf_dictionary
+  = sf_dict_member|1.., OWS "," OWS|
+
+sf_dict_member
+  = sf_member_key ("=" @sf_member_value / sf_parameters)
+
+sf_member_key
+  = sf_key
+
+sf_parameters
+  = params:(";" SP* @sf_parameter)* {
+    if (params.length) {
+      return {params: Object.fromEntries(params)};
+    }
+    return null;
+  }
+
+sf_member_value
+  = sf_inner_list
+  / sf_item
+
+sf_item
+  = item:sf_bare_item params:sf_parameters {
+    return {item, ...params};
+  }
+
+sf_bare_item
+  = sf_boolean
+  / sf_decimal
+  / sf_integer
+  / sf_string
+  / sf_token
+  / sf_binary
+
+sf_integer
+  = num:$("-"? DIGIT|1..15|) { return parseInt(num, 10) }
+
+sf_decimal
+  = num:$("-"? DIGIT|1..12| "." DIGIT|1..3|) { return parseFloat(num) }
+
+sf_string
+  = DQUOTE str:sf_chr* DQUOTE { return str.join('') }
+
+sf_token
+  = $((ALPHA / "*") (tchar / ":" / "/")*)
+
+sf_binary
+  = ":" b64:(txt:$sf_base64* { return {txt}}) ":" &{
+    try {
+      b64.bin = base64ToBytes(b64.txt)
+    } catch (e) {
+      return false;
+    }
+    return true;
+  } { return b64.bin }
+
+sf_chr
+  = sf_escaped
+  / sf_unescaped
+
+sf_unescaped
+  = [\x20-\x21]
+  / [\x23-\x5b]
+  / [\x5d-\x7e]
+
+sf_escaped
+  = "\\" @(DQUOTE / "\\" )
+
+sf_base64
+  = ALPHA
+  / DIGIT
+  / "+"
+  / "/"
+  / "="
+
+sf_boolean
+  = "?" @("0" {return false} / "1" { return true} )
+
+sf_inner_list
+  = "(" SP* items:(@sf_item|1.., SP+| SP*)? ")" params:sf_parameters {
+    const ret = {
+      items: items ?? [],
+      ...params
+    };
+    return ret;
+  }
+
+sf_key
+  = $((lcalpha / "*") (lcalpha / DIGIT / "_" / "-" / "." / "*")*)
+
+sf_parameter
+  = sf_param_key ("=" @sf_param_value)?
+
+lcalpha
+  = [\x61-\x7a]
+
+sf_param_key
+  = sf_key
+
+sf_param_value
+  = sf_bare_item
 
 // Proxy-Authenticate = #challenge
 Proxy_Authenticate
@@ -1789,9 +1934,6 @@ other_range // VCHAR excluding comma
   = other:$([\x21-\x2b] / [\x2d-\x7e])+ {
     return {other};
   }
-
-sf_token
-  = $((ALPHA / "*") (tchar / ":" / "/")*)
 
 scheme_source
   = @$(scheme_part ":") &(required_ascii_whitespace / ";" / EOL)

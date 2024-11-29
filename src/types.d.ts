@@ -219,6 +219,18 @@ export interface NEL extends Header<'nel'> {
   json: unknown[];
 }
 
+export interface PermissionsPolicyItem {
+  item?: string;
+  params?: object;
+}
+export interface PermissionsPolicyItems {
+  items: PermissionsPolicyItem[];
+  params?: object;
+}
+export interface Permissions_Policy extends Header<'permissions-policy'> {
+  directives: [name: string, items: PermissionsPolicyItems][];
+}
+
 export interface Challenge {
   scheme: string;
   params?: AuthParam[];
@@ -369,6 +381,7 @@ export type AnyHeader
   | Location
   | Max_Forwards
   | NEL
+  | Permissions_Policy
   | Proxy_Authenticate
   | Proxy_Authentication_Info
   | Proxy_Authorization
