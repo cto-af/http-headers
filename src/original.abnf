@@ -23,6 +23,7 @@ Header
   / "Content-Location" COWS Content-Location
   / "Content-Range" COWS Content-Range
   / "Content-Security-Policy" COWS Content-Security-Policy
+  / "Content-Security-Policy-Report-Only" COWS Content-Security-Policy-Report-Only
   / "Content-Type" COWS Content-Type
   / "Date" COWS Date
   / "ETag" COWS ETag

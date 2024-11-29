@@ -1,5 +1,7 @@
 Content-Security-Policy = 1#serialized-policy
 
+Content-Security-Policy-Report-Only = 1#serialized-policy
+
 serialized-policy =
     serialized-directive *( optional-ascii-whitespace ";" [ optional-ascii-whitespace serialized-directive ] )
 

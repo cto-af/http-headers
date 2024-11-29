@@ -43,6 +43,7 @@ Known_Header
   / @"Content-Length"i COWS @Content_Length
   / @"Content-Location"i COWS @Content_Location
   / @"Content-Range"i COWS @Content_Range
+  / @"Content-Security-Policy-Report-Only"i COWS @Content_Security_Policy_Report_Only
   / @"Content-Security-Policy"i COWS @Content_Security_Policy
   / @"Content-Type"i COWS @Content_Type
   / @"Date"i COWS @Date
@@ -319,13 +320,25 @@ Content_Range
   }
 
 Content_Security_Policy
-  = policies:(some:(serialized_policy?)|.., optional_ascii_whitespace "," optional_ascii_whitespace| {return some.filter(s => s)}) &{ return (policies.length >= 1) } &EOL {
+  = policies:CSP_Policies {
     return {
       kind: 'content-security-policy',
       value: text(),
       directives: policies.filter(p => p).flat(1),
     }
   }
+
+Content_Security_Policy_Report_Only
+= policies:CSP_Policies {
+    return {
+      kind: 'content-security-policy-report-only',
+      value: text(),
+      directives: policies.filter(p => p).flat(1),
+    }
+  }
+
+CSP_Policies
+  = @policies:(some:(serialized_policy?)|.., optional_ascii_whitespace "," optional_ascii_whitespace| {return some.filter(s => s)}) &{ return (policies.length >= 1) } &EOL
 
 Content_Type
   = mt:media_type {
@@ -669,6 +682,7 @@ Referer
     };
   }
 
+// See: https://www.w3.org/TR/referrer-policy/#referrer-policy-header
 Referrer_Policy
   = tokens:(some:(policy_token?)|.., OWS "," OWS| {return some.filter(s => s)}) &{ return (tokens.length >= 1) } &EOL {
     return {
