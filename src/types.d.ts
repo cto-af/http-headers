@@ -146,6 +146,10 @@ export interface Content_Security_Policy extends Header<'content-security-policy
   directives: CSPDirective[];
 }
 
+export interface Content_Security_Policy_Report_Only extends Header<'content-security-policy-report-only'> {
+  directives: CSPDirective[];
+}
+
 export interface Content_Type extends Header<'content-type'> {
   type: string;
   subtype: string;
@@ -369,6 +373,7 @@ export type AnyHeader
   | Content_Location
   | Content_Range
   | Content_Security_Policy
+  | Content_Security_Policy_Report_Only
   | Content_Type
   | Date
   | ETag

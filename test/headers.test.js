@@ -104,6 +104,7 @@ test('Header: known', () => {
   known('Content-Range: bytes */0', startRule);
   unknown('Content-Range: bytes */0\x80', startRule);
   known('Content-Security-Policy: foo', startRule);
+  known('Content-Security-Policy-Report-Only: foo', startRule);
   known('Content-Type: foo/bar', startRule);
   fails('Content-Type: foo/bar\x80', startRule);
   known('Date: Sun, 06 Nov 1994 08:49:37 GMT', startRule);
@@ -193,6 +194,7 @@ test('Header: unknown', () => {
   unknown('Content-Range: bytes,', startRule);
   unknown('Content-Range: bytes ,', startRule);
   unknown('Content-Security-Policy: \x80', startRule);
+  unknown('Content-Security-Policy-Report-Only: \x80', startRule);
   unknown('Content-Type: ,', startRule);
   unknown('Date: ,', startRule);
   unknown('ETag: ,', startRule);
@@ -262,9 +264,39 @@ alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000\r
     },
     {
       kind: 'content-security-policy-report-only',
-      name: 'content-security-policy-report-only',
       value: "object-src 'none';base-uri 'self';script-src 'nonce-mDRix_DuLkaEeso5np47EA' 'strict-dynamic' 'report-sample' 'unsafe-eval' 'unsafe-inline' https: http:;report-uri https://csp.withgoogle.com/csp/gws/other-hp",
-      unknown: true,
+      directives: [
+        {
+          name: 'object-src',
+          values: [{kind: 'keyword', value: "'none'"}],
+        },
+        {
+          name: 'base-uri',
+          values: [{kind: 'keyword', value: "'self'"}],
+        },
+        {
+          name: 'script-src',
+          values: [
+            {kind: 'nonce', value: "'nonce-mDRix_DuLkaEeso5np47EA'"},
+            {kind: 'keyword', value: "'strict-dynamic'"},
+            {kind: 'keyword', value: "'report-sample'"},
+            {kind: 'keyword', value: "'unsafe-eval'"},
+            {kind: 'keyword', value: "'unsafe-inline'"},
+            {kind: 'scheme', value: 'https:'},
+            {kind: 'scheme', value: 'http:'},
+          ],
+        },
+        {
+          name: 'report-uri',
+          values: [
+            {
+              kind: 'host',
+              value: 'https://csp.withgoogle.com/csp/gws/other-hp',
+            },
+          ],
+        },
+      ],
+      name: 'content-security-policy-report-only',
     },
     {
       kind: 'date',
@@ -367,6 +399,7 @@ test('Header edge cases', () => {
   fails('Content-Location', startRule);
   fails('Content-Range', startRule);
   fails('Content-Security-Policy', startRule);
+  fails('Content-Security-Policy-Report-Only', startRule);
   fails('Content-Type', startRule);
   fails('Date', startRule);
   fails('ETag', startRule);
@@ -628,6 +661,10 @@ test('Content_Security_Policy', t => {
   fails(',', t.name);
   fails(';;', t.name);
   fails('foo, bar\x00');
+});
+
+test('Content_Security_Policy_Report_Only', t => {
+  fails('foo, bar\x00', t.name);
 });
 
 test('Content_Type', t => {

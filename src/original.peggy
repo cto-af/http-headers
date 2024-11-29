@@ -25,6 +25,7 @@ Header
   / "Content-Location"i COWS Content_Location
   / "Content-Range"i COWS Content_Range
   / "Content-Security-Policy"i COWS Content_Security_Policy
+  / "Content-Security-Policy-Report-Only"i COWS Content_Security_Policy_Report_Only
   / "Content-Type"i COWS Content_Type
   / "Date"i COWS Date
   / "ETag"i COWS ETag
@@ -134,6 +135,9 @@ Content_Range
   = range_unit SP (range_resp / unsatisfied_range)
 
 Content_Security_Policy
+  = @count:(some:(serialized_policy?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}) &{ return (count.length >= 1) }
+
+Content_Security_Policy_Report_Only
   = @count:(some:(serialized_policy?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}) &{ return (count.length >= 1) }
 
 Content_Type
