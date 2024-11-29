@@ -42,6 +42,7 @@ Header
   / "Location"i COWS Location
   / "Max-Forwards"i COWS Max_Forwards
   / "NEL"i COWS NEL
+  / "Permissions-Policy"i COWS Permissions_Policy
   / "Proxy-Authenticate"i COWS Proxy_Authenticate
   / "Proxy-Authentication-Info"i COWS Proxy_Authentication_Info
   / "Proxy-Authorization"i COWS Proxy_Authorization
@@ -187,6 +188,9 @@ Max_Forwards
 
 NEL
   = json_field_value
+
+Permissions_Policy
+  = sf_dictionary
 
 Proxy_Authenticate
   = (challenge (OWS "," OWS challenge)*)?
@@ -376,6 +380,9 @@ URI_reference
 
 json_field_value
   = some:(json_field_item?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}
+
+sf_dictionary
+  = sf_dict_member (OWS "," OWS sf_dict_member)*
 
 challenge
   = auth_scheme (SP+ (token68 / (auth_param (OWS "," OWS auth_param)*)?))?
@@ -618,6 +625,9 @@ relative_ref
 
 json_field_item
   = VCHAR+
+
+sf_dict_member
+  = sf_member_key (sf_parameters / ("=" sf_member_value))
 
 range_set
   = range_spec (OWS "," OWS range_spec)*
@@ -886,6 +896,16 @@ fragment
 VCHAR
   = [\x21-\x7e]
 
+sf_member_key
+  = sf_key
+
+sf_parameters
+  = (";" SP* sf_parameter)*
+
+sf_member_value
+  = sf_item
+  / sf_inner_list
+
 range_spec
   = int_range
   / suffix_range
@@ -929,9 +949,6 @@ sf_bare_item
   / sf_token
   / sf_binary
   / sf_boolean
-
-sf_parameters
-  = (";" SP* sf_parameter)*
 
 extlang
   = ALPHA|3| ("-" ALPHA|3|)|..2|
@@ -1024,6 +1041,12 @@ HEXDIG
   / "E"i
   / "F"i
 
+sf_key
+  = (lcalpha / "*") (lcalpha / DIGIT / "_" / "-" / "." / "*")*
+
+sf_parameter
+  = sf_param_key ("=" sf_param_value)?
+
 int_range
   = first_pos "-" last_pos?
 
@@ -1050,9 +1073,6 @@ sf_binary
 
 sf_boolean
   = "?" ("0" / "1")
-
-sf_parameter
-  = sf_param_key ("=" sf_param_value)?
 
 scheme_source
   = scheme_part ":"
@@ -1108,6 +1128,15 @@ dtext
 atom
   = CFWS? atext+ CFWS?
 
+lcalpha
+  = [\x61-\x7a]
+
+sf_param_key
+  = sf_key
+
+sf_param_value
+  = sf_bare_item
+
 suffix_length
   = DIGIT+
 
@@ -1121,12 +1150,6 @@ sf_base64
   / "+"
   / "/"
   / "="
-
-sf_param_key
-  = sf_key
-
-sf_param_value
-  = sf_bare_item
 
 scheme_part
   = scheme
@@ -1210,9 +1233,6 @@ sf_unescaped
 sf_escaped
   = "\\" (DQUOTE / "\\")
 
-sf_key
-  = (lcalpha / "*") (lcalpha / DIGIT / "_" / "-" / "." / "*")*
-
 host_char
   = ALPHA
   / DIGIT
@@ -1236,9 +1256,6 @@ obs_NO_WS_CTL
   / "\x0c"
   / [\x0e-\x1f]
   / "\x7f"
-
-lcalpha
-  = [\x61-\x7a]
 
 obs_ctext
   = obs_NO_WS_CTL

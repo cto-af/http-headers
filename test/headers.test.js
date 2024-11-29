@@ -52,7 +52,10 @@ function out(s) {
 }
 function fails(input, startRule, obsolete = true) {
   count++;
-  assert.throws(() => parse(input, {startRule, obsolete}), input);
+  assert.throws(
+    () => parse(input, {startRule, obsolete}),
+    input
+  );
 }
 
 test.after(() => {
@@ -130,6 +133,7 @@ test('Header: known', () => {
   known('Max-Forwards: 0', startRule);
   unknown('Max-Forwards: 0\x80', startRule);
   known('NEL: ""', startRule);
+  known('Permissions-Policy: a', startRule);
   known('Proxy-Authenticate: ,', startRule);
   known('Proxy-Authentication-Info: ,', startRule);
   known('Proxy-Authorization: basic Zm9vOmJhcg==', startRule);
@@ -205,6 +209,7 @@ test('Header: unknown', () => {
   unknown('Location: {', startRule);
   unknown('Max-Forwards: ,', startRule);
   unknown('NEL: "', startRule);
+  unknown('Permissions-Policy: ;', startRule);
   unknown('Proxy-Authenticate: ;', startRule);
   unknown('Proxy-Authentication-Info: ;', startRule);
   unknown('Proxy-Authorization: ,', startRule);
@@ -376,6 +381,7 @@ test('Header edge cases', () => {
   fails('Location', startRule);
   fails('Max-Forwards', startRule);
   fails('NEL', startRule);
+  fails('Permissions-Policy', startRule);
   fails('Proxy-Authenticate', startRule);
   fails('Proxy-Authentication-Info', startRule);
   fails('Proxy-Authorization', startRule);
@@ -780,6 +786,41 @@ test('Location', t => {
 
 test('NEL', t => {
   fails('\x00', t.name);
+});
+
+test('Permissions_Policy', t => {
+  fails('\x00', t.name);
+  fails('a=b\x00', t.name);
+  fails('a=b, \x00', t.name);
+  fails('a=b, c\x00', t.name);
+  fails('a=b, c=\x00', t.name);
+  fails('a=b, c=d\x00', t.name);
+  fails('a=b;\x00', t.name);
+  fails('a=b;  \x00', t.name);
+  fails('a=b; c; d\x00', t.name);
+  fails('a=1234567890123456', t.name);
+  fails('a=1.1234', t.name);
+  fails('a=1.', t.name);
+  fails('a="1', t.name);
+  fails('foo=:Zm', t.name);
+  fails('foo=:Zm9vOmJhcg=a:', t.name);
+  known('foo=:Zm9vOmJhcg==:', t.name);
+  known('geolocation=(self "https://example.com" "https://geo.example.com" "https://geo2.example.com" "https://new.geo2.example.com")', t.name);
+  known('geolocation=(self "https://example.com" "https://*.example.com")', t.name);
+  known('geolocation=(self "https://example.com" "https://example.com:444" "https://example.com:445" "https://example.com:446")', t.name);
+  known('geolocation=(   *   1   -1 1.1 -1.1 ?0 ?1);foo', t.name);
+  known('geolocation=*;foo=bar', t.name);
+  known('foo=1', t.name);
+  known('foo=a;b; c=d', t.name);
+  fails('foo=a;a=?b', t.name);
+  known('foo="a\\"b"', t.name);
+  fails('foo="a\\("', t.name);
+  fails('foo=?', t.name);
+  fails('foo=?a', t.name);
+  fails('foo=(?a)', t.name);
+  fails('foo=(0 ?a)', t.name);
+  fails('foo;A', t.name);
+  fails('foo;a, bar;A', t.name);
 });
 
 test('Range', t => {

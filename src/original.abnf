@@ -40,6 +40,7 @@ Header
   / "Location" COWS Location
   / "Max-Forwards" COWS Max-Forwards
   / "NEL" COWS NEL
+  / "Permissions-Policy" COWS Permissions-Policy
   / "Proxy-Authenticate" COWS Proxy-Authenticate
   / "Proxy-Authentication-Info" COWS Proxy-Authentication-Info
   / "Proxy-Authorization" COWS Proxy-Authorization
