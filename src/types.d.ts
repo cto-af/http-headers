@@ -56,6 +56,31 @@ export interface Accept_Ranges extends Header<'accept-ranges'> {
   ranges: string[];
 }
 
+export interface Access_Control_Allow_Credentials extends Header<'access-control-allow-credentials'> {
+  allow: boolean;
+}
+export interface Access_Control_Allow_Headers extends Header<'access-control-allow-headers'> {
+  fields: string[];
+}
+export interface Access_Control_Allow_Methods extends Header<'access-control-allow-methods'> {
+  methods: string[];
+}
+export interface Access_Control_Allow_Origin extends Header<'access-control_allow-origin'> {
+  origin: string;
+}
+export interface Access_Control_Expose_Headers extends Header<'access-control-expose-headers'> {
+  fields: string[];
+}
+export interface Access_Control_Max_Age extends Header<'access-control-max-age'> {
+  age: number;
+}
+export interface Access_Control_Request_Headers extends Header<'access-control-request-headers'> {
+  fields: string[];
+}
+export interface Access_Control_Request_Method extends Header<'access-control-request-method'> {
+  method: string;
+}
+
 export interface Age extends Header<'age'> {
   secs: number;
 }
@@ -410,6 +435,14 @@ export type AnyHeader
   | Accept_Encoding
   | Accept_Language
   | Accept_Ranges
+  | Access_Control_Allow_Credentials
+  | Access_Control_Allow_Headers
+  | Access_Control_Allow_Methods
+  | Access_Control_Allow_Origin
+  | Access_Control_Expose_Headers
+  | Access_Control_Max_Age
+  | Access_Control_Request_Headers
+  | Access_Control_Request_Method
   | Age
   | Allow
   | ALPN

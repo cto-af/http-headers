@@ -31,6 +31,14 @@ Known_Header
   / @"Accept-Encoding"i COWS @Accept_Encoding
   / @"Accept-Language"i COWS @Accept_Language
   / @"Accept-Ranges"i COWS @Accept_Ranges
+  / @"Access-Control-Allow-Credentials"i COWS @Access_Control_Allow_Credentials
+  / @"Access-Control-Allow-Headers"i COWS @Access_Control_Allow_Headers
+  / @"Access-Control-Allow-Methods"i COWS @Access_Control_Allow_Methods
+  / @"Access-Control-Allow-Origin"i COWS @Access_Control_Allow_Origin
+  / @"Access-Control-Expose-Headers"i COWS @Access_Control_Expose_Headers
+  / @"Access-Control-Max-Age"i COWS @Access_Control_Max_Age
+  / @"Access-Control-Request-Headers"i COWS @Access_Control_Request_Headers
+  / @"Access-Control-Request-Method"i COWS @Access_Control_Request_Method
   / @"Allow"i COWS @Allow
   / @"ALPN"i COWS @ALPN
   / @"Alt-Svc"i COWS @Alt_Svc
@@ -193,6 +201,91 @@ Accept_Ranges
     };
   }
 
+Access_Control_Allow_Credentials
+  = allow:("true" { return true } / "false" { return false }) &EOL {
+    return {
+      kind: 'access-control-allow-credentials',
+      value: text(),
+      allow,
+    }
+  }
+
+Access_Control_Allow_Headers
+  = fields:(field_name?)|.., OWS "," OWS| &EOL {
+    return {
+      kind: 'access-control-allow-headers',
+      value: text(),
+      fields: fields.filter(s => s).map(f => f.toLowerCase()),
+    }
+  }
+
+Access_Control_Allow_Methods
+  = methods:(method?)|.., OWS "," OWS| &EOL {
+    return {
+      kind: 'access-control-allow-methods',
+      value: text(),
+      methods: methods.filter(m => m).map(m => m.toLowerCase()),
+    }
+  }
+
+Access_Control_Allow_Origin
+  = origin:("null" / "*" / serialized_origin) &EOL {
+    return {
+      kind: 'access-control-allow-origin',
+      value: text(),
+      origin,
+    }
+  }
+
+// No path
+serialized_origin
+  = $(scheme "://" uri_host (":" port)?)
+
+Access_Control_Expose_Headers
+  = fields:(field_name?)|.., OWS "," OWS| &EOL {
+    return {
+      kind: 'access-control-expose-headers',
+      value: text(),
+      fields: fields.filter(f => f).map(f => f.toLowerCase()),
+    }
+  }
+
+Access_Control_Max_Age
+  = age:delta_seconds &EOL {
+    return {
+      kind: 'access-control-max-age',
+      value: text(),
+      age,
+    }
+  }
+
+Access_Control_Request_Headers
+  = fields:(some:(field_name?)|.., OWS "," OWS| {return some.filter(s => s)}) &{ return (fields.length >= 1) } &EOL {
+    return {
+      kind: 'access-control-request-headers',
+      value: text(),
+      fields: fields.map(f => f.toLowerCase()),
+    }
+  }
+
+Access_Control_Request_Method
+  = method:method &EOL {
+    return {
+      kind: 'access-control-request-method',
+      value: text(),
+      method: method.toLowerCase(),
+    }
+  }
+
+Age
+  = secs:delta_seconds &EOL {
+    return {
+      kind: 'age',
+      value: text(),
+      secs,
+    };
+  }
+
 // Allow = #method
 Allow
   = methods:(method?)|.., OWS "," OWS| &EOL {
@@ -210,15 +303,6 @@ ALPN
       value: text(),
       protocols,
     }
-  }
-
-Age
-  = secs:delta_seconds &EOL {
-    return {
-      kind: 'age',
-      value: text(),
-      secs,
-    };
   }
 
 Alt_Svc
@@ -431,7 +515,7 @@ Expect
   }
 
 Expires
-  = date:HTTP_date &EOL {
+  = date:(HTTP_date / "0" { return new Date(0) } / "-1" { return new Date(-1) }) &EOL {
     return {
       kind: 'expires',
       value: text(),

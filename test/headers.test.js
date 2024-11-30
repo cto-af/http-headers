@@ -85,6 +85,18 @@ test('Header: known', () => {
   unknown('Accept-Language: aaa-', startRule);
   known('Accept-Ranges: bytes', startRule);
   unknown('Accept-Ranges: bytes\x80', startRule);
+
+  known('Access-Control-Allow-Credentials: true', startRule);
+  known('Access-Control-Allow-Credentials: false', startRule);
+  known('Access-Control-Allow-Headers: X', startRule);
+  known('Access-Control-Allow-Methods: GET', startRule);
+  known('Access-Control-Allow-Origin: *', startRule);
+  known('Access-Control-Allow-Origin: null', startRule);
+  known('Access-Control-Allow-Origin: http://localhost:9000', startRule);
+  known('Access-Control-Expose-Headers: X', startRule);
+  known('Access-Control-Max-Age: 12', startRule);
+  known('Access-Control-Request-Headers: X', startRule);
+  known('Access-Control-Request-Method: GET', startRule);
   known('Age: 12', startRule);
   known('Allow: ,', startRule);
   known('Alt-Svc: clear', startRule);
@@ -124,6 +136,8 @@ test('Header: known', () => {
   unknown('ETag: ""\x80', startRule);
   known('Expect: ,', startRule);
   known('Expires: Sun, 06 Nov 1994 08:49:37 GMT', startRule);
+  known('Expires: 0', startRule);
+  known('Expires: -1', startRule);
   known('From: a@b', startRule);
   unknown('From: a@b\x80', startRule);
   known('Host: ,', startRule);
@@ -192,6 +206,14 @@ test('Header: unknown', () => {
   unknown('Accept-Encoding: ;', startRule);
   unknown('Accept-Language: ;', startRule);
   unknown('Accept-Ranges: ,', startRule);
+  unknown('Access-Control-Allow-Credentials: ,', startRule);
+  unknown('Access-Control-Allow-Headers: ;', startRule);
+  unknown('Access-Control-Allow-Methods: ;', startRule);
+  unknown('Access-Control-Allow-Origin: ;', startRule);
+  unknown('Access-Control-Expose-Headers: ;', startRule);
+  unknown('Access-Control-Max-Age: ;', startRule);
+  unknown('Access-Control-Request-Headers: ;', startRule);
+  unknown('Access-Control-Request-Method: ;', startRule);
   unknown('Age: a', startRule);
   unknown('Allow: ;', startRule);
   unknown('ALPN: ;', startRule);
@@ -408,6 +430,14 @@ test('Header edge cases', () => {
   fails('accept-encoding', startRule);
   fails('Accept-Language', startRule);
   fails('Accept-Ranges', startRule);
+  fails('Access-Control-Allow-Credentials', startRule);
+  fails('Access-Control-Allow-Headers', startRule);
+  fails('Access-Control-Allow-Methods', startRule);
+  fails('Access-Control-Allow-Origin', startRule);
+  fails('Access-Control-Expose-Headers', startRule);
+  fails('Access-Control-Max-Age', startRule);
+  fails('Access-Control-Request-Headers', startRule);
+  fails('Access-Control-Request-Method', startRule);
   fails('Age', startRule);
   fails('Allow', startRule);
   fails('ALPN', startRule);
@@ -566,6 +596,34 @@ test('Content_Language', t => {
   ]) {
     known(lang, t.name);
   }
+});
+
+test('fetch', () => {
+  fails('true ', 'Access_Control_Allow_Credentials');
+
+  known('X, Y', 'Access_Control_Allow_Headers');
+  fails('X-foo, X-bar, \x00', 'Access_Control_Allow_Headers');
+
+  known('GET, POST', 'Access_Control_Allow_Methods');
+  fails('GET, POST, \x00', 'Access_Control_Allow_Methods');
+
+  known('http://foo', 'Access_Control_Allow_Origin');
+  fails('* ', 'Access_Control_Allow_Origin');
+  fails('foo', 'Access_Control_Allow_Origin');
+  fails('foo:', 'Access_Control_Allow_Origin');
+  fails('foo://bar:\x00', 'Access_Control_Allow_Origin');
+
+  known('X-foo, X-bar', 'Access_Control_Expose_Headers');
+  fails('X-foo, X-bar, \x00', 'Access_Control_Expose_Headers');
+
+  fails('\x00', 'Access_Control_Max_Age');
+  fails('12\x00', 'Access_Control_Max_Age');
+
+  known('X-foo, X-bar', 'Access_Control_Request_Headers');
+  fails('X-foo, X-bar, \x00', 'Access_Control_Request_Headers');
+
+  fails('\x00', 'Access_Control_Request_Method');
+  fails('get\x00', 'Access_Control_Request_Method');
 });
 
 test('Content_Location', t => {

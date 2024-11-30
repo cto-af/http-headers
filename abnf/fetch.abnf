@@ -1,2 +1,22 @@
+Access-Control-Request-Method    = method
+
+Access-Control-Request-Headers   = 1#field-name
+
+wildcard                         = "*"
+
+Access-Control-Allow-Origin      = %s"null" / wildcard / serialized-origin
+
+serialized-origin   = scheme "://" uri-host [ ":" port ]
+
+Access-Control-Allow-Credentials = %s"true" ; case-sensitive
+
+Access-Control-Expose-Headers    = #field-name
+
+Access-Control-Max-Age           = delta-seconds
+
+Access-Control-Allow-Methods     = #method
+
+Access-Control-Allow-Headers     = #field-name
+
 Cross-Origin-Resource-Policy = %s"same-origin" / %s"same-site" / %s"cross-origin" ; case-sensitive
 

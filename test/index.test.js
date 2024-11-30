@@ -2599,6 +2599,15 @@ test('Headers testPeggy', async() => {
         },
       },
     },
+    {
+      invalidInput: 'http://*',
+      options: {
+        peg$startRuleFunction: 'peg$parseserialized_origin',
+        peg$failAfter: {
+          peg$parseuri_host: 0,
+        },
+      },
+    },
   ]);
   delete results.grammarPath;
   delete results.modifiedPath;

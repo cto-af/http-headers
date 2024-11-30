@@ -9,6 +9,14 @@ Header
   / "Accept-Encoding" COWS Accept-Encoding
   / "Accept-Language" COWS Accept-Language
   / "Accept-Ranges" COWS Accept-Ranges
+  / "Access-Control-Allow-Credentials" COWS Access-Control-Allow-Credentials
+  / "Access-Control-Allow-Headers" COWS Access-Control-Allow-Headers
+  / "Access-Control-Allow-Methods" COWS Access-Control-Allow-Methods
+  / "Access-Control-Allow-Origin" COWS Access-Control-Allow-Origin
+  / "Access-Control-Expose-Headers" COWS Access-Control-Expose-Headers
+  / "Access-Control-Max-Age" COWS Access-Control-Max-Age
+  / "Access-Control-Request-Headers" COWS Access-Control-Request-Headers
+  / "Access-Control-Request-Method" COWS Access-Control-Request-Method
   / "Age" COWS Age
   / "Allow" COWS Allow
   / "ALPN" COWS ALPN

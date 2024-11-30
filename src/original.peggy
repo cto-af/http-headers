@@ -11,6 +11,14 @@ Header
   / "Accept-Encoding"i COWS Accept_Encoding
   / "Accept-Language"i COWS Accept_Language
   / "Accept-Ranges"i COWS Accept_Ranges
+  / "Access-Control-Allow-Credentials"i COWS Access_Control_Allow_Credentials
+  / "Access-Control-Allow-Headers"i COWS Access_Control_Allow_Headers
+  / "Access-Control-Allow-Methods"i COWS Access_Control_Allow_Methods
+  / "Access-Control-Allow-Origin"i COWS Access_Control_Allow_Origin
+  / "Access-Control-Expose-Headers"i COWS Access_Control_Expose_Headers
+  / "Access-Control-Max-Age"i COWS Access_Control_Max_Age
+  / "Access-Control-Request-Headers"i COWS Access_Control_Request_Headers
+  / "Access-Control-Request-Method"i COWS Access_Control_Request_Method
   / "Age"i COWS Age
   / "Allow"i COWS Allow
   / "ALPN"i COWS ALPN
@@ -95,6 +103,32 @@ Accept_Language
 
 Accept_Ranges
   = acceptable_ranges
+
+Access_Control_Allow_Credentials
+  = "true"
+
+Access_Control_Allow_Headers
+  = some:(field_name?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}
+
+Access_Control_Allow_Methods
+  = some:(method?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}
+
+Access_Control_Allow_Origin
+  = "null"
+  / wildcard
+  / serialized_origin
+
+Access_Control_Expose_Headers
+  = some:(field_name?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}
+
+Access_Control_Max_Age
+  = delta_seconds
+
+Access_Control_Request_Headers
+  = @count:(some:(field_name?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}) &{ return (count.length >= 1) }
+
+Access_Control_Request_Method
+  = method
 
 Age
   = delta_seconds
@@ -294,11 +328,20 @@ language_range
 acceptable_ranges
   = range_unit (OWS "," OWS range_unit)*
 
-delta_seconds
-  = DIGIT+
+field_name
+  = token
 
 method
   = token
+
+wildcard
+  = "*"
+
+serialized_origin
+  = scheme "://" uri_host (":" port)?
+
+delta_seconds
+  = DIGIT+
 
 protocol_id
   = token
@@ -401,7 +444,7 @@ URI_reference
   / relative_ref
 
 link_value
-  = "<" URI_Reference ">" (OWS ";" OWS link_param)*
+  = "<" URI_reference ">" (OWS ";" OWS link_param)*
 
 json_field_value
   = some:(json_field_item?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}
@@ -458,9 +501,6 @@ directive
 t_codings
   = "trailers"i
   / (transfer_coding weight?)
-
-field_name
-  = token
 
 protocol
   = protocol_name ("/" protocol_version)?
@@ -521,6 +561,9 @@ alphanum
   = ALPHA
   / DIGIT
 
+scheme
+  = ALPHA (ALPHA / DIGIT / "+" / "-" / ".")*
+
 alternative
   = protocol_id "=" alt_authority
 
@@ -548,9 +591,6 @@ privateuse
 grandfathered
   = irregular
   / regular
-
-scheme
-  = ALPHA (ALPHA / DIGIT / "+" / "-" / ".")*
 
 hier_part
   = "//" authority path_abempty
