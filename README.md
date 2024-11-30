@@ -103,6 +103,7 @@ Here are the supported values for `startRule`:
   - 'Range'
   - 'Referer'
   - 'Referrer_Policy'
+  - 'Reporting_Endpoints'
   - 'Retry_After'
   - 'Server'
   - 'Set_Cookie'

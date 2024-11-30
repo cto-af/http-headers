@@ -285,6 +285,10 @@ export interface Referrer_Policy extends Header<'referer-policy'> {
   tokens: string[];
 }
 
+export interface Reporting_Endpoints extends Header<'reporting-endpoints'> {
+  endpoints: [name: string, uri: string][];
+}
+
 export interface Retry_After extends Header<'retry-after'> {
   date?: Date;
   seconds?: number;
@@ -410,6 +414,7 @@ export type AnyHeader
   | Range
   | Referer
   | Referrer_Policy
+  | Reporting_Endpoints
   | Retry_After
   | Server
   | Set_Cookie

@@ -70,6 +70,7 @@ Known_Header
   / @"Range"i COWS @Range
   / @"Referer"i COWS @Referer
   / @"Referrer-Policy"i COWS @Referrer_Policy
+  / @"Reporting-Endpoints"i COWS @Reporting_Endpoints
   / @"Retry-After"i COWS @Retry_After
   / @"Server"i COWS @Server
   / @"TE"i COWS @TE
@@ -721,6 +722,15 @@ policy_token
   / "origin-when-cross-origin"i
   / "origin"i
   / "unsafe-url"i
+
+Reporting_Endpoints
+  = endpoints:sf_dictionary &{ return endpoints.every(e => typeof e[1]?.item === 'string')} &EOL {
+    return {
+      kind: 'reporting-endpoints',
+      value: text(),
+      endpoints: endpoints.map(([name, {item}]) => [name, item]),
+    }
+  }
 
 Retry_After
   = date:HTTP_date &EOL {
