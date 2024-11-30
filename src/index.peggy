@@ -46,6 +46,8 @@ Known_Header
   / @"Content-Security-Policy-Report-Only"i COWS @Content_Security_Policy_Report_Only
   / @"Content-Security-Policy"i COWS @Content_Security_Policy
   / @"Content-Type"i COWS @Content_Type
+  / @"Cross-Origin-Opener-Policy-Report-Only"i COWS @Cross_Origin_Opener_Policy_Report_Only
+  / @"Cross-Origin-Opener-Policy"i COWS @Cross_Origin_Opener_Policy
   / @"Date"i COWS @Date
   / @"ETag"i COWS @ETag
   / @"Expect"i COWS @Expect
@@ -329,7 +331,7 @@ Content_Security_Policy
   }
 
 Content_Security_Policy_Report_Only
-= policies:CSP_Policies {
+  = policies:CSP_Policies {
     return {
       kind: 'content-security-policy-report-only',
       value: text(),
@@ -346,6 +348,24 @@ Content_Type
       kind: 'content-type',
       value: text(),
       ...mt,
+    }
+  }
+
+Cross_Origin_Opener_Policy_Report_Only
+  = policy:sf_item &{ return (typeof policy.item === 'string') } &EOL {
+    return {
+      kind: 'cross-origin-opener-policy-report-only',
+      value: text(),
+      policy,
+    }
+  }
+
+Cross_Origin_Opener_Policy
+  = policy:sf_item &{ return (typeof policy.item === 'string') } &EOL {
+    return {
+      kind: 'cross-origin-opener-policy',
+      value: text(),
+      policy,
     }
   }
 

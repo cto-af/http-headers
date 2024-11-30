@@ -156,6 +156,17 @@ export interface Content_Type extends Header<'content-type'> {
   parameters: Parameters;
 }
 
+export interface CoopPolicyItem {
+  item: string;
+  params?: object;
+}
+export interface Cross_Origin_Opener_Policy extends Header<'cross-origin-opener-policy'> {
+  policy: CoopPolicyItem;
+}
+export interface Cross_Origin_Opener_Policy_Report_Only extends Header<'cross-origin-opener-policy-report-only'> {
+  policy: CoopPolicyItem;
+}
+
 export interface Date extends Header<'date'> {
   date: Date;
 }
@@ -375,6 +386,8 @@ export type AnyHeader
   | Content_Security_Policy
   | Content_Security_Policy_Report_Only
   | Content_Type
+  | Cross_Origin_Opener_Policy
+  | Cross_Origin_Opener_Policy_Report_Only
   | Date
   | ETag
   | Expect

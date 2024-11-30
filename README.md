@@ -79,6 +79,8 @@ Here are the supported values for `startRule`:
   - 'Content_Security_Policy'
   - 'Content_Security_Policy_Report_Only'
   - 'Content_Type'
+  - 'Cross_Origin_Opener_Policy'
+  - 'Cross_Origin_Opener_Policy_Report_Only'
   - 'Date'
   - 'ETag'
   - 'Expect'
