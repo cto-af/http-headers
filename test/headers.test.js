@@ -107,6 +107,10 @@ test('Header: known', () => {
   known('Content-Security-Policy-Report-Only: foo', startRule);
   known('Content-Type: foo/bar', startRule);
   fails('Content-Type: foo/bar\x80', startRule);
+  known('cross-origin-embedder-policy: require-corp', startRule);
+  known('cross-origin-embedder-policy: require-corp; report-to="youtube_main"', startRule);
+  known('cross-origin-embedder-policy-report-only: require-corp', startRule);
+  known('cross-origin-embedder-policy-report-only: require-corp; report-to="youtube_main"', startRule);
   known('cross-origin-opener-policy: same-origin-allow-popups', startRule);
   known('cross-origin-opener-policy: same-origin-allow-popups; report-to="youtube_main"', startRule);
   known('cross-origin-opener-policy-report-only: same-origin-allow-popups', startRule);
@@ -202,6 +206,8 @@ test('Header: unknown', () => {
   unknown('Content-Security-Policy: \x80', startRule);
   unknown('Content-Security-Policy-Report-Only: \x80', startRule);
   unknown('Content-Type: ,', startRule);
+  unknown('Cross-Origin-Embedder-Policy: \x80', startRule);
+  unknown('Cross-Origin-Embedder-Policy-Report-Only: \x80', startRule);
   unknown('Cross-Origin-Opener-Policy: \x80', startRule);
   unknown('Cross-Origin-Opener-Policy-Report-Only: \x80', startRule);
   unknown('Date: ,', startRule);
@@ -411,6 +417,8 @@ test('Header edge cases', () => {
   fails('Content-Security-Policy', startRule);
   fails('Content-Security-Policy-Report-Only', startRule);
   fails('Content-Type', startRule);
+  fails('Cross-Origin-Embedder-Policy', startRule);
+  fails('Cross-Origin-Embedder-Policy-Report-Only', startRule);
   fails('Cross-Origin-Opener-Policy', startRule);
   fails('Cross-Origin-Opener-Policy-Report-Only', startRule);
   fails('Date', startRule);
@@ -688,6 +696,18 @@ test('Content_Type', t => {
   fails('foo/bar   \x80', t.name);
   fails('foo/bar;\x80', t.name);
   fails('foo/bar;a=b;\x80', t.name);
+});
+
+test('Cross_Origin_Embedder_Policy', t => {
+  fails('1', t.name);
+  fails('1;foo', t.name);
+  fails('foo\x00', t.name);
+});
+
+test('Cross_Origin_Embedder_Policy_Report_Only', t => {
+  fails('1', t.name);
+  fails('1;foo', t.name);
+  fails('foo\x00', t.name);
 });
 
 test('Cross_Origin_Opener_Policy', t => {

@@ -160,6 +160,12 @@ export interface CoopPolicyItem {
   item: string;
   params?: {[name: string]: string};
 }
+export interface Cross_Origin_Embedder_Policy extends Header<'cross-origin-embedder-policy'> {
+  policy: CoopPolicyItem;
+}
+export interface Cross_Origin_Embedder_Policy_Report_Only extends Header<'cross-origin-embedder-policy-report-only'> {
+  policy: CoopPolicyItem;
+}
 export interface Cross_Origin_Opener_Policy extends Header<'cross-origin-opener-policy'> {
   policy: CoopPolicyItem;
 }
@@ -398,6 +404,8 @@ export type AnyHeader
   | Content_Security_Policy
   | Content_Security_Policy_Report_Only
   | Content_Type
+  | Cross_Origin_Embedder_Policy
+  | Cross_Origin_Embedder_Policy_Report_Only
   | Cross_Origin_Opener_Policy
   | Cross_Origin_Opener_Policy_Report_Only
   | Date
