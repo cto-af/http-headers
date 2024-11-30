@@ -50,6 +50,7 @@ Known_Header
   / @"Cross-Origin-Embedder-Policy"i COWS @Cross_Origin_Embedder_Policy
   / @"Cross-Origin-Opener-Policy-Report-Only"i COWS @Cross_Origin_Opener_Policy_Report_Only
   / @"Cross-Origin-Opener-Policy"i COWS @Cross_Origin_Opener_Policy
+  / @"Cross-Origin-Resource-Policy"i COWS @Cross_Origin_Resource_Policy
   / @"Date"i COWS @Date
   / @"ETag"i COWS @ETag
   / @"Expect"i COWS @Expect
@@ -386,6 +387,15 @@ Cross_Origin_Opener_Policy
   = policy:sf_item &{ return (typeof policy.item === 'string') } &EOL {
     return {
       kind: 'cross-origin-opener-policy',
+      value: text(),
+      policy,
+    }
+  }
+
+Cross_Origin_Resource_Policy
+  = policy:("same-origin" / "same-site" / "cross-origin") &EOL {
+    return {
+      kind: 'cross-origin-resource-policy',
       value: text(),
       policy,
     }

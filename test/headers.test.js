@@ -115,6 +115,9 @@ test('Header: known', () => {
   known('cross-origin-opener-policy: same-origin-allow-popups; report-to="youtube_main"', startRule);
   known('cross-origin-opener-policy-report-only: same-origin-allow-popups', startRule);
   known('cross-origin-opener-policy-report-only: same-origin-allow-popups; report-to="youtube_main"', startRule);
+  known('cross-origin-resource-policy: cross-origin', startRule);
+  known('cross-origin-resource-policy: same-origin', startRule);
+  known('cross-origin-resource-policy: same-site', startRule);
   known('Date: Sun, 06 Nov 1994 08:49:37 GMT', startRule);
   unknown('Date: Sun, 06 Nov 1994 08:49:37 GMT\x80', startRule);
   known('ETag: ""', startRule);
@@ -210,6 +213,8 @@ test('Header: unknown', () => {
   unknown('Cross-Origin-Embedder-Policy-Report-Only: \x80', startRule);
   unknown('Cross-Origin-Opener-Policy: \x80', startRule);
   unknown('Cross-Origin-Opener-Policy-Report-Only: \x80', startRule);
+  unknown('cross-origin-resource-policy: \x80', startRule);
+  unknown('cross-origin-resource-policy: same-origin-ish', startRule);
   unknown('Date: ,', startRule);
   unknown('ETag: ,', startRule);
   unknown('Expect: ;', startRule);
@@ -421,6 +426,7 @@ test('Header edge cases', () => {
   fails('Cross-Origin-Embedder-Policy-Report-Only', startRule);
   fails('Cross-Origin-Opener-Policy', startRule);
   fails('Cross-Origin-Opener-Policy-Report-Only', startRule);
+  fails('Cross-Origin-Resource-Policy', startRule);
   fails('Date', startRule);
   fails('ETag', startRule);
   fails('Expect', startRule);

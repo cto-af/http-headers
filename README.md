@@ -83,6 +83,7 @@ Here are the supported values for `startRule`:
   - 'Cross_Origin_Embedder_Policy_Report_Only'
   - 'Cross_Origin_Opener_Policy'
   - 'Cross_Origin_Opener_Policy_Report_Only'
+  - 'Cross_Origin_Resource_Policy'
   - 'Date'
   - 'ETag'
   - 'Expect'

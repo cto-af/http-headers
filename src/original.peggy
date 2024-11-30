@@ -27,6 +27,7 @@ Header
   / "Content-Security-Policy"i COWS Content_Security_Policy
   / "Content-Security-Policy-Report-Only"i COWS Content_Security_Policy_Report_Only
   / "Content-Type"i COWS Content_Type
+  / "Cross-Origin-Resource-Policy"i COWS Cross_Origin_Resource_Policy
   / "Date"i COWS Date
   / "ETag"i COWS ETag
   / "Expect"i COWS Expect
@@ -143,6 +144,11 @@ Content_Security_Policy_Report_Only
 
 Content_Type
   = media_type
+
+Cross_Origin_Resource_Policy
+  = "same-origin"
+  / "same-site"
+  / "cross-origin"
 
 Date
   = HTTP_date
