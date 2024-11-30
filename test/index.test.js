@@ -2590,6 +2590,24 @@ test('Headers testPeggy', async() => {
         peg$startRuleFunction: 'peg$parselcalpha',
       },
     },
+    {
+      invalidInput: '<http',
+      options: {
+        peg$startRuleFunction: 'peg$parselink_value',
+        peg$failAfter: {
+          peg$parseURI_reference: 0,
+        },
+      },
+    },
+    {
+      invalidInput: 'http://*',
+      options: {
+        peg$startRuleFunction: 'peg$parseserialized_origin',
+        peg$failAfter: {
+          peg$parseuri_host: 0,
+        },
+      },
+    },
   ]);
   delete results.grammarPath;
   delete results.modifiedPath;

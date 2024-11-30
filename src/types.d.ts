@@ -56,6 +56,31 @@ export interface Accept_Ranges extends Header<'accept-ranges'> {
   ranges: string[];
 }
 
+export interface Access_Control_Allow_Credentials extends Header<'access-control-allow-credentials'> {
+  allow: boolean;
+}
+export interface Access_Control_Allow_Headers extends Header<'access-control-allow-headers'> {
+  fields: string[];
+}
+export interface Access_Control_Allow_Methods extends Header<'access-control-allow-methods'> {
+  methods: string[];
+}
+export interface Access_Control_Allow_Origin extends Header<'access-control_allow-origin'> {
+  origin: string;
+}
+export interface Access_Control_Expose_Headers extends Header<'access-control-expose-headers'> {
+  fields: string[];
+}
+export interface Access_Control_Max_Age extends Header<'access-control-max-age'> {
+  age: number;
+}
+export interface Access_Control_Request_Headers extends Header<'access-control-request-headers'> {
+  fields: string[];
+}
+export interface Access_Control_Request_Method extends Header<'access-control-request-method'> {
+  method: string;
+}
+
 export interface Age extends Header<'age'> {
   secs: number;
 }
@@ -156,6 +181,29 @@ export interface Content_Type extends Header<'content-type'> {
   parameters: Parameters;
 }
 
+export interface CoopPolicyItem {
+  item: string;
+  params?: {
+    [name: string]: string;
+  };
+}
+export interface Cross_Origin_Embedder_Policy extends Header<'cross-origin-embedder-policy'> {
+  policy: CoopPolicyItem;
+}
+export interface Cross_Origin_Embedder_Policy_Report_Only extends Header<'cross-origin-embedder-policy-report-only'> {
+  policy: CoopPolicyItem;
+}
+export interface Cross_Origin_Opener_Policy extends Header<'cross-origin-opener-policy'> {
+  policy: CoopPolicyItem;
+}
+export interface Cross_Origin_Opener_Policy_Report_Only extends Header<'cross-origin-opener-policy-report-only'> {
+  policy: CoopPolicyItem;
+}
+
+export interface Cross_Origin_Resource_Policy extends Header<'cross-origin-resource-policy'> {
+  policy: string;
+}
+
 export interface Date extends Header<'date'> {
   date: Date;
 }
@@ -211,6 +259,16 @@ export interface Last_Modified extends Header<'last-modified'> {
   date: Date;
 }
 
+export interface LinkValue {
+  uri: URL;
+  params: {
+    [name: string]: string;
+  };
+}
+export interface Link extends Header<'link'> {
+  links: LinkValue[];
+}
+
 export interface Location extends Header<'location'> {
   uri: string;
 }
@@ -225,11 +283,15 @@ export interface NEL extends Header<'nel'> {
 
 export interface PermissionsPolicyItem {
   item?: string;
-  params?: object;
+  params?: {
+    [name: string]: string;
+  };
 }
 export interface PermissionsPolicyItems {
   items: PermissionsPolicyItem[];
-  params?: object;
+  params?: {
+    [name: string]: string;
+  };
 }
 export interface Permissions_Policy extends Header<'permissions-policy'> {
   directives: [name: string, items: PermissionsPolicyItems][];
@@ -274,6 +336,10 @@ export interface Referrer_Policy extends Header<'referer-policy'> {
   tokens: string[];
 }
 
+export interface Reporting_Endpoints extends Header<'reporting-endpoints'> {
+  endpoints: [name: string, uri: string][];
+}
+
 export interface Retry_After extends Header<'retry-after'> {
   date?: Date;
   seconds?: number;
@@ -288,6 +354,16 @@ export interface Comment {
 }
 export interface Server extends Header<'server'> {
   products: (Product | Comment)[];
+}
+
+export interface TimingMetric {
+  metric: string;
+  params: {
+    [name: string]: string;
+  };
+}
+export interface Server_Timing extends Header<'server-timing'> {
+  metrics: TimingMetric[];
 }
 
 export type CookieAttribute = [
@@ -359,6 +435,14 @@ export type AnyHeader
   | Accept_Encoding
   | Accept_Language
   | Accept_Ranges
+  | Access_Control_Allow_Credentials
+  | Access_Control_Allow_Headers
+  | Access_Control_Allow_Methods
+  | Access_Control_Allow_Origin
+  | Access_Control_Expose_Headers
+  | Access_Control_Max_Age
+  | Access_Control_Request_Headers
+  | Access_Control_Request_Method
   | Age
   | Allow
   | ALPN
@@ -375,6 +459,11 @@ export type AnyHeader
   | Content_Security_Policy
   | Content_Security_Policy_Report_Only
   | Content_Type
+  | Cross_Origin_Embedder_Policy
+  | Cross_Origin_Embedder_Policy_Report_Only
+  | Cross_Origin_Opener_Policy
+  | Cross_Origin_Opener_Policy_Report_Only
+  | Cross_Origin_Resource_Policy
   | Date
   | ETag
   | Expect
@@ -387,6 +476,7 @@ export type AnyHeader
   | If_Range
   | If_Unmodified_Since
   | Last_Modified
+  | Link
   | Location
   | Max_Forwards
   | NEL
@@ -397,8 +487,10 @@ export type AnyHeader
   | Range
   | Referer
   | Referrer_Policy
+  | Reporting_Endpoints
   | Retry_After
   | Server
+  | Server_Timing
   | Set_Cookie
   | Strict_Transport_Security
   | TE

@@ -11,6 +11,14 @@ Header
   / "Accept-Encoding"i COWS Accept_Encoding
   / "Accept-Language"i COWS Accept_Language
   / "Accept-Ranges"i COWS Accept_Ranges
+  / "Access-Control-Allow-Credentials"i COWS Access_Control_Allow_Credentials
+  / "Access-Control-Allow-Headers"i COWS Access_Control_Allow_Headers
+  / "Access-Control-Allow-Methods"i COWS Access_Control_Allow_Methods
+  / "Access-Control-Allow-Origin"i COWS Access_Control_Allow_Origin
+  / "Access-Control-Expose-Headers"i COWS Access_Control_Expose_Headers
+  / "Access-Control-Max-Age"i COWS Access_Control_Max_Age
+  / "Access-Control-Request-Headers"i COWS Access_Control_Request_Headers
+  / "Access-Control-Request-Method"i COWS Access_Control_Request_Method
   / "Age"i COWS Age
   / "Allow"i COWS Allow
   / "ALPN"i COWS ALPN
@@ -27,6 +35,7 @@ Header
   / "Content-Security-Policy"i COWS Content_Security_Policy
   / "Content-Security-Policy-Report-Only"i COWS Content_Security_Policy_Report_Only
   / "Content-Type"i COWS Content_Type
+  / "Cross-Origin-Resource-Policy"i COWS Cross_Origin_Resource_Policy
   / "Date"i COWS Date
   / "ETag"i COWS ETag
   / "Expect"i COWS Expect
@@ -41,6 +50,7 @@ Header
   / "IMF-fixdate"i COWS IMF_fixdate
   / "Last-Modified"i COWS Last_Modified
   / "Location"i COWS Location
+  / "Link"i COWS Link
   / "Max-Forwards"i COWS Max_Forwards
   / "NEL"i COWS NEL
   / "Permissions-Policy"i COWS Permissions_Policy
@@ -51,6 +61,7 @@ Header
   / "Referer"i COWS Referer
   / "Referrer-Policy"i COWS Referrer_Policy
   / "Retry-After"i COWS Retry_After
+  / "Server-Timing"i COWS Server_Timing
   / "Server"i COWS Server
   / "Set-Cookie"i COWS set_cookie_string
   / "Strict-Transport-Security"i COWS Strict_Transport_Security
@@ -92,6 +103,32 @@ Accept_Language
 
 Accept_Ranges
   = acceptable_ranges
+
+Access_Control_Allow_Credentials
+  = "true"
+
+Access_Control_Allow_Headers
+  = some:(field_name?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}
+
+Access_Control_Allow_Methods
+  = some:(method?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}
+
+Access_Control_Allow_Origin
+  = "null"
+  / wildcard
+  / serialized_origin
+
+Access_Control_Expose_Headers
+  = some:(field_name?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}
+
+Access_Control_Max_Age
+  = delta_seconds
+
+Access_Control_Request_Headers
+  = @count:(some:(field_name?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}) &{ return (count.length >= 1) }
+
+Access_Control_Request_Method
+  = method
 
 Age
   = delta_seconds
@@ -143,6 +180,11 @@ Content_Security_Policy_Report_Only
 Content_Type
   = media_type
 
+Cross_Origin_Resource_Policy
+  = "same-origin"
+  / "same-site"
+  / "cross-origin"
+
 Date
   = HTTP_date
 
@@ -188,6 +230,9 @@ Last_Modified
 Location
   = URI_reference
 
+Link
+  = some:(link_value?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}
+
 Max_Forwards
   = DIGIT+
 
@@ -219,6 +264,9 @@ Referrer_Policy
 Retry_After
   = HTTP_date
   / delay_seconds
+
+Server_Timing
+  = some:(server_timing_metric?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}
 
 Server
   = product (RWS (product / comment))*
@@ -280,11 +328,20 @@ language_range
 acceptable_ranges
   = range_unit (OWS "," OWS range_unit)*
 
-delta_seconds
-  = DIGIT+
+field_name
+  = token
 
 method
   = token
+
+wildcard
+  = "*"
+
+serialized_origin
+  = scheme "://" uri_host (":" port)?
+
+delta_seconds
+  = DIGIT+
 
 protocol_id
   = token
@@ -386,6 +443,9 @@ URI_reference
   = URI
   / relative_ref
 
+link_value
+  = "<" URI_reference ">" (OWS ";" OWS link_param)*
+
 json_field_value
   = some:(json_field_item?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}
 
@@ -410,6 +470,9 @@ policy_token
 
 delay_seconds
   = DIGIT+
+
+server_timing_metric
+  = metric_name (OWS ";" OWS server_timing_param)*
 
 product
   = token ("/" product_version)?
@@ -438,9 +501,6 @@ directive
 t_codings
   = "trailers"i
   / (transfer_coding weight?)
-
-field_name
-  = token
 
 protocol
   = protocol_name ("/" protocol_version)?
@@ -501,6 +561,9 @@ alphanum
   = ALPHA
   / DIGIT
 
+scheme
+  = ALPHA (ALPHA / DIGIT / "+" / "-" / ".")*
+
 alternative
   = protocol_id "=" alt_authority
 
@@ -528,9 +591,6 @@ privateuse
 grandfathered
   = irregular
   / regular
-
-scheme
-  = ALPHA (ALPHA / DIGIT / "+" / "-" / ".")*
 
 hier_part
   = "//" authority path_abempty
@@ -641,6 +701,9 @@ URI
 relative_ref
   = relative_part ("?" query)? ("#" fragment)?
 
+link_param
+  = token BWS ("=" BWS (token / quoted_string))?
+
 json_field_item
   = VCHAR+
 
@@ -649,6 +712,12 @@ sf_dict_member
 
 range_set
   = range_spec (OWS "," OWS range_spec)*
+
+metric_name
+  = token
+
+server_timing_param
+  = server_timing_param_name OWS "=" OWS server_timing_param_value
 
 product_version
   = token
@@ -928,6 +997,13 @@ range_spec
   = int_range
   / suffix_range
   / other_range
+
+server_timing_param_name
+  = token
+
+server_timing_param_value
+  = token
+  / quoted_string
 
 obs_text
   = [\x80-\xff]

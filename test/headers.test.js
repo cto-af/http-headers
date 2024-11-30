@@ -85,6 +85,18 @@ test('Header: known', () => {
   unknown('Accept-Language: aaa-', startRule);
   known('Accept-Ranges: bytes', startRule);
   unknown('Accept-Ranges: bytes\x80', startRule);
+
+  known('Access-Control-Allow-Credentials: true', startRule);
+  known('Access-Control-Allow-Credentials: false', startRule);
+  known('Access-Control-Allow-Headers: X', startRule);
+  known('Access-Control-Allow-Methods: GET', startRule);
+  known('Access-Control-Allow-Origin: *', startRule);
+  known('Access-Control-Allow-Origin: null', startRule);
+  known('Access-Control-Allow-Origin: http://localhost:9000', startRule);
+  known('Access-Control-Expose-Headers: X', startRule);
+  known('Access-Control-Max-Age: 12', startRule);
+  known('Access-Control-Request-Headers: X', startRule);
+  known('Access-Control-Request-Method: GET', startRule);
   known('Age: 12', startRule);
   known('Allow: ,', startRule);
   known('Alt-Svc: clear', startRule);
@@ -107,12 +119,25 @@ test('Header: known', () => {
   known('Content-Security-Policy-Report-Only: foo', startRule);
   known('Content-Type: foo/bar', startRule);
   fails('Content-Type: foo/bar\x80', startRule);
+  known('cross-origin-embedder-policy: require-corp', startRule);
+  known('cross-origin-embedder-policy: require-corp; report-to="youtube_main"', startRule);
+  known('cross-origin-embedder-policy-report-only: require-corp', startRule);
+  known('cross-origin-embedder-policy-report-only: require-corp; report-to="youtube_main"', startRule);
+  known('cross-origin-opener-policy: same-origin-allow-popups', startRule);
+  known('cross-origin-opener-policy: same-origin-allow-popups; report-to="youtube_main"', startRule);
+  known('cross-origin-opener-policy-report-only: same-origin-allow-popups', startRule);
+  known('cross-origin-opener-policy-report-only: same-origin-allow-popups; report-to="youtube_main"', startRule);
+  known('cross-origin-resource-policy: cross-origin', startRule);
+  known('cross-origin-resource-policy: same-origin', startRule);
+  known('cross-origin-resource-policy: same-site', startRule);
   known('Date: Sun, 06 Nov 1994 08:49:37 GMT', startRule);
   unknown('Date: Sun, 06 Nov 1994 08:49:37 GMT\x80', startRule);
   known('ETag: ""', startRule);
   unknown('ETag: ""\x80', startRule);
   known('Expect: ,', startRule);
   known('Expires: Sun, 06 Nov 1994 08:49:37 GMT', startRule);
+  known('Expires: 0', startRule);
+  known('Expires: -1', startRule);
   known('From: a@b', startRule);
   unknown('From: a@b\x80', startRule);
   known('Host: ,', startRule);
@@ -129,6 +154,7 @@ test('Header: known', () => {
   unknown('If-Unmodified-Since: Sun, 06 Nov 1994 08:49:37 GMT\x80', startRule);
   known('Last-Modified: Sun, 06 Nov 1994 08:49:37 GMT', startRule);
   unknown('Last-Modified: Sun, 06 Nov 1994 08:49:37 GMT\x80', startRule);
+  known('Link: ,', startRule);
   known('Location: /', startRule);
   known('Location: ', startRule); // Can't fail
   known('Max-Forwards: 0', startRule);
@@ -144,9 +170,11 @@ test('Header: known', () => {
   known('Referer: ,', startRule);
   known('Referer: ', startRule); // Can't fail
   known('Referrer-Policy: no-referrer', startRule);
+  known('Reporting-Endpoints: a=b', startRule);
   known('Retry-After: 0', startRule);
   unknown('Retry-After: 0\x80', startRule);
   known('Server: foo', startRule);
+  known('Server-Timing: ,,,', startRule);
   unknown('Server: foo\x80', startRule);
   known('Set-Cookie: stateCode=CO; Domain=.cnn.com; Path=/; SameSite=None; Secure', startRule);
   known('Strict-Transport-Security: max-age=31536000; includeSubdomains; preload', startRule);
@@ -178,6 +206,14 @@ test('Header: unknown', () => {
   unknown('Accept-Encoding: ;', startRule);
   unknown('Accept-Language: ;', startRule);
   unknown('Accept-Ranges: ,', startRule);
+  unknown('Access-Control-Allow-Credentials: ,', startRule);
+  unknown('Access-Control-Allow-Headers: ;', startRule);
+  unknown('Access-Control-Allow-Methods: ;', startRule);
+  unknown('Access-Control-Allow-Origin: ;', startRule);
+  unknown('Access-Control-Expose-Headers: ;', startRule);
+  unknown('Access-Control-Max-Age: ;', startRule);
+  unknown('Access-Control-Request-Headers: ;', startRule);
+  unknown('Access-Control-Request-Method: ;', startRule);
   unknown('Age: a', startRule);
   unknown('Allow: ;', startRule);
   unknown('ALPN: ;', startRule);
@@ -196,6 +232,12 @@ test('Header: unknown', () => {
   unknown('Content-Security-Policy: \x80', startRule);
   unknown('Content-Security-Policy-Report-Only: \x80', startRule);
   unknown('Content-Type: ,', startRule);
+  unknown('Cross-Origin-Embedder-Policy: \x80', startRule);
+  unknown('Cross-Origin-Embedder-Policy-Report-Only: \x80', startRule);
+  unknown('Cross-Origin-Opener-Policy: \x80', startRule);
+  unknown('Cross-Origin-Opener-Policy-Report-Only: \x80', startRule);
+  unknown('cross-origin-resource-policy: \x80', startRule);
+  unknown('cross-origin-resource-policy: same-origin-ish', startRule);
   unknown('Date: ,', startRule);
   unknown('ETag: ,', startRule);
   unknown('Expect: ;', startRule);
@@ -209,6 +251,7 @@ test('Header: unknown', () => {
   unknown('If-Range: ,', startRule);
   unknown('If-Unmodified-Since: ,', startRule);
   unknown('Last-Modified: ,', startRule);
+  unknown('Link: ;', startRule);
   unknown('Location: {', startRule);
   unknown('Max-Forwards: ,', startRule);
   unknown('NEL: "', startRule);
@@ -219,8 +262,10 @@ test('Header: unknown', () => {
   unknown('Range: ,', startRule);
   unknown('Referer: {', startRule);
   unknown('Referrer-Policy: foo', startRule);
+  unknown('Reporting-Endpoints: ;', startRule);
   unknown('Retry-After: ,', startRule);
   unknown('Server: ,', startRule);
+  unknown('Server-Timing: ;', startRule);
   unknown('TE: ;', startRule);
   unknown('Set-Cookie: ;', startRule);
   unknown('Strict-Transport-Security: \x80', startRule);
@@ -385,6 +430,14 @@ test('Header edge cases', () => {
   fails('accept-encoding', startRule);
   fails('Accept-Language', startRule);
   fails('Accept-Ranges', startRule);
+  fails('Access-Control-Allow-Credentials', startRule);
+  fails('Access-Control-Allow-Headers', startRule);
+  fails('Access-Control-Allow-Methods', startRule);
+  fails('Access-Control-Allow-Origin', startRule);
+  fails('Access-Control-Expose-Headers', startRule);
+  fails('Access-Control-Max-Age', startRule);
+  fails('Access-Control-Request-Headers', startRule);
+  fails('Access-Control-Request-Method', startRule);
   fails('Age', startRule);
   fails('Allow', startRule);
   fails('ALPN', startRule);
@@ -401,6 +454,11 @@ test('Header edge cases', () => {
   fails('Content-Security-Policy', startRule);
   fails('Content-Security-Policy-Report-Only', startRule);
   fails('Content-Type', startRule);
+  fails('Cross-Origin-Embedder-Policy', startRule);
+  fails('Cross-Origin-Embedder-Policy-Report-Only', startRule);
+  fails('Cross-Origin-Opener-Policy', startRule);
+  fails('Cross-Origin-Opener-Policy-Report-Only', startRule);
+  fails('Cross-Origin-Resource-Policy', startRule);
   fails('Date', startRule);
   fails('ETag', startRule);
   fails('Expect', startRule);
@@ -413,6 +471,7 @@ test('Header edge cases', () => {
   fails('If-Range', startRule);
   fails('If-Unmodified-Since', startRule);
   fails('Last-Modified', startRule);
+  fails('Link', startRule);
   fails('Location', startRule);
   fails('Max-Forwards', startRule);
   fails('NEL', startRule);
@@ -423,8 +482,10 @@ test('Header edge cases', () => {
   fails('Range', startRule);
   fails('Referer', startRule);
   fails('Referrer-Policy', startRule);
+  fails('Reporting-Endpoints', startRule);
   fails('Retry-After', startRule);
   fails('Server', startRule);
+  fails('Server-Timing', startRule);
   fails('Set-Cookie', startRule);
   fails('Strict-Transport-Security', startRule);
   fails('TE', startRule);
@@ -535,6 +596,34 @@ test('Content_Language', t => {
   ]) {
     known(lang, t.name);
   }
+});
+
+test('fetch', () => {
+  fails('true ', 'Access_Control_Allow_Credentials');
+
+  known('X, Y', 'Access_Control_Allow_Headers');
+  fails('X-foo, X-bar, \x00', 'Access_Control_Allow_Headers');
+
+  known('GET, POST', 'Access_Control_Allow_Methods');
+  fails('GET, POST, \x00', 'Access_Control_Allow_Methods');
+
+  known('http://foo', 'Access_Control_Allow_Origin');
+  fails('* ', 'Access_Control_Allow_Origin');
+  fails('foo', 'Access_Control_Allow_Origin');
+  fails('foo:', 'Access_Control_Allow_Origin');
+  fails('foo://bar:\x00', 'Access_Control_Allow_Origin');
+
+  known('X-foo, X-bar', 'Access_Control_Expose_Headers');
+  fails('X-foo, X-bar, \x00', 'Access_Control_Expose_Headers');
+
+  fails('\x00', 'Access_Control_Max_Age');
+  fails('12\x00', 'Access_Control_Max_Age');
+
+  known('X-foo, X-bar', 'Access_Control_Request_Headers');
+  fails('X-foo, X-bar, \x00', 'Access_Control_Request_Headers');
+
+  fails('\x00', 'Access_Control_Request_Method');
+  fails('get\x00', 'Access_Control_Request_Method');
 });
 
 test('Content_Location', t => {
@@ -676,6 +765,30 @@ test('Content_Type', t => {
   fails('foo/bar;a=b;\x80', t.name);
 });
 
+test('Cross_Origin_Embedder_Policy', t => {
+  fails('1', t.name);
+  fails('1;foo', t.name);
+  fails('foo\x00', t.name);
+});
+
+test('Cross_Origin_Embedder_Policy_Report_Only', t => {
+  fails('1', t.name);
+  fails('1;foo', t.name);
+  fails('foo\x00', t.name);
+});
+
+test('Cross_Origin_Opener_Policy', t => {
+  fails('1', t.name);
+  fails('1;foo', t.name);
+  fails('foo\x00', t.name);
+});
+
+test('Cross_Origin_Opener_Policy_Report_Only', t => {
+  fails('1', t.name);
+  fails('1;foo', t.name);
+  fails('foo\x00', t.name);
+});
+
 test('Date', t => {
   let d = 'Sun, 06 Nov 1994 08:49:37 GMT';
   for (let i = 0; i < (d.length - 1); i++) {
@@ -814,6 +927,17 @@ test('Host', t => {
   }
 });
 
+test('Link', t => {
+  known('<https://aadcdn.msauth.net>; rel="preconnect"; crossorigin', t.name);
+  fails('<:::', t.name);
+  fails('<https://aa', t.name);
+  fails('<https://aadcdn.msauth.net> ;/', t.name);
+  fails('<https://aadcdn.msauth.net> rel=preconnect; /', t.name);
+  fails('<https://aadcdn.msauth.net> ; rel=preconnect; /', t.name);
+  fails('<https://aadcdn.msauth.net> ;rel=preconnect; crossorigin; /', t.name);
+  fails('<https://aadcdn.msauth.net> ;rel="pre', t.name);
+});
+
 test('Location', t => {
   fails('foo\x80', t.name);
   fails('http://foo/#/\x80', t.name);
@@ -884,6 +1008,12 @@ test('Referrer_Policy', t => {
   fails('unsafe-url\x80', t.name);
 });
 
+test('Reporting_Endpoints', t => {
+  known('coop_report="https://www.facebook.com/browser_reporting/coop/?minimize=0"', t.name);
+  fails('one=1', t.name);
+  fails('one=two\x00', t.name);
+});
+
 test('Server', t => {
   fails('', t.name);
   fails('\x80', t.name);
@@ -893,6 +1023,16 @@ test('Server', t => {
   fails('foo/\x80', t.name);
   fails('foo (\\\x00', t.name);
   known('foo  \t  bar (((more comment \\))))', t.name);
+});
+
+test('Server_Timing', t => {
+  known('tid;desc="xcIlGVEQAJ0iusle8DcbYChbUeLtmQ";a=b,front;dur=0.171', t.name);
+  fails('foo \x00', t.name);
+  fails('foo ;\x00', t.name);
+  fails('foo ;a\x00', t.name);
+  fails('foo ;a=\x00', t.name);
+  fails('foo ;a=b\x00', t.name);
+  fails('foo ;a=b;\x00', t.name);
 });
 
 test('Set_Cookie', t => {

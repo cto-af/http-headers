@@ -1,0 +1,6 @@
+     Link       = #link-value
+
+     link-value = "<" URI-reference ">" *( OWS ";" OWS link-param )
+
+     link-param = token BWS [ "=" BWS ( token / quoted-string ) ]
+

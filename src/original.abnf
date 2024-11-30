@@ -9,6 +9,14 @@ Header
   / "Accept-Encoding" COWS Accept-Encoding
   / "Accept-Language" COWS Accept-Language
   / "Accept-Ranges" COWS Accept-Ranges
+  / "Access-Control-Allow-Credentials" COWS Access-Control-Allow-Credentials
+  / "Access-Control-Allow-Headers" COWS Access-Control-Allow-Headers
+  / "Access-Control-Allow-Methods" COWS Access-Control-Allow-Methods
+  / "Access-Control-Allow-Origin" COWS Access-Control-Allow-Origin
+  / "Access-Control-Expose-Headers" COWS Access-Control-Expose-Headers
+  / "Access-Control-Max-Age" COWS Access-Control-Max-Age
+  / "Access-Control-Request-Headers" COWS Access-Control-Request-Headers
+  / "Access-Control-Request-Method" COWS Access-Control-Request-Method
   / "Age" COWS Age
   / "Allow" COWS Allow
   / "ALPN" COWS ALPN
@@ -25,6 +33,7 @@ Header
   / "Content-Security-Policy" COWS Content-Security-Policy
   / "Content-Security-Policy-Report-Only" COWS Content-Security-Policy-Report-Only
   / "Content-Type" COWS Content-Type
+  / "Cross-Origin-Resource-Policy" COWS Cross-Origin-Resource-Policy
   / "Date" COWS Date
   / "ETag" COWS ETag
   / "Expect" COWS Expect
@@ -39,6 +48,7 @@ Header
   / "IMF-fixdate" COWS IMF-fixdate
   / "Last-Modified" COWS Last-Modified
   / "Location" COWS Location
+  / "Link" COWS Link
   / "Max-Forwards" COWS Max-Forwards
   / "NEL" COWS NEL
   / "Permissions-Policy" COWS Permissions-Policy
@@ -49,6 +59,7 @@ Header
   / "Referer" COWS Referer
   / "Referrer-Policy" COWS Referrer-Policy
   / "Retry-After" COWS Retry-After
+  / "Server-Timing" COWS Server-Timing
   / "Server" COWS Server
   / "Set-Cookie" COWS set-cookie-string
   / "Strict-Transport-Security" COWS Strict-Transport-Security

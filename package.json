@@ -21,6 +21,7 @@
     "rfc6797",
     "rfc7639",
     "rfc7838",
+    "rfc8288",
     "rfc8942",
     "rfc9111",
     "content-security-policy",
@@ -28,7 +29,9 @@
     "permissions-policy",
     "referrer-policy",
     "network-error-logging",
-    "draft-reschke-http-jfv"
+    "draft-reschke-http-jfv",
+    "reporting-endpoints",
+    "server-timing"
   ],
   "author": "Joe Hildebrand <joe-github@cursive.net>",
   "license": "MIT",
@@ -48,7 +51,7 @@
     "lint": "eslint .",
     "pretest": "npm run parser",
     "test": "c8 node --test",
-    "abnf": "abnf_gen -c src/original.abnf src/rfc9110.abnf src/rfc9111.abnf src/rfc3986.abnf src/rfc4647.abnf src/rfc5646.abnf src/rfc5322.abnf src/rfc6797.abnf src/rfc7639.abnf src/rfc7838.abnf src/rfc6265.abnf src/rfc8941.abnf src/rfc8942.abnf src/CSP.abnf src/NEL.abnf src/draft-reschke-http-jfv.abnf src/permissions-policy.abnf src/referrer-policy.abnf -s Headers -s Headers-Loose",
+    "abnf": "abnf_gen -c src/original.abnf abnf/*.abnf -s Headers -s Headers-Loose",
     "parser": "peggy -c peggy.config.js && mkdir -p lib && cat src/types.d.ts src/index.d.ts > lib/index.d.ts && cp src/index.js lib",
     "build": "npm run test && npm run lint && npm pack --dry-run"
   },

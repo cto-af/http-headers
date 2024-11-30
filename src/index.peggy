@@ -31,6 +31,14 @@ Known_Header
   / @"Accept-Encoding"i COWS @Accept_Encoding
   / @"Accept-Language"i COWS @Accept_Language
   / @"Accept-Ranges"i COWS @Accept_Ranges
+  / @"Access-Control-Allow-Credentials"i COWS @Access_Control_Allow_Credentials
+  / @"Access-Control-Allow-Headers"i COWS @Access_Control_Allow_Headers
+  / @"Access-Control-Allow-Methods"i COWS @Access_Control_Allow_Methods
+  / @"Access-Control-Allow-Origin"i COWS @Access_Control_Allow_Origin
+  / @"Access-Control-Expose-Headers"i COWS @Access_Control_Expose_Headers
+  / @"Access-Control-Max-Age"i COWS @Access_Control_Max_Age
+  / @"Access-Control-Request-Headers"i COWS @Access_Control_Request_Headers
+  / @"Access-Control-Request-Method"i COWS @Access_Control_Request_Method
   / @"Allow"i COWS @Allow
   / @"ALPN"i COWS @ALPN
   / @"Alt-Svc"i COWS @Alt_Svc
@@ -46,6 +54,11 @@ Known_Header
   / @"Content-Security-Policy-Report-Only"i COWS @Content_Security_Policy_Report_Only
   / @"Content-Security-Policy"i COWS @Content_Security_Policy
   / @"Content-Type"i COWS @Content_Type
+  / @"Cross-Origin-Embedder-Policy-Report-Only"i COWS @Cross_Origin_Embedder_Policy_Report_Only
+  / @"Cross-Origin-Embedder-Policy"i COWS @Cross_Origin_Embedder_Policy
+  / @"Cross-Origin-Opener-Policy-Report-Only"i COWS @Cross_Origin_Opener_Policy_Report_Only
+  / @"Cross-Origin-Opener-Policy"i COWS @Cross_Origin_Opener_Policy
+  / @"Cross-Origin-Resource-Policy"i COWS @Cross_Origin_Resource_Policy
   / @"Date"i COWS @Date
   / @"ETag"i COWS @ETag
   / @"Expect"i COWS @Expect
@@ -59,6 +72,7 @@ Known_Header
   / @"If-Unmodified-Since"i COWS @If_Unmodified_Since
   / @"Last-Modified"i COWS @Last_Modified
   / @"Location"i COWS @Location
+  / @"Link"i COWS @Link
   / @"Max-Forwards"i COWS @Max_Forwards
   / @"NEL"i COWS @NEL
   / @"Permissions-Policy"i COWS @Permissions_Policy
@@ -68,7 +82,9 @@ Known_Header
   / @"Range"i COWS @Range
   / @"Referer"i COWS @Referer
   / @"Referrer-Policy"i COWS @Referrer_Policy
+  / @"Reporting-Endpoints"i COWS @Reporting_Endpoints
   / @"Retry-After"i COWS @Retry_After
+  / @"Server-Timing"i COWS @Server_Timing
   / @"Server"i COWS @Server
   / @"TE"i COWS @TE
   / @"Set-Cookie"i COWS @Set_Cookie
@@ -185,6 +201,91 @@ Accept_Ranges
     };
   }
 
+Access_Control_Allow_Credentials
+  = allow:("true" { return true } / "false" { return false }) &EOL {
+    return {
+      kind: 'access-control-allow-credentials',
+      value: text(),
+      allow,
+    }
+  }
+
+Access_Control_Allow_Headers
+  = fields:(field_name?)|.., OWS "," OWS| &EOL {
+    return {
+      kind: 'access-control-allow-headers',
+      value: text(),
+      fields: fields.filter(s => s).map(f => f.toLowerCase()),
+    }
+  }
+
+Access_Control_Allow_Methods
+  = methods:(method?)|.., OWS "," OWS| &EOL {
+    return {
+      kind: 'access-control-allow-methods',
+      value: text(),
+      methods: methods.filter(m => m).map(m => m.toLowerCase()),
+    }
+  }
+
+Access_Control_Allow_Origin
+  = origin:("null" / "*" / serialized_origin) &EOL {
+    return {
+      kind: 'access-control-allow-origin',
+      value: text(),
+      origin,
+    }
+  }
+
+// No path
+serialized_origin
+  = $(scheme "://" uri_host (":" port)?)
+
+Access_Control_Expose_Headers
+  = fields:(field_name?)|.., OWS "," OWS| &EOL {
+    return {
+      kind: 'access-control-expose-headers',
+      value: text(),
+      fields: fields.filter(f => f).map(f => f.toLowerCase()),
+    }
+  }
+
+Access_Control_Max_Age
+  = age:delta_seconds &EOL {
+    return {
+      kind: 'access-control-max-age',
+      value: text(),
+      age,
+    }
+  }
+
+Access_Control_Request_Headers
+  = fields:(some:(field_name?)|.., OWS "," OWS| {return some.filter(s => s)}) &{ return (fields.length >= 1) } &EOL {
+    return {
+      kind: 'access-control-request-headers',
+      value: text(),
+      fields: fields.map(f => f.toLowerCase()),
+    }
+  }
+
+Access_Control_Request_Method
+  = method:method &EOL {
+    return {
+      kind: 'access-control-request-method',
+      value: text(),
+      method: method.toLowerCase(),
+    }
+  }
+
+Age
+  = secs:delta_seconds &EOL {
+    return {
+      kind: 'age',
+      value: text(),
+      secs,
+    };
+  }
+
 // Allow = #method
 Allow
   = methods:(method?)|.., OWS "," OWS| &EOL {
@@ -202,15 +303,6 @@ ALPN
       value: text(),
       protocols,
     }
-  }
-
-Age
-  = secs:delta_seconds &EOL {
-    return {
-      kind: 'age',
-      value: text(),
-      secs,
-    };
   }
 
 Alt_Svc
@@ -329,7 +421,7 @@ Content_Security_Policy
   }
 
 Content_Security_Policy_Report_Only
-= policies:CSP_Policies {
+  = policies:CSP_Policies {
     return {
       kind: 'content-security-policy-report-only',
       value: text(),
@@ -346,6 +438,51 @@ Content_Type
       kind: 'content-type',
       value: text(),
       ...mt,
+    }
+  }
+
+Cross_Origin_Embedder_Policy_Report_Only
+  = policy:sf_item &{ return (typeof policy.item === 'string') } &EOL {
+    return {
+      kind: 'cross-origin-embedder-policy-report-only',
+      value: text(),
+      policy,
+    }
+  }
+
+Cross_Origin_Embedder_Policy
+  = policy:sf_item &{ return (typeof policy.item === 'string') } &EOL {
+    return {
+      kind: 'cross-origin-embedder-policy',
+      value: text(),
+      policy,
+    }
+  }
+
+Cross_Origin_Opener_Policy_Report_Only
+  = policy:sf_item &{ return (typeof policy.item === 'string') } &EOL {
+    return {
+      kind: 'cross-origin-opener-policy-report-only',
+      value: text(),
+      policy,
+    }
+  }
+
+Cross_Origin_Opener_Policy
+  = policy:sf_item &{ return (typeof policy.item === 'string') } &EOL {
+    return {
+      kind: 'cross-origin-opener-policy',
+      value: text(),
+      policy,
+    }
+  }
+
+Cross_Origin_Resource_Policy
+  = policy:("same-origin" / "same-site" / "cross-origin") &EOL {
+    return {
+      kind: 'cross-origin-resource-policy',
+      value: text(),
+      policy,
     }
   }
 
@@ -378,7 +515,7 @@ Expect
   }
 
 Expires
-  = date:HTTP_date &EOL {
+  = date:(HTTP_date / "0" { return new Date(0) } / "-1" { return new Date(-1) }) &EOL {
     return {
       kind: 'expires',
       value: text(),
@@ -487,6 +624,27 @@ Location
       uri,
     }
   }
+
+Link
+  = links:(link_value?)|.., OWS "," OWS| &EOL {
+    return {
+      kind: 'link',
+      value: text(),
+      links: links.filter(l => l),
+    }
+  }
+
+link_value
+  = "<" uri:URI_reference ">" params:(OWS ";" OWS @link_param)* {
+    const ret = {uri};
+    if (params.length) {
+      ret.params = Object.fromEntries(params);
+    }
+    return ret;
+  }
+
+link_param
+  = @token BWS @("=" BWS @(token / quoted_string))?
 
 Max_Forwards
   = num:$DIGIT+ &EOL {
@@ -702,6 +860,15 @@ policy_token
   / "origin"i
   / "unsafe-url"i
 
+Reporting_Endpoints
+  = endpoints:sf_dictionary &{ return endpoints.every(e => typeof e[1]?.item === 'string')} &EOL {
+    return {
+      kind: 'reporting-endpoints',
+      value: text(),
+      endpoints: endpoints.map(([name, {item}]) => [name, item]),
+    }
+  }
+
 Retry_After
   = date:HTTP_date &EOL {
     return {
@@ -726,6 +893,38 @@ Server
       products: [first, ...last],
     }
   }
+
+// See: https://www.w3.org/TR/server-timing/#the-server-timing-header-field
+Server_Timing
+  = metrics:(server_timing_metric?)|.., OWS "," OWS| &EOL {
+    return {
+      kind: 'server-timing',
+      value: text(),
+      metrics: metrics.filter(s => s)
+    }
+  }
+
+server_timing_metric
+  = metric:metric_name params:(OWS ";" OWS @server_timing_param)* {
+    const ret = {metric};
+    if (params.length) {
+      ret.params = Object.fromEntries(params);
+    }
+    return ret;
+  }
+
+server_timing_param
+  = @server_timing_param_name OWS "=" OWS @server_timing_param_value
+
+server_timing_param_name
+  = token
+
+metric_name
+  = token
+
+server_timing_param_value
+  = token
+  / quoted_string
 
 // Note:
 // - the space is required in the spec but some sites don't always include it.
