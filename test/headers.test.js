@@ -140,6 +140,7 @@ test('Header: known', () => {
   unknown('If-Unmodified-Since: Sun, 06 Nov 1994 08:49:37 GMT\x80', startRule);
   known('Last-Modified: Sun, 06 Nov 1994 08:49:37 GMT', startRule);
   unknown('Last-Modified: Sun, 06 Nov 1994 08:49:37 GMT\x80', startRule);
+  known('Link: ,', startRule);
   known('Location: /', startRule);
   known('Location: ', startRule); // Can't fail
   known('Max-Forwards: 0', startRule);
@@ -228,6 +229,7 @@ test('Header: unknown', () => {
   unknown('If-Range: ,', startRule);
   unknown('If-Unmodified-Since: ,', startRule);
   unknown('Last-Modified: ,', startRule);
+  unknown('Link: ;', startRule);
   unknown('Location: {', startRule);
   unknown('Max-Forwards: ,', startRule);
   unknown('NEL: "', startRule);
@@ -439,6 +441,7 @@ test('Header edge cases', () => {
   fails('If-Range', startRule);
   fails('If-Unmodified-Since', startRule);
   fails('Last-Modified', startRule);
+  fails('Link', startRule);
   fails('Location', startRule);
   fails('Max-Forwards', startRule);
   fails('NEL', startRule);
@@ -864,6 +867,17 @@ test('Host', t => {
   for (let i = 0; i < d.length; i++) {
     fails(`${d.slice(0, i)}\x80`, t.name);
   }
+});
+
+test('Link', t => {
+  known('<https://aadcdn.msauth.net>; rel="preconnect"; crossorigin', t.name);
+  fails('<:::', t.name);
+  fails('<https://aa', t.name);
+  fails('<https://aadcdn.msauth.net> ;/', t.name);
+  fails('<https://aadcdn.msauth.net> rel=preconnect; /', t.name);
+  fails('<https://aadcdn.msauth.net> ; rel=preconnect; /', t.name);
+  fails('<https://aadcdn.msauth.net> ;rel=preconnect; crossorigin; /', t.name);
+  fails('<https://aadcdn.msauth.net> ;rel="pre', t.name);
 });
 
 test('Location', t => {

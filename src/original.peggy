@@ -42,6 +42,7 @@ Header
   / "IMF-fixdate"i COWS IMF_fixdate
   / "Last-Modified"i COWS Last_Modified
   / "Location"i COWS Location
+  / "Link"i COWS Link
   / "Max-Forwards"i COWS Max_Forwards
   / "NEL"i COWS NEL
   / "Permissions-Policy"i COWS Permissions_Policy
@@ -194,6 +195,9 @@ Last_Modified
 
 Location
   = URI_reference
+
+Link
+  = some:(link_value?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}
 
 Max_Forwards
   = DIGIT+
@@ -395,6 +399,9 @@ GMT
 URI_reference
   = URI
   / relative_ref
+
+link_value
+  = "<" URI_Reference ">" (OWS ";" OWS link_param)*
 
 json_field_value
   = some:(json_field_item?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}
@@ -653,6 +660,9 @@ URI
 
 relative_ref
   = relative_part ("?" query)? ("#" fragment)?
+
+link_param
+  = token BWS ("=" BWS (token / quoted_string))?
 
 json_field_item
   = VCHAR+

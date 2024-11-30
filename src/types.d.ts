@@ -234,6 +234,16 @@ export interface Last_Modified extends Header<'last-modified'> {
   date: Date;
 }
 
+export interface LinkValue {
+  uri: URL;
+  params: {
+    [name: string]: string;
+  };
+}
+export interface Link extends Header<'link'> {
+  links: LinkValue[];
+}
+
 export interface Location extends Header<'location'> {
   uri: string;
 }
@@ -433,6 +443,7 @@ export type AnyHeader
   | If_Range
   | If_Unmodified_Since
   | Last_Modified
+  | Link
   | Location
   | Max_Forwards
   | NEL

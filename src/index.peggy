@@ -64,6 +64,7 @@ Known_Header
   / @"If-Unmodified-Since"i COWS @If_Unmodified_Since
   / @"Last-Modified"i COWS @Last_Modified
   / @"Location"i COWS @Location
+  / @"Link"i COWS @Link
   / @"Max-Forwards"i COWS @Max_Forwards
   / @"NEL"i COWS @NEL
   / @"Permissions-Policy"i COWS @Permissions_Policy
@@ -539,6 +540,27 @@ Location
       uri,
     }
   }
+
+Link
+  = links:(link_value?)|.., OWS "," OWS| &EOL {
+    return {
+      kind: 'link',
+      value: text(),
+      links: links.filter(l => l),
+    }
+  }
+
+link_value
+  = "<" uri:URI_reference ">" params:(OWS ";" OWS @link_param)* {
+    const ret = {uri};
+    if (params.length) {
+      ret.params = Object.fromEntries(params);
+    }
+    return ret;
+  }
+
+link_param
+  = @token BWS @("=" BWS @(token / quoted_string))?
 
 Max_Forwards
   = num:$DIGIT+ &EOL {

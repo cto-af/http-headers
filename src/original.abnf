@@ -40,6 +40,7 @@ Header
   / "IMF-fixdate" COWS IMF-fixdate
   / "Last-Modified" COWS Last-Modified
   / "Location" COWS Location
+  / "Link" COWS Link
   / "Max-Forwards" COWS Max-Forwards
   / "NEL" COWS NEL
   / "Permissions-Policy" COWS Permissions-Policy

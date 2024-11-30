@@ -97,6 +97,7 @@ Here are the supported values for `startRule`:
   - 'If_Unmodified_Since'
   - 'Last_Modified'
   - 'Location'
+  - 'Link'
   - 'Max_Forwards'
   - 'NEL'
   - 'Permissions_Policy'
