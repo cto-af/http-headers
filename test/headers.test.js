@@ -152,6 +152,7 @@ test('Header: known', () => {
   known('Retry-After: 0', startRule);
   unknown('Retry-After: 0\x80', startRule);
   known('Server: foo', startRule);
+  known('Server-Timing: ,,,', startRule);
   unknown('Server: foo\x80', startRule);
   known('Set-Cookie: stateCode=CO; Domain=.cnn.com; Path=/; SameSite=None; Secure', startRule);
   known('Strict-Transport-Security: max-age=31536000; includeSubdomains; preload', startRule);
@@ -229,6 +230,7 @@ test('Header: unknown', () => {
   unknown('Reporting-Endpoints: ;', startRule);
   unknown('Retry-After: ,', startRule);
   unknown('Server: ,', startRule);
+  unknown('Server-Timing: ;', startRule);
   unknown('TE: ;', startRule);
   unknown('Set-Cookie: ;', startRule);
   unknown('Strict-Transport-Security: \x80', startRule);
@@ -436,6 +438,7 @@ test('Header edge cases', () => {
   fails('Reporting-Endpoints', startRule);
   fails('Retry-After', startRule);
   fails('Server', startRule);
+  fails('Server-Timing', startRule);
   fails('Set-Cookie', startRule);
   fails('Strict-Transport-Security', startRule);
   fails('TE', startRule);
@@ -922,6 +925,16 @@ test('Server', t => {
   fails('foo/\x80', t.name);
   fails('foo (\\\x00', t.name);
   known('foo  \t  bar (((more comment \\))))', t.name);
+});
+
+test('Server_Timing', t => {
+  known('tid;desc="xcIlGVEQAJ0iusle8DcbYChbUeLtmQ";a=b,front;dur=0.171', t.name);
+  fails('foo \x00', t.name);
+  fails('foo ;\x00', t.name);
+  fails('foo ;a\x00', t.name);
+  fails('foo ;a=\x00', t.name);
+  fails('foo ;a=b\x00', t.name);
+  fails('foo ;a=b;\x00', t.name);
 });
 
 test('Set_Cookie', t => {

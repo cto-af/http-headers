@@ -51,6 +51,7 @@ Header
   / "Referer"i COWS Referer
   / "Referrer-Policy"i COWS Referrer_Policy
   / "Retry-After"i COWS Retry_After
+  / "Server-Timing"i COWS Server_Timing
   / "Server"i COWS Server
   / "Set-Cookie"i COWS set_cookie_string
   / "Strict-Transport-Security"i COWS Strict_Transport_Security
@@ -219,6 +220,9 @@ Referrer_Policy
 Retry_After
   = HTTP_date
   / delay_seconds
+
+Server_Timing
+  = some:(server_timing_metric?)|.., [ \t]* "," [ \t]*| {return some.filter(s => s)}
 
 Server
   = product (RWS (product / comment))*
@@ -410,6 +414,9 @@ policy_token
 
 delay_seconds
   = DIGIT+
+
+server_timing_metric
+  = metric_name (OWS ";" OWS server_timing_param)*
 
 product
   = token ("/" product_version)?
@@ -649,6 +656,12 @@ sf_dict_member
 
 range_set
   = range_spec (OWS "," OWS range_spec)*
+
+metric_name
+  = token
+
+server_timing_param
+  = server_timing_param_name OWS "=" OWS server_timing_param_value
 
 product_version
   = token
@@ -928,6 +941,13 @@ range_spec
   = int_range
   / suffix_range
   / other_range
+
+server_timing_param_name
+  = token
+
+server_timing_param_value
+  = token
+  / quoted_string
 
 obs_text
   = [\x80-\xff]

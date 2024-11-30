@@ -106,6 +106,7 @@ Here are the supported values for `startRule`:
   - 'Reporting_Endpoints'
   - 'Retry_After'
   - 'Server'
+  - 'Server_Timing'
   - 'Set_Cookie'
   - 'Strict_Transport_Security'
   - 'TE'

@@ -158,7 +158,7 @@ export interface Content_Type extends Header<'content-type'> {
 
 export interface CoopPolicyItem {
   item: string;
-  params?: object;
+  params?: {[name: string]: string};
 }
 export interface Cross_Origin_Opener_Policy extends Header<'cross-origin-opener-policy'> {
   policy: CoopPolicyItem;
@@ -236,11 +236,11 @@ export interface NEL extends Header<'nel'> {
 
 export interface PermissionsPolicyItem {
   item?: string;
-  params?: object;
+  params?: {[name: string]: string};
 }
 export interface PermissionsPolicyItems {
   items: PermissionsPolicyItem[];
-  params?: object;
+  params?: {[name: string]: string};
 }
 export interface Permissions_Policy extends Header<'permissions-policy'> {
   directives: [name: string, items: PermissionsPolicyItems][];
@@ -303,6 +303,14 @@ export interface Comment {
 }
 export interface Server extends Header<'server'> {
   products: (Product | Comment)[];
+}
+
+export interface TimingMetric {
+  metric: string;
+  params: {[name: string]: string};
+}
+export interface Server_Timing extends Header<'server-timing'> {
+  metrics: TimingMetric[];
 }
 
 export type CookieAttribute = [
@@ -417,6 +425,7 @@ export type AnyHeader
   | Reporting_Endpoints
   | Retry_After
   | Server
+  | Server_Timing
   | Set_Cookie
   | Strict_Transport_Security
   | TE

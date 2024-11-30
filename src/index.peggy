@@ -72,6 +72,7 @@ Known_Header
   / @"Referrer-Policy"i COWS @Referrer_Policy
   / @"Reporting-Endpoints"i COWS @Reporting_Endpoints
   / @"Retry-After"i COWS @Retry_After
+  / @"Server-Timing"i COWS @Server_Timing
   / @"Server"i COWS @Server
   / @"TE"i COWS @TE
   / @"Set-Cookie"i COWS @Set_Cookie
@@ -756,6 +757,38 @@ Server
       products: [first, ...last],
     }
   }
+
+// See: https://www.w3.org/TR/server-timing/#the-server-timing-header-field
+Server_Timing
+  = metrics:(server_timing_metric?)|.., OWS "," OWS| &EOL {
+    return {
+      kind: 'server-timing',
+      value: text(),
+      metrics: metrics.filter(s => s)
+    }
+  }
+
+server_timing_metric
+  = metric:metric_name params:(OWS ";" OWS @server_timing_param)* {
+    const ret = {metric};
+    if (params.length) {
+      ret.params = Object.fromEntries(params);
+    }
+    return ret;
+  }
+
+server_timing_param
+  = @server_timing_param_name OWS "=" OWS @server_timing_param_value
+
+server_timing_param_name
+  = token
+
+metric_name
+  = token
+
+server_timing_param_value
+  = token
+  / quoted_string
 
 // Note:
 // - the space is required in the spec but some sites don't always include it.

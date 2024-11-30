@@ -49,6 +49,7 @@ Header
   / "Referer" COWS Referer
   / "Referrer-Policy" COWS Referrer-Policy
   / "Retry-After" COWS Retry-After
+  / "Server-Timing" COWS Server-Timing
   / "Server" COWS Server
   / "Set-Cookie" COWS set-cookie-string
   / "Strict-Transport-Security" COWS Strict-Transport-Security
