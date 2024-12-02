@@ -49,10 +49,12 @@
   "scripts": {
     "clean": "rm -rf coverage lib",
     "lint": "eslint .",
-    "pretest": "npm run parser",
+    "pretest": "npm run parser:verbose",
     "test": "c8 node --test",
+    "posttest": "npm run parser && NO_GENERATE=1 node --test",
     "abnf": "abnf_gen -c src/original.abnf abnf/*.abnf -s Headers -s Headers-Loose",
-    "parser": "peggy -c peggy.config.js && mkdir -p lib && cat src/types.d.ts src/index.d.ts > lib/index.d.ts && cp src/index.js lib",
+    "parser": "peggy -c peggy.config.js && mkdir -p lib && cat src/types.d.ts src/index.d.ts > lib/index.d.ts && terser src/index.js --config-file terser.json -o lib/index.js",
+    "parser:verbose": "peggy -c peggy.config.js && mkdir -p lib && cat src/types.d.ts src/index.d.ts > lib/index.d.ts && cp src/index.js lib/index.js",
     "build": "npm run test && npm run lint && npm pack --dry-run"
   },
   "devDependencies": {
@@ -63,10 +65,11 @@
     "eslint-plugin-jsdoc": "50.6.0",
     "eslint-plugin-markdown": "5.1.0",
     "peggy": "4.2.0",
+    "terser": "5.36.0",
     "typescript": "5.7.2",
     "typescript-eslint": "8.16.0"
   },
-  "packageManager": "pnpm@9.14.2",
+  "packageManager": "pnpm@9.14.4",
   "pnpm": {
     "overrides": {
       "@eslint/plugin-kit": "^0.2.3"

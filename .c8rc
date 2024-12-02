@@ -4,6 +4,7 @@
     "lcov"
   ],
   "exclude": [
+    "peggy.config.js",
     "**/test/**",
     "**/node_modules/**"
   ]

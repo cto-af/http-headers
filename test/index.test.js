@@ -2608,7 +2608,9 @@ test('Headers testPeggy', async() => {
         },
       },
     },
-  ]);
+  ], {
+    noGenerate: process.env.NO_GENERATE,
+  });
   delete results.grammarPath;
   delete results.modifiedPath;
   // eslint-disable-next-line no-console

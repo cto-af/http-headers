@@ -1,0 +1,18 @@
+{
+  "parse": {},
+  "compress": {
+    "ecma": 2021,
+    "module": true,
+    "passes": 2,
+    "sequences": 40
+  },
+  "mangle": {
+    "module": true
+  },
+  "format": {
+    "comments": false,
+    "ecma": 2021
+  },
+  "ecma": 2021,
+  "module": true
+}
