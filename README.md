@@ -1,12 +1,50 @@
 # @cto.af/http-headers
 
-Parse HTTP headers from RFC 9110 using the full ABNF.
+Parse HTTP headers from RFC 9110 (and a bunch of others) using the full ABNF.
+
+If there is a specified and non-deprecated header you want parsed and it is
+not yet supported, please file an issue.  I won't be tracking all of the
+revisions to all of the docs, but I will fix issues if they are pointed out to
+me.
+
+This code was tested against the headers returned by the top 50 websites as
+reported by
+[wikipedia](https://en.wikipedia.org/wiki/List_of_most-visited_websites) on
+the day that I looked in November 2024.  I made sure that all of the
+non-custom headers that were in use that day by 3 or more of those sites was
+supported here.
 
 ## Installation
 
 ```sh
 npm install @cto.af/http-headers
 ```
+
+## Caveats
+
+- Check for max headers size *before* calling this parser.  Many servers
+  choose 8k or 16k as their maximum.
+- Check the `unknown` property of headers.  Headers that are supported, but
+  have syntax errors, are treated as if they are unknown, un-parseable
+  headers.  They will have always have these properties:
+  - kind: lowercased header name
+  - name: original header name
+  - value: full text of the header, to the first newline
+  - unknown: true
+- The option `obsolete: true` can be passed in to the parse function to enable
+  a bunch of obsolete rules in processing email addresses (and a few other
+  `obs_*` productions).  Hopefully none of those productions have never
+  actually been used on the web, but I have included them for completeness,
+  and left the `obsolete` flag in place mostly for testing purposes.
+- I've tried to stay as faithful to the ABNF for each header as possible.
+  However, the definitions are rife with different understandings of how ABNF
+  works.  In particular, Parser Expression Grammars (PEGs) parse by trying
+  each alternate successively until one matches.  If an alternate always
+  matches (e.g. *"foo", which matches the empty string), then none of the
+  subsequent alternates are ever checked.  Similarly, if one of two alternates
+  is the prefix for another (e.g. "foo" and "foobar"), the longer prefix must
+  be checked first.  There are several places where look-ahead assertions were
+  required to deal with these sorts of issues, or to ensure testability.
 
 ## API
 
@@ -29,7 +67,10 @@ const headers = parse('Date: Sun, 06 Nov 1994 08:49:37 GMT\r\n\r\n');
 // Rules named for a header (camel-case, with dashes turned into underscores)
 // parse everything after the colon+whitespace for the specified header.
 // Use the "startRule" option to select a specific header type.
-const contentType = parse('text/html;charset=utf8', {startRule: 'Content_Type'});
+const contentType = parse('text/html;charset=utf8', {
+  startRule: 'Content_Type',
+});
+
 // {
 //   kind: 'content_type',
 //   value: 'text/html;charset=utf8',
