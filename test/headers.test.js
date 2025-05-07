@@ -1,7 +1,6 @@
 import assert from 'node:assert';
 import {inspect} from 'node:util';
 import {parse} from '../lib/index.js';
-// eslint-disable-next-line n/no-unsupported-features/node-builtins
 import test from 'node:test';
 
 let count = 0;

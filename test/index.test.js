@@ -1,4 +1,3 @@
-// eslint-disable-next-line n/no-unsupported-features/node-builtins
 import test from 'node:test';
 import {testPeggy} from '@peggyjs/coverage';
 
@@ -2265,18 +2264,6 @@ test('Headers testPeggy', async() => {
       invalid,
     },
 
-    // #region Unreachable
-    {
-      validInput: '\t',
-      validResult: '\t',
-      invalidInput: ' ',
-      options: {
-        peg$startRuleFunction: 'peg$parseHTAB',
-        obsolete: true,
-      },
-      invalid,
-    },
-
     // #region Random stuff
     {
       invalidInput: '//',
@@ -2581,13 +2568,6 @@ test('Headers testPeggy', async() => {
       options: {
         peg$silentFails: -1,
         peg$startRuleFunction: 'peg$parsesf_token',
-      },
-    },
-    {
-      validInput: 'a',
-      invalidInput: 'A',
-      options: {
-        peg$startRuleFunction: 'peg$parselcalpha',
       },
     },
     {
