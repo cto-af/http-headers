@@ -18,11 +18,14 @@ importers:
         specifier: 2.0.1
         version: 2.0.1
       abnf:
-        specifier: 4.3.1
-        version: 4.3.1
+        specifier: 5.0.0
+        version: 5.0.0
       c8:
         specifier: 10.1.3
         version: 10.1.3
+      eslint:
+        specifier: 9.26.0
+        version: 9.26.0
       eslint-plugin-jsdoc:
         specifier: 50.6.11
         version: 50.6.11(eslint@9.26.0)
@@ -183,10 +186,6 @@ packages:
     resolution: {integrity: sha512-PJxeQhn+/zfNn8ZNClDliSlQ5WhCqd3fXNcRsup9KUL9K/LPP1w9WnUc7orvY9mzJ1hl6w6hSXWg7Q6H5hmkfQ==}
     engines: {node: '>=20'}
 
-  '@peggyjs/from-mem@1.3.5':
-    resolution: {integrity: sha512-oRyzXE7nirAn+5yYjCdWQHg3EG2XXcYRoYNOK8Quqnmm+9FyK/2YWVunwudlYl++M3xY+gIAdf0vAYS+p0nKfQ==}
-    engines: {node: '>=18'}
-
   '@peggyjs/from-mem@2.0.0':
     resolution: {integrity: sha512-f+pL/s2DiT+2dxwheSoJT0P/KJy/s0klzE+ZqRdXHlkeyFk/DpKtyjLZIiA79kx56g3oEPA8Zu9EzEKzAwuvhw==}
     engines: {node: '>=20'}
@@ -275,9 +274,9 @@ packages:
     resolution: {integrity: sha512-1rYQTCLFFzOI5Nl0c8LUpJT8HxpwVRn9E4CkMsYfuN6ctmQqExjSTzzSk0Tz2apmXy7WU6/6fyaZVVA/thPN+w==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  abnf@4.3.1:
-    resolution: {integrity: sha512-j4A8wWqKqkcSjx5xFESo9GtW2EUvlUZutcWB1knhxSP9kaXJ/YwL0g6dvMhHRjCPCNsIWwNGoKMHzPwemSpCvw==}
-    engines: {node: '>=18'}
+  abnf@5.0.0:
+    resolution: {integrity: sha512-IbfCNRDUPZtyRRJ7Vle+rZ7rh6OaMVb4qHE/dIR4s+STXjEw1rf++vodVcozyOGUUHelFAWpSbe0LODm1rrQwQ==}
+    engines: {node: '>=20'}
     hasBin: true
 
   accepts@2.0.0:
@@ -395,10 +394,6 @@ packages:
 
   color-name@1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
-
-  commander@12.1.0:
-    resolution: {integrity: sha512-Vw8qHK3bZM9y/P10u3Vib8o/DdkvA2OtPtZvD871QKjy74Wj1WSKFILMPRPSdUSx5RFK1arlJzEtA4PkFgnbuA==}
-    engines: {node: '>=18'}
 
   commander@13.1.0:
     resolution: {integrity: sha512-/rFeCpNJQbhSZjGVwO9RFV3xPqbnERS8MmIQzCtD/zl6gpJuV/bMLuN92oG3F7d8oDEHHRrujSXNUr8fpjntKw==}
@@ -1107,11 +1102,6 @@ packages:
     resolution: {integrity: sha512-TdrF7fW9Rphjq4RjrW0Kp2AW0Ahwu9sRGTkS6bvDi0SCwZlEZYmcfDbEsTz8RVk0EHIS/Vd1bv3JhG+1xZuAyQ==}
     engines: {node: '>=16'}
 
-  peggy@4.2.0:
-    resolution: {integrity: sha512-ZjzyJYY8NqW8JOZr2PbS/J0UH/hnfGALxSDsBUVQg5Y/I+ZaPuGeBJ7EclUX2RvWjhlsi4pnuL1C/K/3u+cDeg==}
-    engines: {node: '>=18'}
-    hasBin: true
-
   peggy@5.0.0:
     resolution: {integrity: sha512-f91rDGRveINCxwVGCTavT4ACjToNn1mjjrI3LZVvTWqkEW5k5+G/h/iS0G81q+0uANCWqlrc8jFadRVOBHimEA==}
     engines: {node: '>=20'}
@@ -1211,11 +1201,6 @@ packages:
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
-  semver@7.6.3:
-    resolution: {integrity: sha512-oVekP1cKtI+CTDvHWYFUcMtsK/00wmAEfyqKfNdARm8u1wNVhSgaX7A8d4UuIlUI5e84iEwOhs7ZPYRmzU9U6A==}
-    engines: {node: '>=10'}
-    hasBin: true
-
   semver@7.7.1:
     resolution: {integrity: sha512-hlq8tAfn0m/61p4BVRcPzIGr6LKiMwo4VM6dGi6pt4qcRkmNzTcWq6eCEjEh+qXjkMDvPlOFFSGwQjoEa6gyMA==}
     engines: {node: '>=10'}
@@ -1259,10 +1244,6 @@ packages:
   signal-exit@4.1.0:
     resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
     engines: {node: '>=14'}
-
-  source-map-generator@0.8.0:
-    resolution: {integrity: sha512-psgxdGMwl5MZM9S3FWee4EgsEaIjahYV5AzGnwUvPhWeITz/j6rKpysQHlQ4USdxvINlb8lKfWGIXwfkrgtqkA==}
-    engines: {node: '>= 10'}
 
   source-map-generator@2.0.0:
     resolution: {integrity: sha512-4KomB7QsJti7dFBAVF6SXHzuCNQauk4gE2CummcqPzl+eJqXz1CkkiBdVXXW3g8VGh23bxcdEVACOzrxpIqnUg==}
@@ -1613,10 +1594,6 @@ snapshots:
       peggy: 5.0.0
       source-map: 0.7.4
 
-  '@peggyjs/from-mem@1.3.5':
-    dependencies:
-      semver: 7.6.3
-
   '@peggyjs/from-mem@2.0.0':
     dependencies:
       semver: 7.7.1
@@ -1737,10 +1714,10 @@ snapshots:
       '@typescript-eslint/types': 8.32.0
       eslint-visitor-keys: 4.2.0
 
-  abnf@4.3.1:
+  abnf@5.0.0:
     dependencies:
       commander: 13.1.0
-      peggy: 4.2.0
+      peggy: 5.0.2
 
   accepts@2.0.0:
     dependencies:
@@ -1859,8 +1836,6 @@ snapshots:
       color-name: 1.1.4
 
   color-name@1.1.4: {}
-
-  commander@12.1.0: {}
 
   commander@13.1.0: {}
 
@@ -2776,12 +2751,6 @@ snapshots:
 
   path-to-regexp@8.2.0: {}
 
-  peggy@4.2.0:
-    dependencies:
-      '@peggyjs/from-mem': 1.3.5
-      commander: 12.1.0
-      source-map-generator: 0.8.0
-
   peggy@5.0.0:
     dependencies:
       '@peggyjs/from-mem': 2.0.0
@@ -2869,8 +2838,6 @@ snapshots:
 
   safer-buffer@2.1.2: {}
 
-  semver@7.6.3: {}
-
   semver@7.7.1: {}
 
   send@1.2.0:
@@ -2935,8 +2902,6 @@ snapshots:
       side-channel-weakmap: 1.0.2
 
   signal-exit@4.1.0: {}
-
-  source-map-generator@0.8.0: {}
 
   source-map-generator@2.0.0: {}
 
