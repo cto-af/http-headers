@@ -1,6 +1,6 @@
 {
   "name": "@cto.af/http-headers",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "decription": "Parse HTTP headers from RFC 9110 (and others) using the full ABNF",
   "main": "lib/index.js",
   "type": "module",
