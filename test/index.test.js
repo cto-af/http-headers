@@ -8,7 +8,7 @@ const options = {
 };
 const invalid = '\r\n';
 
-test('Headers testPeggy', async() => {
+test('Headers testPeggy', async () => {
   let startRule = '';
   const results = await testPeggy(PARSER, [
     // #region Accept
