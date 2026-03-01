@@ -6,3 +6,4 @@ sites.js
 sites/
 src/index.d.ts
 src/index.js
+.pnpm-store/
