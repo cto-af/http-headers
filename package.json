@@ -58,25 +58,20 @@
     "build": "npm run test && npm run lint && npm pack --dry-run"
   },
   "devDependencies": {
-    "@cto.af/eslint-config": "6.2.4",
-    "@eslint/markdown": "7.5.1",
-    "@peggyjs/coverage": "2.0.5",
-    "abnf": "5.0.3",
-    "c8": "11.0.0",
-    "eslint": "10.0.2",
-    "eslint-plugin-jsdoc": "62.7.1",
-    "eslint-plugin-markdown": "5.1.0",
-    "peggy": "5.1.0",
-    "terser": "5.46.0",
-    "typescript": "5.9.3",
-    "typescript-eslint": "8.56.1"
+    "@cto.af/eslint-config": "^6.2.5",
+    "@eslint/markdown": "^7.5.1",
+    "@peggyjs/coverage": "^2.0.5",
+    "abnf": "^5.0.4",
+    "eslint": "^10.0.3",
+    "eslint-plugin-jsdoc": "^62.8.0",
+    "eslint-plugin-markdown": "^5.1.0",
+    "peggy": "^5.1.0",
+    "superc8": "^12.3.1",
+    "terser": "^5.46.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.57.1"
   },
-  "packageManager": "pnpm@10.30.3",
-  "pnpm": {
-    "overrides": {
-      "c8@11.0.0>yargs": "18.0.0"
-    }
-  },
+  "packageManager": "pnpm@10.32.1",
   "engines": {
     "node": ">=20"
   }
