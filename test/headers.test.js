@@ -1,4 +1,4 @@
-import assert from 'node:assert';
+import assert from 'node:assert/strict';
 import {inspect} from 'node:util';
 import {parse} from '../lib/index.js';
 import test from 'node:test';
